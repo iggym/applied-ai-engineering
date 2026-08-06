@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Applied AI Engineering</title>
+<meta name="description" content="Past the taxonomy. Into the argument.">
+
+<style>
+  /* ============================================================
+     THEME — edit this block to reskin the whole site
+     ============================================================ */
+  :root{
+    /* color */
+    --color-bg:            #f7f5f0;
+    --color-bg-raised:     #ffffff;
+    --color-ink:           #1c1b19;
+    --color-ink-soft:      #514e47;
+    --color-ink-faint:     #8b8579;
+    --color-rule:          #ddd8cd;
+    --color-rule-strong:   #1c1b19;
+    --color-accent:        #7a3b2e;
+    --color-accent-soft:   #efe6de;
+    --color-pill-bg:       #eeeae1;
+    --color-pill-ink:      #514e47;
+
+    /* type */
+    --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, "Times New Roman", serif;
+    --font-mono:  "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+
+    --fs-000: 0.75rem;
+    --fs-00:  0.8125rem;
+    --fs-0:   1rem;
+    --fs-1:   1.125rem;
+    --fs-2:   1.4rem;
+    --fs-3:   1.9rem;
+    --fs-4:   2.6rem;
+
+    --lh-tight: 1.15;
+    --lh-normal: 1.5;
+    --lh-loose: 1.75;
+
+    /* space */
+    --sp-1: 0.25rem;
+    --sp-2: 0.5rem;
+    --sp-3: 0.85rem;
+    --sp-4: 1.25rem;
+    --sp-5: 2rem;
+    --sp-6: 3.25rem;
+    --sp-7: 5rem;
+
+    /* misc */
+    --radius: 2px;
+    --max-w: 46rem;
+    --border: 1px solid var(--color-rule);
+  }
+
+  *{ box-sizing: border-box; }
+  html{ -webkit-text-size-adjust: 100%; }
+
+  body{
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-serif);
+    font-size: var(--fs-0);
+    line-height: var(--lh-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a{ color: inherit; }
+
+  .wrap{
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 var(--sp-4);
+  }
+
+  /* ---------- header ---------- */
+  header.site-head{
+    border-bottom: var(--border);
+    padding: var(--sp-6) 0 var(--sp-5);
+  }
+
+  .mark{
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    font-family: var(--font-mono);
+    font-size: var(--fs-000);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+    margin-bottom: var(--sp-4);
+  }
+  .mark svg{ flex: none; }
+
+  h1.site-title{
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: var(--fs-4);
+    line-height: var(--lh-tight);
+    letter-spacing: -0.01em;
+    margin: 0 0 var(--sp-3);
+  }
+
+  p.site-tagline{
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: var(--fs-2);
+    color: var(--color-ink-soft);
+    margin: 0;
+    max-width: 34ch;
+  }
+
+  /* ---------- main / layout ---------- */
+  main{ padding: var(--sp-6) 0 var(--sp-7); }
+
+  .section-label{
+    font-family: var(--font-mono);
+    font-size: var(--fs-000);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+    margin: 0 0 var(--sp-4);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+  }
+  .section-label::after{
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--color-rule);
+  }
+
+  /* ---------- start-here / pinned ---------- */
+  .start-here{
+    margin-bottom: var(--sp-7);
+  }
+  .start-here .card{
+    background: var(--color-bg-raised);
+    border: var(--border);
+    border-left: 3px solid var(--color-accent);
+  }
+
+  /* ---------- feed ---------- */
+  .feed{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+  }
+
+  .card{
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    padding: var(--sp-5);
+    border-bottom: var(--border);
+  }
+  .feed .card{ border: none; border-bottom: var(--border); padding: 0 0 var(--sp-5); }
+  .feed li:last-child .card{ border-bottom: none; padding-bottom: 0; }
+
+  .card:hover .card-title{ color: var(--color-accent); }
+
+  .card-meta{
+    font-family: var(--font-mono);
+    font-size: var(--fs-000);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-1) var(--sp-3);
+    margin-bottom: var(--sp-2);
+  }
+  .card-meta .dot{ color: var(--color-rule); }
+
+  .card-title{
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: var(--fs-3);
+    line-height: var(--lh-tight);
+    margin: 0 0 var(--sp-3);
+    transition: color 0.15s ease;
+  }
+  .start-here .card-title{ font-size: var(--fs-3); }
+
+  .card-hook{
+    font-family: var(--font-serif);
+    font-size: var(--fs-1);
+    color: var(--color-ink-soft);
+    line-height: var(--lh-loose);
+    margin: 0 0 var(--sp-4);
+    max-width: 58ch;
+  }
+
+  .pills{
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+  }
+  .pill{
+    font-family: var(--font-mono);
+    font-size: var(--fs-000);
+    letter-spacing: 0.03em;
+    background: var(--color-pill-bg);
+    color: var(--color-pill-ink);
+    padding: 0.2em 0.6em;
+    border-radius: var(--radius);
+    white-space: nowrap;
+  }
+
+  /* ---------- filter ---------- */
+  .filter-bar{
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-5);
+  }
+  .filter-btn{
+    font-family: var(--font-mono);
+    font-size: var(--fs-000);
+    letter-spacing: 0.04em;
+    background: transparent;
+    color: var(--color-ink-soft);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius);
+    padding: 0.4em 0.8em;
+    cursor: pointer;
+  }
+  .filter-btn:hover{ border-color: var(--color-ink-faint); }
+  .filter-btn.active{
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-bg-raised);
+  }
+
+  /* ---------- empty state ---------- */
+  .empty-state{
+    border: var(--border);
+    background: var(--color-bg-raised);
+    padding: var(--sp-7) var(--sp-5);
+    text-align: center;
+  }
+  .empty-state .glyph{
+    margin: 0 auto var(--sp-4);
+    display: block;
+  }
+  .empty-state h2{
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: var(--fs-2);
+    margin: 0 0 var(--sp-2);
+  }
+  .empty-state p{
+    font-family: var(--font-serif);
+    color: var(--color-ink-soft);
+    max-width: 40ch;
+    margin: 0 auto;
+    line-height: var(--lh-loose);
+  }
+
+  /* ---------- footer ---------- */
+  footer.site-foot{
+    border-top: var(--border);
+    padding: var(--sp-5) 0 var(--sp-6);
+  }
+  footer.site-foot p{
+    font-family: var(--font-serif);
+    color: var(--color-ink-soft);
+    font-size: var(--fs-00);
+    line-height: var(--lh-loose);
+    margin: 0 0 var(--sp-3);
+    max-width: 60ch;
+  }
+  footer.site-foot a.repo-link{
+    font-family: var(--font-mono);
+    font-size: var(--fs-000);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-rule-strong);
+    padding-bottom: 2px;
+  }
+  footer.site-foot a.repo-link:hover{ color: var(--color-accent); border-color: var(--color-accent); }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 640px){
+    :root{
+      --fs-4: 2rem;
+      --fs-3: 1.5rem;
+      --sp-6: 2.25rem;
+      --sp-7: 3rem;
+    }
+    .wrap{ padding: 0 var(--sp-3); }
+  }
+
+  /* ---------- utility ---------- */
+  [hidden]{ display: none !important; }
+</style>
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap">
+    <div class="mark">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="0.5" y="0.5" width="13" height="13" stroke="currentColor"/>
+        <line x1="0.5" y1="7" x2="13.5" y2="7" stroke="currentColor"/>
+        <line x1="7" y1="0.5" x2="7" y2="13.5" stroke="currentColor"/>
+      </svg>
+      <span id="repo-label">repo</span>
+    </div>
+    <h1 class="site-title" id="site-title">&nbsp;</h1>
+    <p class="site-tagline" id="site-tagline">&nbsp;</p>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section class="start-here" id="start-here" hidden>
+      <p class="section-label">Start here</p>
+      <ul class="feed" id="start-here-feed"></ul>
+    </section>
+
+    <section id="feed-section">
+      <p class="section-label" id="feed-label">Latest</p>
+      <div class="filter-bar" id="filter-bar" hidden></div>
+      <ul class="feed" id="feed"></ul>
+    </section>
+
+    <div class="empty-state" id="empty-state" hidden>
+      <svg class="glyph" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="20" cy="20" r="19" stroke="#ddd8cd" stroke-width="1"/>
+        <line x1="20" y1="10" x2="20" y2="22" stroke="#8b8579" stroke-width="1.5"/>
+        <circle cx="20" cy="28" r="1.2" fill="#8b8579"/>
+      </svg>
+      <h2>The first piece is coming.</h2>
+      <p id="empty-copy">This hub goes live once the first synthesis piece is published. Check back soon.</p>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <p id="site-description"></p>
+    <a class="repo-link" id="base-link" href="#" rel="noopener">View on GitHub</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+
+  var state = {
+    articles: [],
+    activeTag: null
+  };
+
+  function fmtDate(iso){
+    try{
+      var d = new Date(iso + (iso.length === 10 ? 'T00:00:00' : ''));
+      if (isNaN(d.getTime())) return iso;
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }catch(e){ return iso; }
+  }
+
+  function el(tag, attrs, children){
+    var node = document.createElement(tag);
+    attrs = attrs || {};
+    for (var k in attrs){
+      if (k === 'class') node.className = attrs[k];
+      else if (k === 'html') node.innerHTML = attrs[k];
+      else node.setAttribute(k, attrs[k]);
+    }
+    (children || []).forEach(function(c){
+      if (c) node.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return node;
+  }
+
+  function buildCard(article){
+    var meta = el('div', { class: 'card-meta' }, [
+      el('span', {}, [fmtDate(article.date)]),
+      el('span', { class: 'dot' }, ['·']),
+      el('span', {}, [(article.reading_time_minutes || '—') + ' min read'])
+    ]);
+
+    var pills = el('div', { class: 'pills' },
+      (article.tags || []).map(function(t){ return el('span', { class: 'pill' }, [t]); })
+    );
+
+    var card = el('a', { class: 'card', href: article.path || '#' }, [
+      meta,
+      el('h3', { class: 'card-title' }, [article.title || 'Untitled']),
+      el('p', { class: 'card-hook' }, [article.hook || '']),
+      pills
+    ]);
+
+    var li = el('li', {}, [card]);
+    li.dataset.tags = (article.tags || []).join('|').toLowerCase();
+    return li;
+  }
+
+  function renderFeed(){
+    var feedEl = document.getElementById('feed');
+    var startFeedEl = document.getElementById('start-here-feed');
+    var startSection = document.getElementById('start-here');
+    var emptyState = document.getElementById('empty-state');
+    var feedSection = document.getElementById('feed-section');
+
+    feedEl.innerHTML = '';
+    startFeedEl.innerHTML = '';
+
+    var published = state.articles.filter(function(a){ return a.status === 'published'; });
+
+    if (published.length === 0){
+      startSection.hidden = true;
+      feedSection.hidden = true;
+      emptyState.hidden = false;
+      return;
+    }
+
+    emptyState.hidden = true;
+
+    var pinned = published.filter(function(a){ return a.pinned === true; });
+    var rest = published.filter(function(a){ return a.pinned !== true; });
+
+    rest.sort(function(a, b){ return new Date(b.date) - new Date(a.date); });
+    pinned.sort(function(a, b){ return new Date(b.date) - new Date(a.date); });
+
+    if (pinned.length){
+      startSection.hidden = false;
+      pinned.forEach(function(a){ startFeedEl.appendChild(buildCard(a)); });
+    } else {
+      startSection.hidden = true;
+    }
+
+    feedSection.hidden = false;
+
+    var visible = state.activeTag
+      ? rest.filter(function(a){ return (a.tags || []).map(function(t){return t.toLowerCase();}).indexOf(state.activeTag) !== -1; })
+      : rest;
+
+    if (visible.length === 0 && rest.length > 0){
+      feedEl.appendChild(el('li', {}, [
+        el('p', { class: 'card-hook', style: 'padding: var(--sp-4) 0;' }, ['No pieces tagged “' + state.activeTag + '” yet.'])
+      ]));
+    } else {
+      visible.forEach(function(a){ feedEl.appendChild(buildCard(a)); });
+    }
+
+    document.getElementById('feed-label').textContent = pinned.length ? 'More from the hub' : 'Latest';
+  }
+
+  function renderFilterBar(){
+    var published = state.articles.filter(function(a){ return a.status === 'published'; });
+    var bar = document.getElementById('filter-bar');
+    bar.innerHTML = '';
+
+    if (published.length <= 6){
+      bar.hidden = true;
+      return;
+    }
+
+    var tagSet = {};
+    published.forEach(function(a){
+      (a.tags || []).forEach(function(t){ tagSet[t.toLowerCase()] = t; });
+    });
+    var tags = Object.keys(tagSet);
+    if (tags.length === 0){ bar.hidden = true; return; }
+
+    bar.hidden = false;
+
+    var allBtn = el('button', { class: 'filter-btn active', type: 'button' }, ['All']);
+    allBtn.addEventListener('click', function(){
+      state.activeTag = null;
+      Array.prototype.forEach.call(bar.children, function(b){ b.classList.remove('active'); });
+      allBtn.classList.add('active');
+      renderFeed();
+    });
+    bar.appendChild(allBtn);
+
+    tags.forEach(function(key){
+      var btn = el('button', { class: 'filter-btn', type: 'button' }, [tagSet[key]]);
+      btn.addEventListener('click', function(){
+        state.activeTag = key;
+        Array.prototype.forEach.call(bar.children, function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+        renderFeed();
+      });
+      bar.appendChild(btn);
+    });
+  }
+
+  function applySiteMeta(site){
+    site = site || {};
+    document.getElementById('site-title').textContent = site.title || 'Untitled Site';
+    document.getElementById('site-tagline').textContent = site.tagline || '';
+    document.getElementById('repo-label').textContent = site.repo_name || '';
+    document.getElementById('site-description').textContent = site.description || '';
+    document.title = site.title || 'Untitled Site';
+
+    var base = site.base_url || '#';
+    var link = document.getElementById('base-link');
+    link.href = base;
+    link.textContent = (site.repo_name ? site.repo_name : 'View repository') + ' →';
+  }
+
+  function init(data){
+    applySiteMeta(data.site);
+    state.articles = Array.isArray(data.articles) ? data.articles : [];
+    renderFilterBar();
+    renderFeed();
+  }
+
+  fetch('./metadata.json')
+    .then(function(res){
+      if (!res.ok) throw new Error('metadata.json not found (' + res.status + ')');
+      return res.json();
+    })
+    .then(init)
+    .catch(function(err){
+      console.error('Failed to load metadata.json:', err);
+      applySiteMeta({});
+      document.getElementById('start-here').hidden = true;
+      document.getElementById('feed-section').hidden = true;
+      document.getElementById('empty-copy').textContent =
+        'metadata.json could not be loaded. If you\'re viewing this file locally, serve it over HTTP rather than opening it directly.';
+      document.getElementById('empty-state').hidden = false;
+    });
+
+})();
+</script>
+
+</body>
+</html>
