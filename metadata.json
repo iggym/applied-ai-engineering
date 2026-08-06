@@ -1,0 +1,73 @@
+{
+  "site": {
+    "repo_name": "applied-ai-engineering",
+    "title": "Applied AI Engineering",
+    "tagline": "Past the taxonomy. Into the argument.",
+    "base_url": "https://iggym.github.io/applied-ai-engineering/",
+    "audience": "Engineering leaders and consulting/hiring evaluators",
+    "description": "The flagship synthesis hub — where patterns surfacing across production-ai-patterns, agentic-engineering, scaling-ai-systems, ai-ops-field-notes, fde-field-notes, the-ai-runbook, and awesome-ai-architecture add up to a strategic argument, not just another failure list."
+  },
+  "articles": [
+  {
+    "title": "Why Your AI Failure Taxonomy Isn't a Strategy",
+    "hook": "Every team has a list of ways agents break. Almost none have turned that list into an argument about where to invest next quarter.",
+    "date": "2026-07-14",
+    "reading_time_minutes": 11,
+    "tags": ["strategy", "org-design"],
+    "status": "published",
+    "pinned": true,
+    "path": "articles/failure-taxonomy-is-not-a-strategy.html"
+  },
+  {
+    "title": "The Pattern That Keeps Showing Up: Read-Heavy, Write-Cautious",
+    "hook": "Across seven field-notes repos, the production systems that survived contact with real users share one design instinct — and it isn't the one vendors sell you.",
+    "date": "2026-07-28",
+    "reading_time_minutes": 9,
+    "tags": ["architecture", "production"],
+    "status": "published",
+    "pinned": false,
+    "path": "articles/read-heavy-write-cautious.html"
+  },
+  {
+    "title": "What FDEs Know That Platform Teams Don't (Yet)",
+    "hook": "Forward-deployed engineers absorb chaos that never reaches a postmortem. Their tacit rules are quietly becoming the platform team's next roadmap.",
+    "date": "2026-07-21",
+    "reading_time_minutes": 8,
+    "tags": ["org-design", "fde"],
+    "status": "published",
+    "pinned": false,
+    "path": "articles/fde-tacit-knowledge.html"
+  },
+  {
+    "title": "On-Call for Agents: Runbooks Are Not Enough",
+    "hook": "A runbook tells a human what to do when things break. It says nothing about what to do when the thing breaking is itself making decisions.",
+    "date": "2026-07-05",
+    "reading_time_minutes": 13,
+    "tags": ["ops", "production", "reliability"],
+    "status": "published",
+    "pinned": false,
+    "path": "articles/on-call-for-agents.html"
+  },
+  {
+    "title": "Scaling Laws Are Not Operating Laws",
+    "hook": "The industry keeps borrowing model-scaling intuition to justify org-scaling decisions. The two curves don't share an X-axis.",
+    "date": "2026-06-22",
+    "reading_time_minutes": 10,
+    "tags": ["strategy", "architecture"],
+    "status": "published",
+    "pinned": false,
+    "path": "articles/scaling-laws-vs-operating-laws.html"
+  },
+  {
+    "title": "The Architecture Reference Nobody Finishes Reading — And Why That's Fine",
+    "hook": "Awesome-lists get bookmarked, not read cover to cover. The value was never completeness; it was the two links you needed at 11pm.",
+    "date": "2026-06-10",
+    "reading_time_minutes": 6,
+    "tags": ["reference", "architecture"],
+    "status": "published",
+    "pinned": false,
+    "path": "articles/reference-nobody-finishes.html"
+  },
+  {
+    "title": "Hiring Signal: What Six Months of Agentic Engineering
+}
