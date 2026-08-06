@@ -8,6 +8,19 @@
     "description": "The flagship synthesis hub — where patterns surfacing across production-ai-patterns, agentic-engineering, scaling-ai-systems, ai-ops-field-notes, fde-field-notes, the-ai-runbook, and awesome-ai-architecture add up to a strategic argument, not just another failure list."
   },
   "articles": [
+    {
+  "id": "failure-taxonomy-industrial-complex",
+  "slug": "failure-taxonomy-industrial-complex",
+  "title": "The Failure Taxonomy Industrial Complex",
+  "hook": "Every AI engineering blog in 2026 has published its own list of seven ways agents fail. They agree with each other almost perfectly. That agreement should worry you more than any individual failure.",
+  "path": "articles/the-failure-taxonomy-industrial-complex.html",
+  "date": "2026-08-06",
+  "status": "published",
+  "format": "essay",
+  "tags": ["strategy", "agentic-systems", "incident-analysis", "critique"],
+  "reading_time_minutes": 9,
+  "pinned": true
+},
   {
     "title": "Why Your AI Failure Taxonomy Isn't a Strategy",
     "hook": "Every team has a list of ways agents break. Almost none have turned that list into an argument about where to invest next quarter.",
