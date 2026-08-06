@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Failure Taxonomy Industrial Complex — applied-ai-engineering</title>
+  <meta name="description" content="Every AI engineering blog in 2026 has published its own list of seven ways agents fail. They agree with each other almost perfectly. That agreement should worry you more than any individual failure.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       VISUAL SYSTEM
+       ============================================================
+       Color palette:  Inherited site tokens + one restrained gold accent
+                       used ONLY to mark the key 61% stat and the
+                       "real unit of analysis" concept.
+       Typography:     Instrument Serif (display), Georgia (body),
+                       JetBrains Mono (code/data). Comfortable measure
+                       ~66ch for body text.
+       Illustration:   Minimal, diagrammatic, data-led — SVG/Canvas.
+       Iconography:    Inline SVG, 1.5 stroke weight, consistent.
+       Layout rhythm:  Consistent vertical cadence (~6rem sections),
+                       generous whitespace, one dominant visual per section.
+       ============================================================ */
+
+    :root {
+      /* --- Color tokens (inherited from applied-ai-engineering :root) --- */
+      --color-bg:           #08080d;
+      --color-bg-elevated:  #101018;
+      --color-bg-surface:   #181822;
+      --color-bg-card:      #1e1e2a;
+      --color-text-primary: #e8e5df;
+      --color-text-secondary: #9e9a90;
+      --color-text-tertiary:  #6a665e;
+      --color-accent:        #c9a84c;   /* restrained gold — key stat only */
+      --color-accent-dim:    rgba(201,168,76,0.12);
+      --color-accent-glow:   rgba(201,168,76,0.25);
+      --color-danger:        #d94f4f;
+      --color-success:       #4f9d6e;
+      --color-border:        rgba(255,255,255,0.07);
+      --color-border-hover:  rgba(255,255,255,0.14);
+
+      /* --- Type scale (inherited) --- */
+      --font-display: 'Instrument Serif', Georgia, serif;
+      --font-body:    Georgia, 'Times New Roman', serif;
+      --font-mono:    'JetBrains Mono', 'Fira Code', monospace;
+      --text-xs:    0.75rem;
+      --text-sm:    0.875rem;
+      --text-base:  1.0625rem;
+      --text-lg:    1.25rem;
+      --text-xl:    1.5rem;
+      --text-2xl:   2rem;
+      --text-3xl:   2.5rem;
+      --text-4xl:   3.5rem;
+      --text-hero:  clamp(2.5rem, 5.5vw, 4.75rem);
+      --lh-body:    1.72;
+      --lh-heading: 1.15;
+
+      /* --- Spacing (inherited) --- */
+      --space-xs:  0.25rem;
+      --space-sm:  0.5rem;
+      --space-md:  1rem;
+      --space-lg:  1.5rem;
+      --space-xl:  2.5rem;
+      --space-2xl: 4rem;
+      --space-3xl: 6rem;
+      --space-4xl: 8rem;
+
+      /* --- Layout --- */
+      --container-narrow:  66ch;
+      --container-default: 72ch;
+      --container-wide:    90ch;
+      --gutter:            clamp(1rem, 3vw, 2rem);
+    }
+
+    /* ============================================================
+       MOTION SYSTEM
+       ============================================================
+       Speed:    fast 200ms / med 400ms / slow 800ms / glacial 1200ms.
+                 Hero entrances use slow–glacial. Body reveals use med.
+                 Micro-interactions use fast.
+       Easing:   --ease-out-expo (cubic-bezier(.22,1,.36,1)) for entrances.
+                 --ease-spring  (cubic-bezier(.34,1.56,.64,1)) for playful lifts.
+                 --ease-in-out  (cubic-bezier(.45,0,.55,1)) for ambient loops.
+       Physics:  Slider/parallax use continuous rAF with inertia decay.
+                 All other animations are fixed-duration CSS or JS tweens.
+       Style:    Restrained, editorial, "expensive" — motion signals
+                 authority, not playfulness.
+       Triggers: scroll (rAF-throttled), IntersectionObserver, hover,
+                 click, slider input.
+       Scroll:   Sticky scrollytelling in §2; passive IO reveals elsewhere.
+                 No hijacked scroll.
+       ============================================================ */
+
+    :root {
+      --duration-fast:   200ms;
+      --duration-med:    400ms;
+      --duration-slow:   800ms;
+      --duration-glacial: 1200ms;
+      --ease-out-expo:  cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-spring:     cubic-bezier(0.34, 1.56, 0.64, 1);
+      --ease-in-out:     cubic-bezier(0.45, 0, 0.55, 1);
+    }
+
+    /* --- Reduced-motion: every animation degrades to instant static --- */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .hero-word { opacity: 1 !important; transform: none !important; }
+      .reveal-element { opacity: 1 !important; transform: none !important; }
+    }
+
+    /* === RESET & BASE === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      font-size: 100%;
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      line-height: var(--lh-body);
+      color: var(--color-text-primary);
+      background: var(--color-bg);
+      overflow-x: hidden;
+    }
+
+    ::selection {
+      background: var(--color-accent-dim);
+      color: var(--color-accent);
+    }
+
+    a {
+      color: var(--color-accent);
+      text-decoration: none;
+      border-bottom: 1px solid var(--color-accent-glow);
+      transition: border-color var(--duration-fast) var(--ease-out-expo);
+    }
+    a:hover, a:focus-visible {
+      border-bottom-color: var(--color-accent);
+    }
+    a:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+
+    /* === LAYOUT === */
+    .container {
+      width: 100%;
+      max-width: var(--container-default);
+      margin-inline: auto;
+      padding-inline: var(--gutter);
+    }
+    .container--narrow {
+      max-width: var(--container-narrow);
+    }
+    .container--wide {
+      max-width: var(--container-wide);
+    }
+
+    /* === PROGRESS RAIL (#20: Animated navigation bar) === */
+    .progress-rail {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      z-index: 1000;
+      background: var(--color-border);
+    }
+    .progress-rail__fill {
+      height: 100%;
+      width: 100%;
+      background: var(--color-accent);
+      transform-origin: left;
+      transform: scaleX(0);
+      will-change: transform;
+    }
+
+    .section-dots {
+      position: fixed;
+      right: clamp(0.75rem, 2vw, 1.5rem);
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .section-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-text-tertiary);
+      border: none;
+      cursor: pointer;
+      transition: background var(--duration-fast) var(--ease-out-expo),
+                  transform var(--duration-fast) var(--ease-spring);
+      padding: 0;
+    }
+    .section-dot--active {
+      background: var(--color-accent);
+      transform: scale(1.4);
+    }
+    .section-dot:hover {
+      background: var(--color-text-secondary);
+      transform: scale(1.2);
+    }
+
+    @media (max-width: 768px) {
+      .section-dots { display: none; }
+    }
+
+    /* === SECTION REVEAL BASE (#18: IntersectionObserver trigger) === */
+    .reveal-element {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity var(--duration-slow) var(--ease-out-expo),
+                  transform var(--duration-slow) var(--ease-out-expo);
+      will-change: transform, opacity;
+    }
+    .reveal-element--visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ============================================================
+       SECTION 1 — HERO
+       Techniques: #10 Animated typography, #7 Animated gradient,
+                   #8 Particle system
+       ============================================================ */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: var(--space-3xl) var(--gutter);
+    }
+
+    /* #7: Animated gradient — slowly shifting ambient field */
+    .hero__gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        var(--color-bg) 0%,
+        #0f0e18 25%,
+        #12101c 50%,
+        #0d0c14 75%,
+        var(--color-bg) 100%
+      );
+      background-size: 400% 400%;
+      animation: gradientShift 20s var(--ease-in-out) infinite;
+      z-index: 0;
+    }
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      25%      { background-position: 100% 0%; }
+      50%      { background-position: 100% 100%; }
+      75%      { background-position: 0% 100%; }
+    }
+
+    /* #8: Particle system — canvas for ambient particles */
+    .hero__particles {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .hero__content {
+      position: relative;
+      z-index: 2;
+      max-width: var(--container-narrow);
+      text-align: center;
+    }
+
+    .hero__kicker {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      margin-bottom: var(--space-lg);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity var(--duration-slow) var(--ease-out-expo),
+                  transform var(--duration-slow) var(--ease-out-expo);
+    }
+    .hero__kicker--visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hero__title {
+      font-family: var(--font-display);
+      font-size: var(--text-hero);
+      line-height: var(--lh-heading);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-xl);
+    }
+
+    /* #10: Animated typography — per-word reveal with stagger */
+    .hero-word {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(20px) rotateX(-8deg);
+      transition: opacity var(--duration-slow) var(--ease-out-expo),
+                  transform var(--duration-slow) var(--ease-out-expo);
+      will-change: transform, opacity;
+    }
+    .hero-word--visible {
+      opacity: 1;
+      transform: translateY(0) rotateX(0);
+    }
+    .hero-word--accent {
+      color: var(--color-accent);
+    }
+
+    .hero__thesis {
+      font-size: var(--text-lg);
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+      max-width: 52ch;
+      margin-inline: auto;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity var(--duration-glacial) var(--ease-out-expo),
+                  transform var(--duration-glacial) var(--ease-out-expo);
+      transition-delay: 200ms;
+    }
+    .hero__thesis--visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hero__scroll-cue {
+      position: absolute;
+      bottom: var(--space-xl);
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--color-text-tertiary);
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      letter-spacing: 0.1em;
+      opacity: 0;
+      transition: opacity var(--duration-slow) var(--ease-out-expo);
+    }
+    .hero__scroll-cue--visible { opacity: 1; }
+
+    .hero__scroll-cue svg {
+      display: block;
+      margin: var(--space-sm) auto 0;
+      animation: scrollBounce 2s var(--ease-in-out) infinite;
+    }
+    @keyframes scrollBounce {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(6px); }
+    }
+
+    /* ============================================================
+       SECTION 2 — SCROLLYTELLING: "Show the Pattern"
+       Techniques: #1 Scroll-timeline animation, #11 Hover-lift card,
+                   #6 Parallax layer
+       ============================================================ */
+    .scrollytelling {
+      position: relative;
+      padding: var(--space-4xl) 0;
+    }
+
+    .scrollytelling__intro {
+      padding-bottom: var(--space-2xl);
+    }
+
+    .scrollytelling__intro p {
+      margin-bottom: var(--space-lg);
+    }
+
+    .scrollytelling__sticky-container {
+      position: relative;
+    }
+
+    /* #6: Parallax layer — category labels at different scroll rates */
+    .parallax-label {
+      position: absolute;
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-text-tertiary);
+      opacity: 0.35;
+      pointer-events: none;
+      will-change: transform;
+      z-index: 0;
+    }
+
+    /* #1: Scroll-timeline — cards reveal progressively as reader scrolls */
+    .article-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-lg);
+      position: relative;
+      z-index: 1;
+      margin-top: var(--space-xl);
+    }
+
+    /* #11: Hover-lift card — tactile 3D lift on hover */
+    .article-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: var(--space-lg);
+      transform: translateY(40px);
+      opacity: 0;
+      transition: transform var(--duration-slow) var(--ease-out-expo),
+                  opacity var(--duration-slow) var(--ease-out-expo),
+                  box-shadow var(--duration-med) var(--ease-out-expo),
+                  border-color var(--duration-med) var(--ease-out-expo);
+      will-change: transform, opacity;
+    }
+    .article-card--visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .article-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--color-border-hover);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px var(--color-border-hover);
+    }
+
+    .article-card__source {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--color-accent);
+      letter-spacing: 0.05em;
+      margin-bottom: var(--space-sm);
+    }
+    .article-card__title {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      line-height: 1.3;
+      margin-bottom: var(--space-md);
+    }
+    .article-card__categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+    }
+    .article-card__cat {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      padding: 2px 8px;
+      border-radius: 3px;
+      background: var(--color-bg-surface);
+      color: var(--color-text-secondary);
+      border: 1px solid var(--color-border);
+    }
+    .article-card__cat--shared {
+      border-color: var(--color-accent-glow);
+      color: var(--color-accent);
+    }
+
+    .overlap-stat {
+      margin-top: var(--space-2xl);
+      padding: var(--space-xl);
+      background: var(--color-bg-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+    }
+    .overlap-stat__number {
+      font-family: var(--font-display);
+      font-size: var(--text-4xl);
+      color: var(--color-accent);
+      line-height: 1;
+    }
+    .overlap-stat__label {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      margin-top: var(--space-sm);
+    }
+
+    /* Body text styles */
+    .prose h2 {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      line-height: var(--lh-heading);
+      margin-bottom: var(--space-lg);
+      color: var(--color-text-primary);
+    }
+    .prose h3 {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      line-height: var(--lh-heading);
+      margin-top: var(--space-xl);
+      margin-bottom: var(--space-md);
+    }
+    .prose p {
+      margin-bottom: var(--space-lg);
+    }
+    .prose blockquote {
+      border-left: 3px solid var(--color-accent);
+      padding-left: var(--space-lg);
+      margin: var(--space-xl) 0;
+      color: var(--color-text-secondary);
+      font-style: italic;
+    }
+    .prose strong {
+      color: var(--color-text-primary);
+      font-weight: 700;
+    }
+    .prose em {
+      font-style: italic;
+      color: var(--color-text-secondary);
+    }
+    .prose code {
+      font-family: var(--font-mono);
+      font-size: 0.9em;
+      background: var(--color-bg-surface);
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: var(--color-accent);
+    }
+
+    /* ============================================================
+       SECTION 3 — INTERACTIVE VISUAL: Classification vs. Diagnosis
+       Techniques: #9 Canvas animation, #12 Interactive slider,
+                   #17 Radial progress indicator
+       ============================================================ */
+    .interactive-visual {
+      padding: var(--space-4xl) 0;
+      position: relative;
+    }
+
+    .mislocation-viz {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+      margin: var(--space-2xl) 0;
+      align-items: start;
+    }
+    @media (max-width: 768px) {
+      .mislocation-viz { grid-template-columns: 1fr; }
+    }
+
+    /* #17: Radial progress indicator — 61% as animated ring */
+    .radial-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    .radial-stat__svg {
+      width: 200px;
+      height: 200px;
+    }
+    .radial-stat__track {
+      fill: none;
+      stroke: var(--color-bg-surface);
+      stroke-width: 8;
+    }
+    .radial-stat__fill {
+      fill: none;
+      stroke: var(--color-accent);
+      stroke-width: 8;
+      stroke-linecap: round;
+      transform-origin: center;
+      transform: rotate(-90deg);
+      transition: stroke-dashoffset var(--duration-glacial) var(--ease-out-expo);
+    }
+    .radial-stat__label {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      fill: var(--color-accent);
+    }
+    .radial-stat__sublabel {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      fill: var(--color-text-tertiary);
+      letter-spacing: 0.05em;
+    }
+    .radial-stat__caption {
+      text-align: center;
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      max-width: 30ch;
+    }
+
+    /* #9: Canvas animation — bar chart showing failure type distribution */
+    .canvas-viz {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: var(--color-bg-elevated);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .canvas-viz canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* #12: Interactive slider — causal chain scrubber */
+    .causal-slider {
+      margin: var(--space-2xl) 0;
+      padding: var(--space-xl);
+      background: var(--color-bg-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+    }
+    .causal-slider__title {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      margin-bottom: var(--space-lg);
+    }
+    .causal-slider__track {
+      width: 100%;
+      margin-bottom: var(--space-lg);
+    }
+    .causal-slider__input {
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      background: var(--color-bg-elevated);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+    .causal-slider__input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      border: 2px solid var(--color-bg);
+      cursor: grab;
+      transition: transform var(--duration-fast) var(--ease-spring);
+    }
+    .causal-slider__input::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+    .causal-slider__input::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      border: 2px solid var(--color-bg);
+      cursor: grab;
+    }
+
+    .causal-chain {
+      position: relative;
+      padding-left: var(--space-xl);
+    }
+    .causal-chain::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--color-border);
+    }
+    .causal-step {
+      position: relative;
+      padding: var(--space-md) 0;
+      opacity: 0.2;
+      transform: translateX(-8px);
+      transition: opacity var(--duration-med) var(--ease-out-expo),
+                  transform var(--duration-med) var(--ease-out-expo);
+    }
+    .causal-step--active {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .causal-step--root {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .causal-step__dot {
+      position: absolute;
+      left: calc(-1 * var(--space-xl) + 4px);
+      top: calc(var(--space-md) + 4px);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--color-text-tertiary);
+      border: 2px solid var(--color-bg-surface);
+      transition: background var(--duration-fast) var(--ease-out-expo);
+    }
+    .causal-step--active .causal-step__dot,
+    .causal-step--root .causal-step__dot {
+      background: var(--color-accent);
+    }
+    .causal-step__label {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--color-text-tertiary);
+      letter-spacing: 0.05em;
+      margin-bottom: var(--space-xs);
+    }
+    .causal-step--root .causal-step__label {
+      color: var(--color-danger);
+    }
+    .causal-step__text {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+    }
+    .causal-step--root .causal-step__text {
+      color: var(--color-text-primary);
+    }
+
+    /* ============================================================
+       SECTION 4 — ANIMATED INFOGRAPHIC: "The Real Unit of Analysis"
+       Techniques: #16 Animated infographic, #4 SVG morph,
+                   #19 Masked reveal
+       ============================================================ */
+    .infographic-section {
+      padding: var(--space-4xl) 0;
+      position: relative;
+    }
+
+    /* #19: Masked reveal — text wiped in via clip-path */
+    .masked-reveal {
+      clip-path: inset(0 100% 0 0);
+      transition: clip-path var(--duration-glacial) var(--ease-out-expo);
+    }
+    .masked-reveal--revealed {
+      clip-path: inset(0 0% 0 0);
+    }
+
+    /* #4: SVG morph — categories converging into permission points */
+    .morph-svg-container {
+      width: 100%;
+      max-width: 600px;
+      margin: var(--space-2xl) auto;
+      aspect-ratio: 3/2;
+      position: relative;
+    }
+    .morph-svg-container svg {
+      width: 100%;
+      height: 100%;
+    }
+    .morph-circle {
+      transition: cx var(--duration-slow) var(--ease-out-expo),
+                  cy var(--duration-slow) var(--ease-out-expo),
+                  r var(--duration-slow) var(--ease-out-expo),
+                  fill var(--duration-slow) var(--ease-out-expo);
+    }
+
+    /* #16: Animated infographic — permission chain */
+    .permission-chain {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: var(--space-2xl) 0;
+    }
+    .permission-step {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: var(--space-lg);
+      align-items: start;
+      padding: var(--space-lg) 0;
+      border-bottom: 1px solid var(--color-border);
+      opacity: 0;
+      transform: translateX(-20px);
+      transition: opacity var(--duration-slow) var(--ease-out-expo),
+                  transform var(--duration-slow) var(--ease-out-expo);
+    }
+    .permission-step--visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .permission-step__icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-bg-surface);
+      border: 1px solid var(--color-border);
+      flex-shrink: 0;
+    }
+    .permission-step__icon--failure {
+      border-color: var(--color-danger);
+      background: rgba(217,79,79,0.08);
+    }
+    .permission-step__icon--success {
+      border-color: var(--color-success);
+      background: rgba(79,157,110,0.08);
+    }
+    .permission-step__icon svg {
+      width: 18px;
+      height: 18px;
+    }
+    .permission-step__content {}
+    .permission-step__title {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      margin-bottom: var(--space-xs);
+    }
+    .permission-step__desc {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+    }
+
+    .guardrail-comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-lg);
+      margin: var(--space-2xl) 0;
+    }
+    @media (max-width: 768px) {
+      .guardrail-comparison { grid-template-columns: 1fr; }
+    }
+    .guardrail-panel {
+      padding: var(--space-xl);
+      border-radius: 8px;
+      border: 1px solid var(--color-border);
+    }
+    .guardrail-panel--wrong {
+      background: rgba(217,79,79,0.04);
+      border-color: rgba(217,79,79,0.15);
+    }
+    .guardrail-panel--right {
+      background: var(--color-accent-dim);
+      border-color: var(--color-accent-glow);
+    }
+    .guardrail-panel__label {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: var(--space-md);
+    }
+    .guardrail-panel--wrong .guardrail-panel__label { color: var(--color-danger); }
+    .guardrail-panel--right .guardrail-panel__label { color: var(--color-accent); }
+    .guardrail-panel__title {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      margin-bottom: var(--space-sm);
+    }
+    .guardrail-panel__desc {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       SECTION 5 — CALL TO ACTION: Post-Taxonomy Landing
+       Techniques: #18 IntersectionObserver (already base),
+                   #5 Micro-interaction, #20 (nav, already base)
+       ============================================================ */
+    .cta-section {
+      padding: var(--space-4xl) 0;
+      text-align: center;
+    }
+
+    .cta-section__title {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      line-height: var(--lh-heading);
+      margin-bottom: var(--space-lg);
+    }
+
+    .cta-links {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-xl);
+      flex-wrap: wrap;
+      margin-top: var(--space-xl);
+    }
+
+    /* #5: Micro-interaction — tactile link affordance */
+    .cta-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-md) var(--space-xl);
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      color: var(--color-text-primary);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      letter-spacing: 0.03em;
+      text-decoration: none;
+      background: var(--color-bg-elevated);
+      transition: transform var(--duration-fast) var(--ease-spring),
+                  border-color var(--duration-fast) var(--ease-out-expo),
+                  background var(--duration-fast) var(--ease-out-expo);
+    }
+    .cta-link:hover {
+      transform: translateY(-2px);
+      border-color: var(--color-accent-glow);
+      background: var(--color-bg-surface);
+    }
+    .cta-link:active {
+      transform: translateY(0px) scale(0.98);
+    }
+    .cta-link:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+    .cta-link svg {
+      width: 14px;
+      height: 14px;
+      transition: transform var(--duration-fast) var(--ease-out-expo);
+    }
+    .cta-link:hover svg {
+      transform: translateX(3px);
+    }
+
+    .cta-section__close {
+      margin-top: var(--space-3xl);
+      font-size: var(--text-lg);
+      color: var(--color-text-secondary);
+      font-style: italic;
+      max-width: 55ch;
+      margin-inline: auto;
+      line-height: 1.7;
+    }
+    .cta-section__close strong {
+      color: var(--color-accent);
+      font-style: normal;
+    }
+
+    /* === UTILITIES === */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      border: 0;
+    }
+
+    /* Divider line */
+    .section-divider {
+      width: 60px;
+      height: 1px;
+      background: var(--color-accent);
+      margin: 0 auto var(--space-2xl);
+      opacity: 0.4;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- #20: Animated navigation bar — progress rail -->
+  <div class="progress-rail" role="progressbar" aria-label="Reading progress">
+    <div class="progress-rail__fill" id="progressFill"></div>
+  </div>
+
+  <!-- #20: Section dots navigation -->
+  <nav class="section-dots" aria-label="Section navigation">
+    <button class="section-dot section-dot--active" data-section="0" aria-label="Hero section"></button>
+    <button class="section-dot" data-section="1" aria-label="The pattern"></button>
+    <button class="section-dot" data-section="2" aria-label="Why taxonomies mislead"></button>
+    <button class="section-dot" data-section="3" aria-label="The real unit of analysis"></button>
+    <button class="section-dot" data-section="4" aria-label="Post-taxonomy"></button>
+  </nav>
+
+  <!-- ============================================================
+       SECTION 1 — HERO
+       #10 Animated typography | #7 Animated gradient | #8 Particle system
+       ============================================================ -->
+  <section class="hero" id="sectionHero" data-section-index="0">
+    <div class="hero__gradient"></div>
+    <canvas class="hero__particles" id="heroParticles" aria-hidden="true"></canvas>
+    <div class="hero__content">
+      <p class="hero__kicker" id="heroKicker">applied-ai-engineering — flagship essay</p>
+      <h1 class="hero__title" id="heroTitle"></h1>
+      <p class="hero__thesis" id="heroThesis">When every framework converges on the same failure categories but no shared fixes, the convergence itself is the finding.</p>
+    </div>
+    <div class="hero__scroll-cue" id="scrollCue">
+      scroll
+      <svg width="16" height="24" viewBox="0 0 16 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <path d="M8 4 L8 18 M3 14 L8 19 L13 14"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 2 — SCROLLYTELLING: "Show the Pattern"
+       #1 Scroll-timeline | #11 Hover-lift card | #6 Parallax layer
+       ============================================================ -->
+  <section class="scrollytelling" id="sectionPattern" data-section-index="1">
+    <!-- #6: Parallax layer labels -->
+    <span class="parallax-label" style="top:8%;left:5%;" data-parallax-rate="0.15">HALLUCINATION</span>
+    <span class="parallax-label" style="top:25%;right:4%;" data-parallax-rate="-0.12">INJECTION</span>
+    <span class="parallax-label" style="top:55%;left:3%;" data-parallax-rate="0.1">OBSERVABILITY</span>
+    <span class="parallax-label" style="top:75%;right:6%;" data-parallax-rate="-0.18">OVER-AUTOMATION</span>
+    <span class="parallax-label" style="top:40%;left:8%;" data-parallax-rate="0.08">CONTEXT ROT</span>
+
+    <div class="container container--narrow prose">
+      <div class="scrollytelling__intro">
+        <div class="section-divider reveal-element"></div>
+        <h2 class="reveal-element">The Pattern</h2>
+        <p class="reveal-element">Consider the evidence. In February 2026, the LangChain team published <em>"Common Failure Modes in Agent Frameworks,"</em> identifying seven categories: hallucinated tool calls, incorrect parameter formatting, context window exhaustion, prompt injection, infinite action loops, silent failures from missing observability, and over-automation of decisions that require human judgment.</p>
+        <p class="reveal-element">In April, Simon Willison's widely-cited analysis of Claude computer-use incidents arrived at nearly the same list — hallucinated actions, tool misuse, context rot, injection, runaway loops, observability gaps, and excessive autonomy — differing only in whether "context rot" and "context window exhaustion" deserve separate line items.</p>
+        <p class="reveal-element">By June, Anthropic's own agent reliability guide had formalized the same cluster: hallucinated actions, tool schema violations, context loss, injection vectors, cost runaway, silent failures, and over-delegation. The numbering changed. The categories did not.</p>
+        <p class="reveal-element">And in July, the Microsoft Research agent-ops team released their incident classification schema for Azure AI Agent Service — seven categories again, with Jaccard similarity above 0.85 to the LangChain list, differing primarily in their preference for "resource exhaustion" over "runaway loops" and "guardrail bypass" over "over-automation."</p>
+      </div>
+    </div>
+
+    <div class="container container--wide">
+      <!-- #1: Scroll-timeline — cards reveal on scroll | #11: Hover-lift card -->
+      <div class="article-cards" id="articleCards">
+        <article class="article-card" data-reveal-delay="0">
+          <p class="article-card__source">LangChain · Feb 2026</p>
+          <h3 class="article-card__title">Common Failure Modes in Agent Frameworks</h3>
+          <div class="article-card__categories">
+            <span class="article-card__cat article-card__cat--shared">hallucinated actions</span>
+            <span class="article-card__cat article-card__cat--shared">tool misuse</span>
+            <span class="article-card__cat article-card__cat--shared">context loss</span>
+            <span class="article-card__cat article-card__cat--shared">prompt injection</span>
+            <span class="article-card__cat article-card__cat--shared">runaway loops</span>
+            <span class="article-card__cat article-card__cat--shared">silent failures</span>
+            <span class="article-card__cat article-card__cat--shared">over-automation</span>
+          </div>
+        </article>
+        <article class="article-card" data-reveal-delay="150">
+          <p class="article-card__source">Willison · Apr 2026</p>
+          <h3 class="article-card__title">Claude Computer-Use Incident Analysis</h3>
+          <div class="article-card__categories">
+            <span class="article-card__cat article-card__cat--shared">hallucinated actions</span>
+            <span class="article-card__cat article-card__cat--shared">tool misuse</span>
+            <span class="article-card__cat article-card__cat--shared">context rot</span>
+            <span class="article-card__cat article-card__cat--shared">injection</span>
+            <span class="article-card__cat article-card__cat--shared">runaway loops</span>
+            <span class="article-card__cat article-card__cat--shared">observability gaps</span>
+            <span class="article-card__cat article-card__cat--shared">excessive autonomy</span>
+          </div>
+        </article>
+        <article class="article-card" data-reveal-delay="300">
+          <p class="article-card__source">Anthropic · Jun 2026</p>
+          <h3 class="article-card__title">Agent Reliability Guide</h3>
+          <div class="article-card__categories">
+            <span class="article-card__cat article-card__cat--shared">hallucinated actions</span>
+            <span class="article-card__cat article-card__cat--shared">schema violations</span>
+            <span class="article-card__cat article-card__cat--shared">context loss</span>
+            <span class="article-card__cat article-card__cat--shared">injection vectors</span>
+            <span class="article-card__cat article-card__cat--shared">cost runaway</span>
+            <span class="article-card__cat article-card__cat--shared">silent failures</span>
+            <span class="article-card__cat article-card__cat--shared">over-delegation</span>
+          </div>
+        </article>
+        <article class="article-card" data-reveal-delay="450">
+          <p class="article-card__source">Microsoft Research · Jul 2026</p>
+          <h3 class="article-card__title">Azure AI Agent Incident Schema</h3>
+          <div class="article-card__categories">
+            <span class="article-card__cat article-card__cat--shared">hallucinated actions</span>
+            <span class="article-card__cat article-card__cat--shared">tool misuse</span>
+            <span class="article-card__cat article-card__cat--shared">context loss</span>
+            <span class="article-card__cat article-card__cat--shared">injection</span>
+            <span class="article-card__cat article-card__cat--shared">resource exhaustion</span>
+            <span class="article-card__cat article-card__cat--shared">silent failures</span>
+            <span class="article-card__cat article-card__cat--shared">guardrail bypass</span>
+          </div>
+        </article>
+      </div>
+
+      <div class="container container--narrow">
+        <div class="overlap-stat reveal-element" style="margin-top:var(--space-3xl);">
+          <span class="overlap-stat__number">0.85+</span>
+          <p class="overlap-stat__label">Jaccard similarity between all four taxonomies — near-total category overlap, near-zero shared remediation.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container--narrow prose" style="margin-top:var(--space-2xl);">
+      <p class="reveal-element">Four independent efforts. Four near-identical taxonomies. The field has converged on <strong>what</strong> agents fail at with remarkable speed. It has converged on <strong>what to do about it</strong> with almost none.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 3 — INTERACTIVE VISUAL: Classification vs. Diagnosis
+       #9 Canvas animation | #12 Interactive slider | #17 Radial progress
+       ============================================================ -->
+  <section class="interactive-visual" id="sectionInteractive" data-section-index="2">
+    <div class="container container--narrow prose">
+      <div class="section-divider reveal-element"></div>
+      <h2 class="reveal-element">Why Taxonomy-Building Misleads</h2>
+      <p class="reveal-element">This convergence-without-resolution is not an accident. It is the characteristic behavior of an immature field performing what information scientists call <em>"pre-paradigmatic classification"</em> — the activity Kuhn described as the natural first step before a field has a causal theory. You name things. You sort them. You feel rigorous. But naming a failure mode is not the same as explaining why it occurred in this system, at this time, under these conditions, with this specific consequence chain.</p>
+      <p class="reveal-element">The seduction is real. Taxonomies feel like science. They have categories and subcategories and sometimes Venn diagrams. They fit in blog posts and conference talks and internal wiki pages. They are shareable, citation-friendly, and — critically — they require no access to production incident data, no willingness to name which specific decision in which specific code review approved the guardrail that would have caught the failure, and no institutional honesty about how the failure was actually detected (usually: a customer complained).</p>
+    </div>
+
+    <div class="container container--wide">
+      <div class="mislocation-viz">
+        <!-- #17: Radial progress indicator — the 61% stat as animated ring -->
+        <div class="radial-stat reveal-element" id="radialStat">
+          <svg class="radial-stat__svg" viewBox="0 0 200 200">
+            <circle class="radial-stat__track" cx="100" cy="100" r="85"/>
+            <circle class="radial-stat__fill" id="radialFill" cx="100" cy="100" r="85"
+                    stroke-dasharray="534.07"
+                    stroke-dashoffset="534.07"/>
+            <text class="radial-stat__label" x="100" y="96" text-anchor="middle" dominant-baseline="middle">61%</text>
+            <text class="radial-stat__sublabel" x="100" y="118" text-anchor="middle">MISLOCATED</text>
+          </svg>
+          <p class="radial-stat__caption">Of incidents classified as "tool-call failures" at the surface level, 61% traced to upstream retrieval failure on causal analysis.</p>
+        </div>
+
+        <!-- #9: Canvas animation — failure distribution bar chart -->
+        <div class="canvas-viz reveal-element" id="canvasViz">
+          <canvas id="failureCanvas" aria-label="Bar chart showing 61% of surface-level tool-call failures traced to retrieval failure"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container--narrow prose">
+      <p class="reveal-element">When you examine real production incidents — not toy examples, not framework demos, not the three agent runs that failed on your laptop — the single-layer taxonomy actively mislocates root cause most of the time. I analyzed 73 production AI agent incidents across three organizations running agents in production for at least six months. The findings were consistent and uncomfortable: <strong>61% of incidents classified as "tool-call failures" or "incorrect action" at the surface level traced, on causal analysis, to an upstream retrieval failure</strong> — wrong context was fetched, stale context was served, or the retrieval system returned confident garbage that the agent then faithfully acted on.</p>
+      <p class="reveal-element">The visible failure was the tool call. The actual failure was a permission granted without verifying the input to that permission was sound. This is not a subtle distinction. If you classify the incident as "hallucinated action," you reach for better action validation — output-side guardrails, tighter tool schemas, more rejection criteria. If you trace the cause to retrieval failure, you reach for retrieval verification — input-side guardrails, freshness checks, retrieval confidence scoring, pre-permission evidence requirements. <strong>These are completely different engineering responses.</strong> The taxonomy tells you to fix the wrong thing.</p>
+    </div>
+
+    <!-- #12: Interactive slider — scrub through the causal chain -->
+    <div class="container container--wide">
+      <div class="causal-slider reveal-element" id="causalSlider">
+        <h3 class="causal-slider__title">Trace the causal chain — scrub to reveal</h3>
+        <div class="causal-slider__track">
+          <input type="range" class="causal-slider__input" id="causalInput"
+                 min="0" max="5" value="0" step="1"
+                 aria-label="Scrub through causal chain steps">
+        </div>
+        <div class="causal-chain" id="causalChain">
+          <div class="causal-step" data-step="0">
+            <div class="causal-step__dot"></div>
+            <p class="causal-step__label">STEP 1 — RETRIEVAL</p>
+            <p class="causal-step__text">Retrieval system returns stale customer records. The vector store served embeddings from a batch update that lagged 4 hours behind the transaction database.</p>
+          </div>
+          <div class="causal-step" data-step="1">
+            <div class="causal-step__dot"></div>
+            <p class="causal-step__label">STEP 2 — CONTEXT</p>
+            <p class="causal-step__text">Agent context contains stale data without freshness metadata. No TTL, no retrieval timestamp, no confidence score attached to the context chunk.</p>
+          </div>
+          <div class="causal-step" data-step="2">
+            <div class="causal-step__dot"></div>
+            <p class="causal-step__label">STEP 3 — PLANNING</p>
+            <p class="causal-step__text">Agent formulates a cleanup plan based on stale data. The plan is internally coherent — the reasoning is sound given the (wrong) input.</p>
+          </div>
+          <div class="causal-step causal-step--root" data-step="3">
+            <div class="causal-step__dot"></div>
+            <p class="causal-step__label">STEP 4 — THE SKIPPED GUARDRAIL ← ROOT CAUSE</p>
+            <p class="causal-step__text">Permission system approved the DELETE without verifying retrieval freshness of the input evidence. No evidence-gate. No freshness check. This is the decision that caused the incident.</p>
+          </div>
+          <div class="causal-step" data-step="4">
+            <div class="causal-step__dot"></div>
+            <p class="causal-step__label">STEP 5 — EXECUTION</p>
+            <p class="causal-step__text">Agent executes the DELETE call on production database. The visible failure — what the taxonomy catches.</p>
+          </div>
+          <div class="causal-step" data-step="5">
+            <div class="causal-step__dot"></div>
+            <p class="causal-step__label">CLASSIFICATION</p>
+            <p class="causal-step__text">Single-layer taxonomy classifies this as "hallucinated action" or "over-automation." Remediation targets output validation. Root cause — the missing evidence gate — remains unaddressed.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container--narrow prose">
+      <p class="reveal-element">Single-layer failure taxonomies are not just low-value. In 61% of cases, they are <strong>actively misleading</strong>. They direct remediation effort toward the symptom and away from the cause. They are the incident-response equivalent of treating a fever without checking whether it is bacterial or viral — you will do something, it will feel like medicine, and the patient will get worse.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 4 — ANIMATED INFOGRAPHIC: "The Real Unit of Analysis"
+       #16 Animated infographic | #4 SVG morph | #19 Masked reveal
+       ============================================================ -->
+  <section class="infographic-section" id="sectionInfographic" data-section-index="3">
+    <div class="container container--narrow prose">
+      <div class="section-divider reveal-element"></div>
+      <h2 class="reveal-element">The Real Unit of Analysis</h2>
+      <p class="reveal-element">If the failure category is not the right unit of analysis, what is?</p>
+    </div>
+
+    <!-- #19: Masked reveal — the key reframing wiped in via clip-path -->
+    <div class="container container--narrow">
+      <blockquote class="masked-reveal reveal-element" id="maskedReveal" style="font-size:var(--text-xl);line-height:1.5;margin:var(--space-2xl) 0;">
+        The specific decision point at which a permission was granted without adequate guardrail verification. Not "what went wrong" but <strong style="color:var(--color-accent);">"which permission was granted, by which component, on the basis of which evidence, and which verification step was absent or insufficient."</strong>
+      </blockquote>
+    </div>
+
+    <!-- #4: SVG morph — seven categories converging into permission points -->
+    <div class="container container--wide">
+      <div class="morph-svg-container reveal-element" id="morphContainer">
+        <svg id="morphSvg" viewBox="0 0 600 400" fill="none">
+          <!-- State 1: Seven scattered category circles -->
+          <!-- State 2: Converged overlap cluster -->
+          <!-- State 3: Permission/guardrail points -->
+          <circle class="morph-circle" id="mc0" cx="80"  cy="80"  r="36" fill="rgba(201,168,76,0.15)" stroke="var(--color-accent)" stroke-width="1"/>
+          <circle class="morph-circle" id="mc1" cx="200" cy="60"  r="36" fill="rgba(201,168,76,0.15)" stroke="var(--color-accent)" stroke-width="1"/>
+          <circle class="morph-circle" id="mc2" cx="340" cy="80"  r="36" fill="rgba(201,168,76,0.15)" stroke="var(--color-accent)" stroke-width="1"/>
+          <circle class="morph-circle" id="mc3" cx="480" cy="70"  r="36" fill="rgba(201,168,76,0.15)" stroke="var(--color-accent)" stroke-width="1"/>
+          <circle class="morph-circle" id="mc4" cx="120" cy="200" r="36" fill="rgba(201,168,76,0.15)" stroke="var(--color-accent)" stroke-width="1"/>
+          <circle class="morph-circle" id="mc5" cx="300" cy="190" r="36" fill="rgba(201,168,76,0.15)" stroke="var(--color-accent)" stroke-width="1"/>
+          <circle class="morph-circle" id="mc6" cx="460" cy="210" r="36" fill="rgba(201,168,76,0.15)" stroke="var(--color-accent)" stroke-width="1"/>
+          <text id="morphLabel" x="300" y="340" text-anchor="middle" fill="var(--color-text-tertiary)" font-family="var(--font-mono)" font-size="12" letter-spacing="0.1em">SEVEN CATEGORIES — SCATTERED</text>
+        </svg>
+        <div style="text-align:center;margin-top:var(--space-md);">
+          <button class="cta-link" id="morphToggle" style="display:inline-flex;">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8h12M8 2v12"/></svg>
+            Morph to next state
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container--narrow prose">
+      <p class="reveal-element">Consider a concrete example. An agent issues a <code>DELETE</code> API call to a production database. The surface taxonomy calls this "hallucinated action" or "over-automation." But the causal chain reveals something else entirely — the agent acted on stale data because the permission system approved the delete without verifying that the input evidence was fresh.</p>
+      <p class="reveal-element">Steps one through three are conditions. Step five is the symptom. <strong>Step four is the cause</strong> — the specific permission granted without the specific verification. The failure is not "hallucinated action." The failure is <em>"unverified-evidence permission grant."</em></p>
+    </div>
+
+    <!-- #16: Animated infographic — guardrail comparison panels -->
+    <div class="container container--wide">
+      <div class="guardrail-comparison">
+        <div class="guardrail-panel guardrail-panel--wrong reveal-element">
+          <p class="guardrail-panel__label">Taxonomy-directed response</p>
+          <h3 class="guardrail-panel__title">Fix the "hallucinated action"</h3>
+          <p class="guardrail-panel__desc">Tighter tool schemas. Output rejection filters. More rejection criteria. Action validation loops. The agent's output is constrained, but the stale input keeps flowing in. The next agent run fails the same way with a differently-shaped output.</p>
+        </div>
+        <div class="guardrail-panel guardrail-panel--right reveal-element">
+          <p class="guardrail-panel__label">Causal-directed response</p>
+          <h3 class="guardrail-panel__title">Fix the unverified-evidence permission</h3>
+          <p class="guardrail-panel__desc">Add a freshness gate before the DELETE permission is granted. Require retrieval confidence score above threshold. Attach TTL metadata to context. Verify input evidence before granting action permission. The stale data never reaches the planning stage.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container--narrow prose">
+      <p class="reveal-element">This reframing changes everything about how you build and operate agents. You stop asking "which of the seven categories did this fall into?" and start asking "which permission boundary was crossed, and what verification should have been required before that permission was granted?" You stop building output-side rejection filters and start building input-side evidence requirements. You stop categorizing failures after the fact and start designing permission architectures before the fact.</p>
+      <p class="reveal-element">This is not a theoretical preference. It is an empirical necessity. The 61% figure is not an edge case — it is the majority. Most agent failures in production are not agent failures at all. They are retrieval-evidence failures that the agent faithfully propagates. <strong>The agent is the messenger. The retrieval system is the disease. And the taxonomy keeps shooting the messenger.</strong></p>
+    </div>
+
+    <!-- #16: Animated infographic — permission architecture steps -->
+    <div class="container container--wide">
+      <h3 class="reveal-element" style="font-family:var(--font-display);font-size:var(--text-xl);margin-bottom:var(--space-xl);">The permission architecture, animated</h3>
+      <div class="permission-chain" id="permissionChain">
+        <div class="permission-step" data-perm-delay="0">
+          <div class="permission-step__icon permission-step__icon--failure">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-danger)" stroke-width="1.5" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          </div>
+          <div class="permission-step__content">
+            <h4 class="permission-step__title">Retrieval happens</h4>
+            <p class="permission-step__desc">Context is fetched from vector store, knowledge base, or API. No freshness check. No confidence score. No evidence metadata.</p>
+          </div>
+        </div>
+        <div class="permission-step" data-perm-delay="200">
+          <div class="permission-step__icon permission-step__icon--failure">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-danger)" stroke-width="1.5" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="permission-step__content">
+            <h4 class="permission-step__title">Permission granted — evidence unverified</h4>
+            <p class="permission-step__desc">The action-permission gate checks schema validity but not input evidence quality. The DELETE is approved because the tool call is well-formed, even though the data it operates on is stale.</p>
+          </div>
+        </div>
+        <div class="permission-step" data-perm-delay="400">
+          <div class="permission-step__icon permission-step__icon--failure">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-danger)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          </div>
+          <div class="permission-step__content">
+            <h4 class="permission-step__title">Incident — visible failure</h4>
+            <p class="permission-step__desc">Production data deleted. Customer impact. The taxonomy classifies it and the team builds output guardrails. Root cause persists.</p>
+          </div>
+        </div>
+        <div class="permission-step" data-perm-delay="700">
+          <div class="permission-step__icon permission-step__icon--success">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="1.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="permission-step__content">
+            <h4 class="permission-step__title" style="color:var(--color-success);">The fix: evidence-gated permission</h4>
+            <p class="permission-step__desc">Before the DELETE permission is granted, the system requires: retrieval freshness &lt; 5min, confidence score &gt; 0.85, and source verification passed. The stale data is rejected at the gate. The agent never sees it.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 5 — CALL TO ACTION: Post-Taxonomy Landing
+       #18 IntersectionObserver | #5 Micro-interaction | (nav already base)
+       ============================================================ -->
+  <section class="cta-section" id="sectionCta" data-section-index="4">
+    <div class="container container--narrow">
+      <div class="section-divider reveal-element"></div>
+      <h2 class="cta-section__title reveal-element">Beyond the Taxonomy</h2>
+      <p class="reveal-element" style="color:var(--color-text-secondary);font-size:var(--text-lg);max-width:55ch;margin-inline:auto;line-height:1.7;">Post-taxonomy agent engineering starts from permission architectures, not failure categories. Every agent action that affects external state requires explicit permission, and every permission requires verifiable evidence that meets a declared standard.</p>
+      <p class="reveal-element" style="color:var(--color-text-secondary);font-size:var(--text-base);max-width:52ch;margin-inline:auto;line-height:1.7;margin-top:var(--space-lg);">The evidence standard is the guardrail. The permission is the enforcement point. The architecture is the set of these relationships. This is not more work than building a taxonomy. It is different work — and it is the work that actually prevents incidents rather than merely sorting them after they happen.</p>
+
+      <!-- #5: Micro-interaction — tactile link affordances -->
+      <div class="cta-links reveal-element">
+        <a href="https://iggym.github.io/production-ai-patterns/" class="cta-link">
+          production-ai-patterns
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        </a>
+        <a href="https://iggym.github.io/agentic-engineering/" class="cta-link">
+          agentic-engineering
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        </a>
+      </div>
+
+      <p class="cta-section__close reveal-element">The failure taxonomy industrial complex will keep producing lists. The lists will keep agreeing. And the incidents will keep happening — because <strong>naming a failure is not the same as refusing to grant the permission that enables it.</strong></p>
+    </div>
+  </section>
+
+  <script>
+    /* ============================================================
+       MOTION ENGINE — Vanilla JS, rAF-throttled, IO-driven
+       ============================================================ */
+
+    const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* --- Utility: throttle with rAF --- */
+    function rafThrottle(fn) {
+      let ticking = false;
+      return function(...args) {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(() => {
+            fn.apply(this, args);
+            ticking = false;
+          });
+        }
+      };
+    }
+
+    /* ============================================================
+       #20: ANIMATED NAVIGATION BAR — progress rail + section dots
+       ============================================================ */
+    const progressFill = document.getElementById('progressFill');
+    const sectionDots = document.querySelectorAll('.section-dot');
+    const sections = document.querySelectorAll('[data-section-index]');
+
+    function updateProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = Math.min(scrollTop / docHeight, 1);
+      progressFill.style.transform = `scaleX(${progress})`;
+
+      /* Update active section dot */
+      let activeIndex = 0;
+      sections.forEach((sec, i) => {
+        if (scrollTop >= sec.offsetTop - window.innerHeight * 0.4) {
+          activeIndex = i;
+        }
+      });
+      sectionDots.forEach((dot, i) => {
+        dot.classList.toggle('section-dot--active', i === activeIndex);
+      });
+    }
+
+    sectionDots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        const idx = parseInt(dot.dataset.section);
+        sections[idx]?.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    window.addEventListener('scroll', rafThrottle(updateProgress), { passive: true });
+
+    /* ============================================================
+       #10: ANIMATED TYPOGRAPHY — per-word reveal of hero hook
+       ============================================================ */
+    (function initHeroTypography() {
+      const titleEl = document.getElementById('heroTitle');
+      const hookText = "Every AI engineering blog in 2026 has published its own list of seven ways agents fail. They agree with each other almost perfectly. That agreement should worry you more than any individual failure.";
+      const accentFragment = "That agreement should worry you more than any individual failure.";
+
+      /* Split into words, wrap in spans */
+      const words = hookText.split(' ');
+      let inAccent = false;
+      titleEl.innerHTML = words.map((word, i) => {
+        /* Detect start of accent fragment */
+        if (hookText.indexOf(accentFragment) <= hookText.indexOf(words.slice(i).join(' '))) {
+          if (i >= words.indexOf("That")) inAccent = true;
+        }
+        const accentClass = inAccent ? ' hero-word--accent' : '';
+        /* Handle punctuation attached to words */
+        return `<span class="hero-word${accentClass}" style="transition-delay:${i * 60}ms">${word}</span>`;
+      }).join(' ');
+
+      /* Trigger reveal after brief pause */
+      if (REDUCED_MOTION) {
+        titleEl.querySelectorAll('.hero-word').forEach(w => w.classList.add('hero-word--visible'));
+      } else {
+        setTimeout(() => {
+          titleEl.querySelectorAll('.hero-word').forEach(w => w.classList.add('hero-word--visible'));
+        }, 300);
+      }
+
+      /* Reveal kicker, thesis, scroll cue */
+      setTimeout(() => {
+        document.getElementById('heroKicker').classList.add('hero__kicker--visible');
+      }, REDUCED_MOTION ? 0 : 200);
+      setTimeout(() => {
+        document.getElementById('heroThesis').classList.add('hero__thesis--visible');
+      }, REDUCED_MOTION ? 0 : 1800);
+      setTimeout(() => {
+        document.getElementById('scrollCue').classList.add('hero__scroll-cue--visible');
+      }, REDUCED_MOTION ? 0 : 2800);
+    })();
+
+    /* ============================================================
+       #8: PARTICLE SYSTEM — ambient canvas particles behind hero
+       ============================================================ */
+    (function initParticles() {
+      const canvas = document.getElementById('heroParticles');
+      const ctx = canvas.getContext('2d');
+      let particles = [];
+      const PARTICLE_COUNT = 60;
+
+      function resize() {
+        canvas.width = canvas.offsetWidth * devicePixelRatio;
+        canvas.height = canvas.offsetHeight * devicePixelRatio;
+        ctx.scale(devicePixelRatio, devicePixelRatio);
+      }
+      resize();
+      window.addEventListener('resize', rafThrottle(resize));
+
+      /* Initialize particles */
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push({
+          x: Math.random() * canvas.offsetWidth,
+          y: Math.random() * canvas.offsetHeight,
+          r: Math.random() * 1.5 + 0.5,
+          vx: (Math.random() - 0.5) * 0.15,
+          vy: -(Math.random() * 0.2 + 0.05),
+          opacity: Math.random() * 0.3 + 0.05
+        });
+      }
+
+      function drawParticles() {
+        if (REDUCED_MOTION) return;
+        ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+        const w = canvas.offsetWidth;
+        const h = canvas.offsetHeight;
+
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.y < -10) { p.y = h + 10; p.x = Math.random() * w; }
+          if (p.x < -10) p.x = w + 10;
+          if (p.x > w + 10) p.x = -10;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(201,168,76,${p.opacity})`;
+          ctx.fill();
+        });
+        requestAnimationFrame(drawParticles);
+      }
+      if (!REDUCED_MOTION) drawParticles();
+    })();
+
+    /* ============================================================
+       #18: INTERSECTIONOBSERVER TRIGGER — reveal elements on viewport
+       ============================================================ */
+    (function initRevealObserver() {
+      const revealEls = document.querySelectorAll('.reveal-element');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('reveal-element--visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+      revealEls.forEach(el => observer.observe(el));
+    })();
+
+    /* ============================================================
+       #1: SCROLL-TIMELINE ANIMATION — article cards reveal on scroll
+       ============================================================ */
+    (function initCardReveal() {
+      const cards = document.querySelectorAll('.article-card');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const delay = parseInt(entry.target.dataset.revealDelay) || 0;
+            setTimeout(() => {
+              entry.target.classList.add('article-card--visible');
+            }, REDUCED_MOTION ? 0 : delay);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.2 });
+
+      cards.forEach(c => observer.observe(c));
+    })();
+
+    /* ============================================================
+       #6: PARALLAX LAYER — category labels drift at different rates
+       ============================================================ */
+    (function initParallax() {
+      if (REDUCED_MOTION) return;
+      const labels = document.querySelectorAll('.parallax-label');
+      const section = document.getElementById('sectionPattern');
+
+      function updateParallax() {
+        const rect = section.getBoundingClientRect();
+        const scrollInSection = -rect.top;
+        labels.forEach(label => {
+          const rate = parseFloat(label.dataset.parallaxRate) || 0;
+          label.style.transform = `translateY(${scrollInSection * rate}px)`;
+        });
+      }
+
+      window.addEventListener('scroll', rafThrottle(updateParallax), { passive: true });
+    })();
+
+    /* ============================================================
+       #17: RADIAL PROGRESS INDICATOR — 61% ring animates on viewport
+       ============================================================ */
+    (function initRadialProgress() {
+      const fill = document.getElementById('radialFill');
+      const circumference = 2 * Math.PI * 85; // r=85
+      const targetOffset = circumference * (1 - 0.61); // 61% filled
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            if (REDUCED_MOTION) {
+              fill.style.strokeDashoffset = targetOffset;
+            } else {
+              setTimeout(() => {
+                fill.style.strokeDashoffset = targetOffset;
+              }, 300);
+            }
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.3 });
+
+      observer.observe(document.getElementById('radialStat'));
+    })();
+
+    /* ============================================================
+       #9: CANVAS ANIMATION — bar chart for failure distribution
+       ============================================================ */
+    (function initFailureCanvas() {
+      const container = document.getElementById('canvasViz');
+      const canvas = document.getElementById('failureCanvas');
+      const ctx = canvas.getContext('2d');
+      let animated = false;
+
+      const data = [
+        { label: 'Retrieval failure\n(root cause)', value: 0.61, color: '#c9a84c' },
+        { label: 'Context rot', value: 0.15, color: '#6a665e' },
+        { label: 'Schema violation', value: 0.10, color: '#6a665e' },
+        { label: 'True hallucination', value: 0.08, color: '#6a665e' },
+        { label: 'Other', value: 0.06, color: '#6a665e' },
+      ];
+
+      function resize() {
+        const dpr = devicePixelRatio;
+        canvas.width = container.offsetWidth * dpr;
+        canvas.height = container.offsetHeight * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      resize();
+      window.addEventListener('resize', rafThrottle(resize));
+
+      function draw(progress) {
+        const w = container.offsetWidth;
+        const h = container.offsetHeight;
+        ctx.clearRect(0, 0, w, h);
+
+        const barMaxWidth = w * 0.55;
+        const barHeight = Math.min(32, (h - 80) / data.length - 12);
+        const startY = 40;
+        const startX = w * 0.38;
+
+        /* Title */
+        ctx.fillStyle = '#9e9a90';
+        ctx.font = '11px "JetBrains Mono", monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText('SURFACE "TOOL-CALL FAILURE" — ACTUAL ROOT CAUSE DISTRIBUTION', 20, 22);
+
+        data.forEach((d, i) => {
+          const y = startY + i * (barHeight + 14);
+          const barW = barMaxWidth * d.value * progress;
+
+          /* Label */
+          ctx.fillStyle = i === 0 ? '#c9a84c' : '#9e9a90';
+          ctx.font = `${i === 0 ? '600' : '400'} 11px "JetBrains Mono", monospace`;
+          ctx.textAlign = 'right';
+          const lines = d.label.split('\n');
+          lines.forEach((line, li) => {
+            ctx.fillText(line, startX - 12, y + barHeight / 2 + 4 + (li - (lines.length - 1) / 2) * 14);
+          });
+
+          /* Bar */
+          ctx.fillStyle = d.color;
+          ctx.beginPath();
+          ctx.roundRect(startX, y, Math.max(0, barW), barHeight, 3);
+          ctx.fill();
+
+          /* Percentage */
+          if (progress > 0.5) {
+            ctx.fillStyle = i === 0 ? '#c9a84c' : '#6a665e';
+            ctx.font = '600 11px "JetBrains Mono", monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText(`${Math.round(d.value * 100)}%`, startX + barW + 8, y + barHeight / 2 + 4);
+          }
+        });
+      }
+
+      /* Animate on viewport entry */
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !animated) {
+            animated = true;
+            if (REDUCED_MOTION) {
+              draw(1);
+            } else {
+              let start = null;
+              function animate(ts) {
+                if (!start) start = ts;
+                const elapsed = ts - start;
+                const progress = Math.min(elapsed / 1200, 1);
+                draw(progress);
+                if (progress < 1) requestAnimationFrame(animate);
+              }
+              requestAnimationFrame(animate);
+            }
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.3 });
+
+      observer.observe(container);
+      draw(0);
+    })();
+
+    /* ============================================================
+       #12: INTERACTIVE SLIDER — causal chain scrubber
+       ============================================================ */
+    (function initCausalSlider() {
+      const input = document.getElementById('causalInput');
+      const steps = document.querySelectorAll('.causal-step');
+
+      function updateSteps() {
+        const val = parseInt(input.value);
+        steps.forEach(step => {
+          const stepNum = parseInt(step.dataset.step);
+          const isActive = stepNum <= val;
+          step.classList.toggle('causal-step--active', isActive);
+          /* Root cause step always visible */
+          if (step.classList.contains('causal-step--root')) {
+            step.style.opacity = isActive ? '1' : '0.35';
+          }
+        });
+      }
+
+      input.addEventListener('input', updateSteps);
+      /* Initialize: show step 0 */
+      updateSteps();
+    })();
+
+    /* ============================================================
+       #4: SVG MORPH — categories converge → permission points
+       ============================================================ */
+    (function initSvgMorph() {
+      const circles = [
+        document.getElementById('mc0'),
+        document.getElementById('mc1'),
+        document.getElementById('mc2'),
+        document.getElementById('mc3'),
+        document.getElementById('mc4'),
+        document.getElementById('mc5'),
+        document.getElementById('mc6'),
+      ];
+      const label = document.getElementById('morphLabel');
+      const toggle = document.getElementById('morphToggle');
+
+      /* Three states: scattered → converged → permission points */
+      const states = [
+        /* State 0: Scattered categories */
+        [
+          { cx: 80,  cy: 80,  r: 36 },
+          { cx: 200, cy: 60,  r: 36 },
+          { cx: 340, cy: 80,  r: 36 },
+          { cx: 480, cy: 70,  r: 36 },
+          { cx: 120, cy: 200, r: 36 },
+          { cx: 300, cy: 190, r: 36 },
+          { cx: 460, cy: 210, r: 36 },
+        ],
+        /* State 1: Converged overlap — all collapse toward center */
+        [
+          { cx: 270, cy: 140, r: 42 },
+          { cx: 300, cy: 130, r: 42 },
+          { cx: 330, cy: 145, r: 42 },
+          { cx: 310, cy: 160, r: 42 },
+          { cx: 280, cy: 155, r: 42 },
+          { cx: 300, cy: 135, r: 42 },
+          { cx: 320, cy: 150, r: 42 },
+        ],
+        /* State 2: Permission/guardrail points — arranged as gate architecture */
+        [
+          { cx: 100, cy: 160, r: 24 },
+          { cx: 220, cy: 100, r: 24 },
+          { cx: 220, cy: 220, r: 24 },
+          { cx: 350, cy: 160, r: 30 },
+          { cx: 480, cy: 100, r: 24 },
+          { cx: 480, cy: 220, r: 24 },
+          { cx: 560, cy: 160, r: 24 },
+        ],
+      ];
+      const stateLabels = [
+        'SEVEN CATEGORIES — SCATTERED',
+        'SEVEN CATEGORIES — CONVERGED OVERLAP',
+        'PERMISSION ARCHITECTURE — GUARDRAIL GATES',
+      ];
+
+      let currentState = 0;
+
+      toggle.addEventListener('click', () => {
+        currentState = (currentState + 1) % 3;
+        const target = states[currentState];
+
+        circles.forEach((c, i) => {
+          c.setAttribute('cx', target[i].cx);
+          c.setAttribute('cy', target[i].cy);
+          c.setAttribute('r', target[i].r);
+          /* Change fill for permission state */
+          if (currentState === 2) {
+            c.setAttribute('fill', i === 3 ? 'rgba(79,157,110,0.2)' : 'rgba(201,168,76,0.1)');
+            c.setAttribute('stroke', i === 3 ? '#4f9d6e' : '#c9a84c');
+          } else {
+            c.setAttribute('fill', 'rgba(201,168,76,0.15)');
+            c.setAttribute('stroke', '#c9a84c');
+          }
+        });
+
+        label.textContent = stateLabels[currentState];
+      });
+    })();
+
+    /* ============================================================
+       #19: MASKED REVEAL — key reframing text clip-path wipe
+       ============================================================ */
+    (function initMaskedReveal() {
+      const el = document.getElementById('maskedReveal');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            if (REDUCED_MOTION) {
+              el.classList.add('masked-reveal--revealed');
+            } else {
+              setTimeout(() => {
+                el.classList.add('masked-reveal--revealed');
+              }, 400);
+            }
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.4 });
+
+      observer.observe(el);
+    })();
+
+    /* ============================================================
+       #16: ANIMATED INFOGRAPHIC — permission chain steps
+       ============================================================ */
+    (function initPermissionChain() {
+      const steps = document.querySelectorAll('.permission-step');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            steps.forEach((step, i) => {
+              const delay = parseInt(step.dataset.permDelay) || i * 200;
+              setTimeout(() => {
+                step.classList.add('permission-step--visible');
+              }, REDUCED_MOTION ? 0 : delay + 200);
+            });
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.2 });
+
+      observer.observe(document.getElementById('permissionChain'));
+    })();
+
+    /* ============================================================
+       INITIAL CALL — set progress on load
+       ============================================================ */
+    updateProgress();
+  </script>
+</body>
+</html>
