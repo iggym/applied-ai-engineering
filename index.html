@@ -4,540 +4,230 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Applied AI Engineering</title>
-<meta name="description" content="Past the taxonomy. Into the argument.">
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Source+Serif+4:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  /* ============================================================
-     THEME — edit this block to reskin the whole site
-     ============================================================ */
   :root{
-    /* color */
-    --color-bg:            #f7f5f0;
-    --color-bg-raised:     #ffffff;
-    --color-ink:           #1c1b19;
-    --color-ink-soft:      #514e47;
-    --color-ink-faint:     #8b8579;
-    --color-rule:          #ddd8cd;
-    --color-rule-strong:   #1c1b19;
-    --color-accent:        #7a3b2e;
-    --color-accent-soft:   #efe6de;
-    --color-pill-bg:       #eeeae1;
-    --color-pill-ink:      #514e47;
-
-    /* type */
-    --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, "Times New Roman", serif;
-    --font-mono:  "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
-
-    --fs-000: 0.75rem;
-    --fs-00:  0.8125rem;
-    --fs-0:   1rem;
-    --fs-1:   1.125rem;
-    --fs-2:   1.4rem;
-    --fs-3:   1.9rem;
-    --fs-4:   2.6rem;
-
-    --lh-tight: 1.15;
-    --lh-normal: 1.5;
-    --lh-loose: 1.75;
-
-    /* space */
-    --sp-1: 0.25rem;
-    --sp-2: 0.5rem;
-    --sp-3: 0.85rem;
-    --sp-4: 1.25rem;
-    --sp-5: 2rem;
-    --sp-6: 3.25rem;
-    --sp-7: 5rem;
-
-    /* misc */
-    --radius: 2px;
-    --max-w: 46rem;
-    --border: 1px solid var(--color-rule);
+    --bg:#12151B;
+    --surface:#181C24;
+    --surface-2:#1E232D;
+    --ink:#E7E5DF;
+    --muted:#8B909C;
+    --brass:#C08A3E;
+    --brass-dim:rgba(192,138,62,.35);
+    --rust:#A6503E;
+    --rule:rgba(231,229,223,.12);
+    --max:680px;
   }
-
-  *{ box-sizing: border-box; }
-  html{ -webkit-text-size-adjust: 100%; }
-
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
   body{
-    margin: 0;
-    background: var(--color-bg);
-    color: var(--color-ink);
-    font-family: var(--font-serif);
-    font-size: var(--fs-0);
-    line-height: var(--lh-normal);
-    -webkit-font-smoothing: antialiased;
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Source Serif 4', serif; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--brass);}
+  ::selection{background:var(--brass-dim);}
+
+  /* ---- topbar ---- */
+  header.top{
+    position:sticky; top:0; z-index:50;
+    background:rgba(18,21,27,.82); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--rule);
+    padding:16px 24px; display:flex; align-items:center; justify-content:space-between;
+  }
+  .brand{ font-family:'IBM Plex Mono'; font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+  .brand b{ color:var(--ink); font-weight:500; }
+  .docket-badge{
+    font-family:'IBM Plex Mono'; font-size:.68rem; color:var(--brass);
+    border:1px solid var(--brass-dim); padding:4px 10px; border-radius:2px;
   }
 
-  a{ color: inherit; }
+  /* ---- hero ---- */
+  .hero{ max-width:var(--max); margin:0 auto; padding:88px 24px 56px; text-align:left; }
+  .eyebrow{
+    font-family:'IBM Plex Mono'; font-size:.72rem; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--muted); margin:0 0 22px; display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{ content:''; width:22px; height:1px; background:var(--brass); display:inline-block; }
+  h1.tagline{
+    font-family:'Fraunces'; font-style:italic; font-weight:500;
+    font-size:clamp(1.9rem, 5.2vw, 3rem); line-height:1.18; margin:0 0 8px; color:var(--ink);
+    min-height:1.3em;
+  }
+  .tagline .cursor{ display:inline-block; width:2px; background:var(--brass); margin-left:2px; animation:blink 1s steps(1) infinite; }
+  @keyframes blink{ 50%{ opacity:0; } }
+  .desc{ color:var(--muted); font-size:1rem; max-width:52ch; margin:18px 0 0; }
 
-  .wrap{
-    max-width: var(--max-w);
-    margin: 0 auto;
-    padding: 0 var(--sp-4);
+  /* ---- stamp ---- */
+  .stamp-wrap{ margin-top:38px; display:flex; align-items:center; gap:18px; opacity:0; transform:translateY(6px) rotate(-6deg) scale(.85); }
+  .stamp-wrap.show{ animation:stampIn .55s cubic-bezier(.2,1.4,.4,1) forwards; }
+  @keyframes stampIn{ 0%{opacity:0; transform:translateY(6px) rotate(-8deg) scale(.7);} 60%{opacity:1; transform:translateY(-2px) rotate(-3deg) scale(1.06);} 100%{opacity:1; transform:translateY(0) rotate(-4deg) scale(1);} }
+  .stamp{
+    width:104px; height:104px; border-radius:50%; border:2px solid var(--rust);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    position:relative; color:var(--rust); font-family:'IBM Plex Mono';
   }
+  .stamp::before{ content:''; position:absolute; inset:6px; border:1px solid var(--rust); border-radius:50%; opacity:.5; }
+  .stamp-text{ text-align:center; font-size:.62rem; letter-spacing:.08em; line-height:1.5; text-transform:uppercase; }
+  .stamp-note{ font-family:'IBM Plex Mono'; font-size:.78rem; color:var(--muted); }
+  .stamp-note b{ color:var(--ink); font-weight:500; }
 
-  /* ---------- header ---------- */
-  header.site-head{
-    border-bottom: var(--border);
-    padding: var(--sp-6) 0 var(--sp-5);
-  }
-
-  .mark{
-    display: inline-flex;
-    align-items: center;
-    gap: var(--sp-2);
-    font-family: var(--font-mono);
-    font-size: var(--fs-000);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--color-ink-faint);
-    margin-bottom: var(--sp-4);
-  }
-  .mark svg{ flex: none; }
-
-  h1.site-title{
-    font-family: var(--font-serif);
-    font-weight: 600;
-    font-size: var(--fs-4);
-    line-height: var(--lh-tight);
-    letter-spacing: -0.01em;
-    margin: 0 0 var(--sp-3);
-  }
-
-  p.site-tagline{
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-size: var(--fs-2);
-    color: var(--color-ink-soft);
-    margin: 0;
-    max-width: 34ch;
-  }
-
-  /* ---------- main / layout ---------- */
-  main{ padding: var(--sp-6) 0 var(--sp-7); }
-
-  .section-label{
-    font-family: var(--font-mono);
-    font-size: var(--fs-000);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--color-ink-faint);
-    margin: 0 0 var(--sp-4);
-    display: flex;
-    align-items: center;
-    gap: var(--sp-3);
-  }
-  .section-label::after{
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: var(--color-rule);
-  }
-
-  /* ---------- start-here / pinned ---------- */
-  .start-here{
-    margin-bottom: var(--sp-7);
-  }
-  .start-here .card{
-    background: var(--color-bg-raised);
-    border: var(--border);
-    border-left: 3px solid var(--color-accent);
-  }
-
-  /* ---------- feed ---------- */
-  .feed{
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--sp-5);
-  }
+  /* ---- feed ---- */
+  main{ max-width:var(--max); margin:0 auto; padding:0 24px 100px; }
+  .feed-head{ display:flex; align-items:baseline; justify-content:space-between; border-bottom:1px solid var(--rule); padding-bottom:12px; margin-bottom:8px; }
+  .feed-head h2{ font-family:'IBM Plex Mono'; font-size:.78rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:500; margin:0; }
+  .feed-count{ font-family:'IBM Plex Mono'; font-size:.72rem; color:var(--muted); }
 
   .card{
-    display: block;
-    text-decoration: none;
-    color: inherit;
-    padding: var(--sp-5);
-    border-bottom: var(--border);
+    display:block; text-decoration:none; color:inherit;
+    padding:26px 0; border-bottom:1px solid var(--rule);
+    position:relative; transition:padding-left .25s ease;
   }
-  .feed .card{ border: none; border-bottom: var(--border); padding: 0 0 var(--sp-5); }
-  .feed li:last-child .card{ border-bottom: none; padding-bottom: 0; }
+  .card:hover{ padding-left:10px; }
+  .card:hover .card-title{ color:var(--brass); }
+  .card::before{
+    content:''; position:absolute; left:-24px; top:26px; bottom:auto; width:0; height:1px; background:var(--brass);
+    transition:width .25s ease;
+  }
+  .card:hover::before{ width:18px; }
+  .card-meta{ font-family:'IBM Plex Mono'; font-size:.68rem; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; display:flex; gap:12px; margin-bottom:8px; }
+  .card-meta .docket{ color:var(--brass); }
+  .card-title{ font-family:'Fraunces'; font-weight:600; font-size:1.32rem; margin:0 0 8px; transition:color .2s ease; }
+  .card-hook{ color:var(--muted); font-size:.96rem; margin:0 0 10px; max-width:56ch; }
+  .card-tags{ display:flex; gap:8px; flex-wrap:wrap; }
+  .tag{ font-family:'IBM Plex Mono'; font-size:.65rem; color:var(--brass); border:1px solid var(--brass-dim); padding:2px 8px; border-radius:2px; text-transform:lowercase; }
+  .pinned-flag{ font-family:'IBM Plex Mono'; font-size:.62rem; color:var(--rust); letter-spacing:.1em; text-transform:uppercase; }
 
-  .card:hover .card-title{ color: var(--color-accent); }
+  /* ---- empty state ---- */
+  .empty{ padding:60px 0; text-align:left; }
+  .empty .seal{ width:56px; height:56px; border:1.5px dashed var(--rule); border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:18px; }
+  .empty .seal span{ font-family:'IBM Plex Mono'; font-size:.62rem; color:var(--muted); }
+  .empty h3{ font-family:'Fraunces'; font-style:italic; font-weight:500; font-size:1.4rem; margin:0 0 8px; color:var(--ink); }
+  .empty p{ color:var(--muted); max-width:48ch; margin:0; font-size:.95rem; }
 
-  .card-meta{
-    font-family: var(--font-mono);
-    font-size: var(--fs-000);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--color-ink-faint);
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--sp-1) var(--sp-3);
-    margin-bottom: var(--sp-2);
+  footer{
+    border-top:1px solid var(--rule); padding:36px 24px 60px; max-width:var(--max); margin:0 auto;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
   }
-  .card-meta .dot{ color: var(--color-rule); }
+  footer .desc-line{ color:var(--muted); font-size:.82rem; max-width:44ch; font-family:'IBM Plex Mono'; line-height:1.6; }
+  footer a.home{ font-family:'IBM Plex Mono'; font-size:.78rem; color:var(--brass); text-decoration:none; border-bottom:1px solid var(--brass-dim); padding-bottom:2px; }
 
-  .card-title{
-    font-family: var(--font-serif);
-    font-weight: 600;
-    font-size: var(--fs-3);
-    line-height: var(--lh-tight);
-    margin: 0 0 var(--sp-3);
-    transition: color 0.15s ease;
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
   }
-  .start-here .card-title{ font-size: var(--fs-3); }
-
-  .card-hook{
-    font-family: var(--font-serif);
-    font-size: var(--fs-1);
-    color: var(--color-ink-soft);
-    line-height: var(--lh-loose);
-    margin: 0 0 var(--sp-4);
-    max-width: 58ch;
-  }
-
-  .pills{
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--sp-2);
-  }
-  .pill{
-    font-family: var(--font-mono);
-    font-size: var(--fs-000);
-    letter-spacing: 0.03em;
-    background: var(--color-pill-bg);
-    color: var(--color-pill-ink);
-    padding: 0.2em 0.6em;
-    border-radius: var(--radius);
-    white-space: nowrap;
-  }
-
-  /* ---------- filter ---------- */
-  .filter-bar{
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--sp-2);
-    margin-bottom: var(--sp-5);
-  }
-  .filter-btn{
-    font-family: var(--font-mono);
-    font-size: var(--fs-000);
-    letter-spacing: 0.04em;
-    background: transparent;
-    color: var(--color-ink-soft);
-    border: 1px solid var(--color-rule);
-    border-radius: var(--radius);
-    padding: 0.4em 0.8em;
-    cursor: pointer;
-  }
-  .filter-btn:hover{ border-color: var(--color-ink-faint); }
-  .filter-btn.active{
-    background: var(--color-ink);
-    border-color: var(--color-ink);
-    color: var(--color-bg-raised);
-  }
-
-  /* ---------- empty state ---------- */
-  .empty-state{
-    border: var(--border);
-    background: var(--color-bg-raised);
-    padding: var(--sp-7) var(--sp-5);
-    text-align: center;
-  }
-  .empty-state .glyph{
-    margin: 0 auto var(--sp-4);
-    display: block;
-  }
-  .empty-state h2{
-    font-family: var(--font-serif);
-    font-weight: 600;
-    font-size: var(--fs-2);
-    margin: 0 0 var(--sp-2);
-  }
-  .empty-state p{
-    font-family: var(--font-serif);
-    color: var(--color-ink-soft);
-    max-width: 40ch;
-    margin: 0 auto;
-    line-height: var(--lh-loose);
-  }
-
-  /* ---------- footer ---------- */
-  footer.site-foot{
-    border-top: var(--border);
-    padding: var(--sp-5) 0 var(--sp-6);
-  }
-  footer.site-foot p{
-    font-family: var(--font-serif);
-    color: var(--color-ink-soft);
-    font-size: var(--fs-00);
-    line-height: var(--lh-loose);
-    margin: 0 0 var(--sp-3);
-    max-width: 60ch;
-  }
-  footer.site-foot a.repo-link{
-    font-family: var(--font-mono);
-    font-size: var(--fs-000);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--color-ink);
-    text-decoration: none;
-    border-bottom: 1px solid var(--color-rule-strong);
-    padding-bottom: 2px;
-  }
-  footer.site-foot a.repo-link:hover{ color: var(--color-accent); border-color: var(--color-accent); }
-
-  /* ---------- responsive ---------- */
-  @media (max-width: 640px){
-    :root{
-      --fs-4: 2rem;
-      --fs-3: 1.5rem;
-      --sp-6: 2.25rem;
-      --sp-7: 3rem;
-    }
-    .wrap{ padding: 0 var(--sp-3); }
-  }
-
-  /* ---------- utility ---------- */
-  [hidden]{ display: none !important; }
 </style>
 </head>
 <body>
 
-<header class="site-head">
-  <div class="wrap">
-    <div class="mark">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect x="0.5" y="0.5" width="13" height="13" stroke="currentColor"/>
-        <line x1="0.5" y1="7" x2="13.5" y2="7" stroke="currentColor"/>
-        <line x1="7" y1="0.5" x2="7" y2="13.5" stroke="currentColor"/>
-      </svg>
-      <span id="repo-label">repo</span>
-    </div>
-    <h1 class="site-title" id="site-title">&nbsp;</h1>
-    <p class="site-tagline" id="site-tagline">&nbsp;</p>
-  </div>
+<header class="top">
+  <div class="brand"><b>Applied AI Engineering</b></div>
+  <div class="docket-badge" id="docketBadge">DOCKET —</div>
 </header>
 
-<main>
-  <div class="wrap">
+<section class="hero">
+  <p class="eyebrow">Applied AI Engineering — Flagship Synthesis</p>
+  <h1 class="tagline" id="tagline"><span id="taglineText"></span><span class="cursor" id="cursor"></span></h1>
+  <p class="desc" id="descText">Loading site description…</p>
 
-    <section class="start-here" id="start-here" hidden>
-      <p class="section-label">Start here</p>
-      <ul class="feed" id="start-here-feed"></ul>
-    </section>
-
-    <section id="feed-section">
-      <p class="section-label" id="feed-label">Latest</p>
-      <div class="filter-bar" id="filter-bar" hidden></div>
-      <ul class="feed" id="feed"></ul>
-    </section>
-
-    <div class="empty-state" id="empty-state" hidden>
-      <svg class="glyph" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <circle cx="20" cy="20" r="19" stroke="#ddd8cd" stroke-width="1"/>
-        <line x1="20" y1="10" x2="20" y2="22" stroke="#8b8579" stroke-width="1.5"/>
-        <circle cx="20" cy="28" r="1.2" fill="#8b8579"/>
-      </svg>
-      <h2>The first piece is coming.</h2>
-      <p id="empty-copy">This hub goes live once the first synthesis piece is published. Check back soon.</p>
+  <div class="stamp-wrap" id="stampWrap">
+    <div class="stamp">
+      <div class="stamp-text">Brief<br>Filed<br>No. 001</div>
     </div>
-
+    <p class="stamp-note">Every piece here is <b>argued</b>, not just published — a position, a counterargument, and a verdict.</p>
   </div>
+</section>
+
+<main>
+  <div class="feed-head">
+    <h2>Filed Arguments</h2>
+    <span class="feed-count" id="feedCount">—</span>
+  </div>
+  <div id="feed"></div>
 </main>
 
-<footer class="site-foot">
-  <div class="wrap">
-    <p id="site-description"></p>
-    <a class="repo-link" id="base-link" href="#" rel="noopener">View on GitHub</a>
-  </div>
+<footer>
+  <div class="desc-line" id="footerDesc">applied-ai-engineering</div>
+  <a class="home" href="https://iggym.github.io/applied-ai-engineering/">↑ applied-ai-engineering</a>
 </footer>
 
 <script>
-(function(){
+(async function(){
+  const taglineEl = document.getElementById('taglineText');
+  const cursorEl = document.getElementById('cursor');
+  const stampWrap = document.getElementById('stampWrap');
+  const descEl = document.getElementById('descText');
+  const footerDesc = document.getElementById('footerDesc');
+  const docketBadge = document.getElementById('docketBadge');
+  const feedEl = document.getElementById('feed');
+  const feedCount = document.getElementById('feedCount');
 
-  var state = {
-    articles: [],
-    activeTag: null
-  };
+  let data = { site:{ title:'Applied AI Engineering', tagline:'Past the taxonomy. Into the argument.', description:'', base_url:'https://iggym.github.io/applied-ai-engineering/' }, articles:[] };
+  try{
+    const res = await fetch('./metadata.json');
+    if(res.ok) data = await res.json();
+  }catch(e){ /* fall back to defaults above */ }
 
-  function fmtDate(iso){
-    try{
-      var d = new Date(iso + (iso.length === 10 ? 'T00:00:00' : ''));
-      if (isNaN(d.getTime())) return iso;
-      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    }catch(e){ return iso; }
+  const tagline = (data.site && data.site.tagline) || 'Past the taxonomy. Into the argument.';
+  const desc = (data.site && data.site.description) || '';
+  document.title = (data.site && data.site.title) || document.title;
+  descEl.textContent = desc;
+  footerDesc.textContent = desc;
+
+  // typewriter for tagline, respecting reduced motion
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function typeOut(text, el, done){
+    if(reduced){ el.textContent = text; done(); return; }
+    let i = 0;
+    (function step(){
+      el.textContent = text.slice(0, i);
+      i++;
+      if(i <= text.length){ setTimeout(step, 22); }
+      else { done(); }
+    })();
+  }
+  typeOut(tagline, taglineEl, ()=>{
+    cursorEl.style.display = 'none';
+    stampWrap.classList.add('show');
+  });
+
+  // articles
+  const published = (data.articles || []).filter(a => a.status === 'published');
+  const pinned = published.filter(a => a.pinned);
+  const rest = published.filter(a => !a.pinned).sort((a,b)=> new Date(b.date) - new Date(a.date));
+  const ordered = [...pinned, ...rest];
+
+  docketBadge.textContent = 'DOCKET — ' + String(published.length).padStart(3,'0');
+  feedCount.textContent = published.length + (published.length === 1 ? ' brief' : ' briefs');
+
+  function fmtDate(d){
+    try{ return new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }); }
+    catch(e){ return d; }
   }
 
-  function el(tag, attrs, children){
-    var node = document.createElement(tag);
-    attrs = attrs || {};
-    for (var k in attrs){
-      if (k === 'class') node.className = attrs[k];
-      else if (k === 'html') node.innerHTML = attrs[k];
-      else node.setAttribute(k, attrs[k]);
-    }
-    (children || []).forEach(function(c){
-      if (c) node.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
-    });
-    return node;
+  if(ordered.length === 0){
+    feedEl.innerHTML = `
+      <div class="empty">
+        <div class="seal"><span>N/A</span></div>
+        <h3>No briefs filed yet.</h3>
+        <p>The first argument is being drafted. Case No. 001 opens the docket.</p>
+      </div>`;
+  } else {
+    feedEl.innerHTML = ordered.map((a, idx) => `
+      <a class="card" href="${a.path}">
+        <div class="card-meta">
+          <span class="docket">No. ${a.id || String(idx+1).padStart(3,'0')}</span>
+          <span>${fmtDate(a.date)}</span>
+          <span>${a.reading_time_minutes ? a.reading_time_minutes + ' min' : ''}</span>
+          ${a.pinned ? '<span class="pinned-flag">· Lead Brief</span>' : ''}
+        </div>
+        <h3 class="card-title">${a.title}</h3>
+        <p class="card-hook">${a.hook || ''}</p>
+        <div class="card-tags">${(a.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      </a>
+    `).join('');
   }
-
-  function buildCard(article){
-    var meta = el('div', { class: 'card-meta' }, [
-      el('span', {}, [fmtDate(article.date)]),
-      el('span', { class: 'dot' }, ['·']),
-      el('span', {}, [(article.reading_time_minutes || '—') + ' min read'])
-    ]);
-
-    var pills = el('div', { class: 'pills' },
-      (article.tags || []).map(function(t){ return el('span', { class: 'pill' }, [t]); })
-    );
-
-    var card = el('a', { class: 'card', href: article.path || '#' }, [
-      meta,
-      el('h3', { class: 'card-title' }, [article.title || 'Untitled']),
-      el('p', { class: 'card-hook' }, [article.hook || '']),
-      pills
-    ]);
-
-    var li = el('li', {}, [card]);
-    li.dataset.tags = (article.tags || []).join('|').toLowerCase();
-    return li;
-  }
-
-  function renderFeed(){
-    var feedEl = document.getElementById('feed');
-    var startFeedEl = document.getElementById('start-here-feed');
-    var startSection = document.getElementById('start-here');
-    var emptyState = document.getElementById('empty-state');
-    var feedSection = document.getElementById('feed-section');
-
-    feedEl.innerHTML = '';
-    startFeedEl.innerHTML = '';
-
-    var published = state.articles.filter(function(a){ return a.status === 'published'; });
-
-    if (published.length === 0){
-      startSection.hidden = true;
-      feedSection.hidden = true;
-      emptyState.hidden = false;
-      return;
-    }
-
-    emptyState.hidden = true;
-
-    var pinned = published.filter(function(a){ return a.pinned === true; });
-    var rest = published.filter(function(a){ return a.pinned !== true; });
-
-    rest.sort(function(a, b){ return new Date(b.date) - new Date(a.date); });
-    pinned.sort(function(a, b){ return new Date(b.date) - new Date(a.date); });
-
-    if (pinned.length){
-      startSection.hidden = false;
-      pinned.forEach(function(a){ startFeedEl.appendChild(buildCard(a)); });
-    } else {
-      startSection.hidden = true;
-    }
-
-    feedSection.hidden = false;
-
-    var visible = state.activeTag
-      ? rest.filter(function(a){ return (a.tags || []).map(function(t){return t.toLowerCase();}).indexOf(state.activeTag) !== -1; })
-      : rest;
-
-    if (visible.length === 0 && rest.length > 0){
-      feedEl.appendChild(el('li', {}, [
-        el('p', { class: 'card-hook', style: 'padding: var(--sp-4) 0;' }, ['No pieces tagged “' + state.activeTag + '” yet.'])
-      ]));
-    } else {
-      visible.forEach(function(a){ feedEl.appendChild(buildCard(a)); });
-    }
-
-    document.getElementById('feed-label').textContent = pinned.length ? 'More from the hub' : 'Latest';
-  }
-
-  function renderFilterBar(){
-    var published = state.articles.filter(function(a){ return a.status === 'published'; });
-    var bar = document.getElementById('filter-bar');
-    bar.innerHTML = '';
-
-    if (published.length <= 6){
-      bar.hidden = true;
-      return;
-    }
-
-    var tagSet = {};
-    published.forEach(function(a){
-      (a.tags || []).forEach(function(t){ tagSet[t.toLowerCase()] = t; });
-    });
-    var tags = Object.keys(tagSet);
-    if (tags.length === 0){ bar.hidden = true; return; }
-
-    bar.hidden = false;
-
-    var allBtn = el('button', { class: 'filter-btn active', type: 'button' }, ['All']);
-    allBtn.addEventListener('click', function(){
-      state.activeTag = null;
-      Array.prototype.forEach.call(bar.children, function(b){ b.classList.remove('active'); });
-      allBtn.classList.add('active');
-      renderFeed();
-    });
-    bar.appendChild(allBtn);
-
-    tags.forEach(function(key){
-      var btn = el('button', { class: 'filter-btn', type: 'button' }, [tagSet[key]]);
-      btn.addEventListener('click', function(){
-        state.activeTag = key;
-        Array.prototype.forEach.call(bar.children, function(b){ b.classList.remove('active'); });
-        btn.classList.add('active');
-        renderFeed();
-      });
-      bar.appendChild(btn);
-    });
-  }
-
-  function applySiteMeta(site){
-    site = site || {};
-    document.getElementById('site-title').textContent = site.title || 'Untitled Site';
-    document.getElementById('site-tagline').textContent = site.tagline || '';
-    document.getElementById('repo-label').textContent = site.repo_name || '';
-    document.getElementById('site-description').textContent = site.description || '';
-    document.title = site.title || 'Untitled Site';
-
-    var base = site.base_url || '#';
-    var link = document.getElementById('base-link');
-    link.href = base;
-    link.textContent = (site.repo_name ? site.repo_name : 'View repository') + ' →';
-  }
-
-  function init(data){
-    applySiteMeta(data.site);
-    state.articles = Array.isArray(data.articles) ? data.articles : [];
-    renderFilterBar();
-    renderFeed();
-  }
-
-  fetch('./metadata.json')
-    .then(function(res){
-      if (!res.ok) throw new Error('metadata.json not found (' + res.status + ')');
-      return res.json();
-    })
-    .then(init)
-    .catch(function(err){
-      console.error('Failed to load metadata.json:', err);
-      applySiteMeta({});
-      document.getElementById('start-here').hidden = true;
-      document.getElementById('feed-section').hidden = true;
-      document.getElementById('empty-copy').textContent =
-        'metadata.json could not be loaded. If you\'re viewing this file locally, serve it over HTTP rather than opening it directly.';
-      document.getElementById('empty-state').hidden = false;
-    });
-
 })();
 </script>
-
 </body>
 </html>
