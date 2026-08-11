@@ -154,6 +154,24 @@
   "reading_time_minutes": 7,
   "pinned": false,
   "research_window": "2025-05-15 to 2026-05-15"
-}
+},{
+    "id": "0042",
+    "slug": "vendor-rhetoric-vs-practitioner-reality",
+    "title": "The Demo-to-Production Chasm: Vendor Rhetoric vs. Practitioner Reality",
+    "hook": "Vendors sell the inference, but practitioners pay for the orchestration.",
+    "path": "articles/vendor-rhetoric-vs-practitioner-reality.html",
+    "date": "2026-05-15",
+    "status": "published",
+    "format": "essay",
+    "tags": [
+      "ai-engineering",
+      "rag",
+      "production-systems",
+      "vendor-critique"
+    ],
+    "reading_time_minutes": 8,
+    "pinned": false,
+    "research_window": "2026-04-15 to 2026-05-15"
+  }
   ]
 }
