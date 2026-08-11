@@ -42,26 +42,6 @@
     "path": "articles/read-heavy-write-cautious.html"
   },
   {
-    "title": "What FDEs Know That Platform Teams Don't (Yet)",
-    "hook": "Forward-deployed engineers absorb chaos that never reaches a postmortem. Their tacit rules are quietly becoming the platform team's next roadmap.",
-    "date": "2026-07-21",
-    "reading_time_minutes": 8,
-    "tags": ["org-design", "fde"],
-    "status": "published",
-    "pinned": false,
-    "path": "articles/fde-tacit-knowledge.html"
-  },
-  {
-    "title": "On-Call for Agents: Runbooks Are Not Enough",
-    "hook": "A runbook tells a human what to do when things break. It says nothing about what to do when the thing breaking is itself making decisions.",
-    "date": "2026-07-05",
-    "reading_time_minutes": 13,
-    "tags": ["ops", "production", "reliability"],
-    "status": "published",
-    "pinned": false,
-    "path": "articles/on-call-for-agents.html"
-  },
-  {
     "title": "Scaling Laws Are Not Operating Laws",
     "hook": "The industry keeps borrowing model-scaling intuition to justify org-scaling decisions. The two curves don't share an X-axis.",
     "date": "2026-06-22",
@@ -172,6 +152,19 @@
     "reading_time_minutes": 8,
     "pinned": false,
     "research_window": "2026-04-15 to 2026-05-15"
-  }
+  },{
+  "id": "00014755",
+  "slug": "throwing-bodies-at-silicon",
+  "title": "Throwing Bodies at Silicon",
+  "hook": "The industry keeps borrowing model-scaling intuition to justify org-scaling decisions. The two curves don't share an X-axis.",
+  "path": "articles/throwing-bodies-at-silicon.html",
+  "date": "2026-08-10",
+  "status": "published",
+  "format": "essay",
+  "tags": ["scaling-ai-systems", "ai-ops", "organizational-design"],
+  "reading_time_minutes": 4,
+  "pinned": false,
+  "research_window": "2026-06-15 to 2026-08-10"
+}
   ]
 }
