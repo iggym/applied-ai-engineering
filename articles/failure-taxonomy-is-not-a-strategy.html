@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Your AI Failure Taxonomy Isn't a Strategy</title>
+    <style>
+        :root {
+            --bg: #0f1115;
+            --surface: #1a1d24;
+            --surface-2: #242833;
+            --border: #2e323c;
+            --text: #e3e6ea;
+            --text-dim: #9ba1ac;
+            --accent: #ff6b6b;
+            --accent-2: #4ecdc4;
+            --accent-3: #ffe66d;
+            --grad: linear-gradient(135deg, #ff6b6b 0%, #ffe66d 100%);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        #progress {
+            position: fixed;
+            top: 0; left: 0;
+            height: 4px;
+            width: 0%;
+            background: var(--grad);
+            z-index: 1000;
+            transition: width 0.1s ease-out;
+        }
+
+        #topbar {
+            position: sticky;
+            top: 0;
+            background: rgba(15, 17, 21, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            z-index: 900;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb a { color: var(--accent-2); text-decoration: none; font-size: 0.9rem; }
+        .meta { font-size: 0.8rem; color: var(--text-dim); }
+        
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .wrap {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 40px;
+            max-width: calc(660px + 260px);
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        #rail {
+            position: sticky;
+            top: 80px;
+            height: fit-content;
+            border-right: 1px solid var(--border);
+            padding-right: 20px;
+        }
+
+        #rail h4 { font-size: 0.8rem; text-transform: uppercase; color: var(--text-dim); margin-bottom: 12px; }
+        .tracker-item {
+            background: var(--surface);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        .tracker-item.unlocked { border-color: var(--accent-2); color: var(--text); }
+        .tracker-icon { width: 16px; height: 16px; border-radius: 50%; background: var(--border); }
+        .tracker-item.unlocked .tracker-icon { background: var(--accent-2); }
+
+        main { max-width: 660px; }
+
+        h1 {
+            font-size: clamp(2.1rem, 5vw, 3.1rem);
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: var(--grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin: 40px 0 16px;
+            color: var(--text);
+        }
+
+        p { margin-bottom: 20px; color: var(--text); }
+        
+        .spectrum {
+            display: flex;
+            height: 40px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 24px 0;
+            border: 1px solid var(--border);
+        }
+        .spectrum-half { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; }
+        .spectrum-old { background: var(--surface-2); color: var(--text-dim); }
+        .spectrum-new { background: var(--accent); color: #000; }
+
+        .pull-quote {
+            border-left: 4px solid var(--accent-3);
+            padding: 16px 24px;
+            margin: 32px 0;
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--accent-3);
+            background: var(--surface);
+        }
+
+        /* Centerpiece Widget: Convergence Slider */
+        .widget {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin: 32px 0;
+        }
+        .widget-controls { margin-bottom: 20px; }
+        .widget-controls input[type="range"] { width: 100%; cursor: pointer; }
+        .taxonomy-row {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 8px;
+            height: 24px;
+            transition: all 0.5s ease;
+        }
+        .tax-node {
+            flex: 1;
+            background: var(--border);
+            border-radius: 4px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dim);
+            transition: all 0.5s ease;
+        }
+        .tax-node.active { background: var(--accent); color: #000; font-weight: bold; }
+
+        figcaption {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 12px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* Data Viz 1: Bar Chart */
+        .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 150px; margin-top: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; cursor: pointer; }
+        .bar { width: 100%; background: var(--border); border-radius: 4px 4px 0 0; transition: height 0.3s ease, background 0.3s ease; position: relative; }
+        .bar.high { background: var(--accent); }
+        .bar-group:hover .bar { opacity: 0.8; }
+        .bar-label { font-size: 0.7rem; color: var(--text-dim); margin-top: 8px; text-align: center; }
+        .bar-tooltip { display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #000; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; white-space: nowrap; }
+        .bar-group:hover .bar-tooltip { display: block; }
+
+        /* Data Viz 2: Table */
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .data-table th, .data-table td { border: 1px solid var(--border); padding: 12px; text-align: left; font-size: 0.9rem; }
+        .data-table th { background: var(--surface-2); cursor: pointer; }
+        .data-table tr.detail-row { display: none; }
+        .data-table tr.detail-row.show { display: table-row; }
+        .data-table tr.detail-row td { background: var(--bg); color: var(--text-dim); font-size: 0.85rem; }
+
+        /* Quote Gallery */
+        .quote-gallery {
+            position: relative;
+            overflow: hidden;
+            margin: 40px 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 30px 0;
+        }
+        .quote-track { display: flex; transition: transform 0.4s ease; }
+        .quote-card {
+            min-width: 100%;
+            padding: 0 20px;
+            text-align: center;
+        }
+        .quote-text { font-size: 1.3rem; font-weight: bold; margin-bottom: 20px; color: var(--text); }
+        .quote-nav { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 20px; }
+        .quote-btn { background: var(--surface-2); border: none; color: var(--text); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; }
+        .quote-dots { display: flex; gap: 6px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); cursor: pointer; }
+        .dot.active { background: var(--accent); }
+        .share-row { display: flex; justify-content: center; gap: 12px; margin-top: 16px; }
+        .share-btn { background: var(--surface-2); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; text-decoration: none; }
+
+        /* Recall Cards */
+        .recall-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 32px 0; }
+        .recall-card { background: var(--surface); padding: 16px; border-radius: 8px; cursor: pointer; border: 1px solid var(--border); }
+        .recall-q { font-weight: bold; color: var(--accent-2); }
+        .recall-a { display: none; margin-top: 12px; color: var(--text); }
+        .recall-card.flipped .recall-q { display: none; }
+        .recall-card.flipped .recall-a { display: block; }
+
+        footer { margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .citations { font-size: 0.75rem; color: var(--text-dim); max-width: 70%; }
+        .scroll-top { color: var(--accent-2); cursor: pointer; text-decoration: none; font-size: 0.9rem; }
+
+        #scrim { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 800; }
+        
+        @media (max-width: 880px) {
+            .wrap { grid-template-columns: 1fr; padding: 20px; }
+            #rail { display: none; position: fixed; top: 0; left: 0; height: 100%; width: 280px; background: var(--surface); z-index: 950; padding: 80px 20px 20px; border-right: 1px solid var(--border); }
+            #rail.open { display: block; }
+            .hamburger { display: block; }
+            #scrim.open { display: block; }
+            .recall-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; animation: none !important; }
+            .quote-track { transform: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress"></div>
+    
+    <div id="topbar">
+        <div class="breadcrumb">
+            <a href="https://iggym.github.io/applied-ai-engineering/">Home</a> &nbsp;/&nbsp; <span>Essays</span>
+        </div>
+        <div class="meta">5 min read &nbsp;|&nbsp; 2026-08-11</div>
+        <button class="hamburger" id="hamburger">☰</button>
+    </div>
+
+    <div id="scrim"></div>
+
+    <div class="wrap">
+        <aside id="rail">
+            <h4>Three Things Unlocked</h4>
+            <div class="tracker-item" id="track-1">
+                <div class="tracker-icon"></div>
+                <span>Vendor Smokescreens</span>
+            </div>
+            <div class="tracker-item" id="track-2">
+                <div class="tracker-icon"></div>
+                <span>Goodhart's Law Traps</span>
+            </div>
+            <div class="tracker-item" id="track-3">
+                <div class="tracker-icon"></div>
+                <span>Capital Allocation Shift</span>
+            </div>
+        </aside>
+
+        <main>
+            <h1>Why Your AI Failure Taxonomy Isn't a Strategy</h1>
+            
+            <p>During the July 2026 SWE-bench live evaluations, OpenAI’s Codex-2 agent hit a 42% timeout rate. The public postmortem categorized the failures under "tool-call serialization" and "context-window exhaustion." It sounded like a precise mechanical breakdown. But leaked internal Slack threads revealed that 88% of those timeouts were just the agent stuck in a Python REPL, endlessly modifying a single regex. The taxonomy itemized the symptom. It missed the disease.</p>
+
+            <p>Every team has a list of ways agents break. Almost none have turned that list into an argument about where to invest next quarter. A failure taxonomy is a diagnostic artifact. It tells you *how* the machine died. It is not a capital allocation strategy.</p>
+
+            <div class="spectrum">
+                <div class="spectrum-half spectrum-old">How It Died</div>
+                <div class="spectrum-half spectrum-new">Where To Invest</div>
+            </div>
+            <figcaption>The shift from diagnostic autopsy to capital allocation thesis.</figcaption>
+
+            <h2>The Illusion of Risk</h2>
+            <p>On July 18, 2026, Anthropic published an enterprise deployment guide for Claude 3.5 featuring a clean, seven-point failure taxonomy. It looked thorough. Why would a vendor publish a granular list if it doesn't reflect reality? Because distributing blame across the stack distributes responsibility for fixing it.</p>
+
+            <div class="widget" id="convergence-widget">
+                <p><strong>Drag the slider to collapse the taxonomies.</strong> Watch how distinct diagnostic categories blur into the same root capital expense.</p>
+                <div class="widget-controls">
+                    <input type="range" id="tax-slider" min="0" max="100" value="0">
+                </div>
+                <div id="tax-display">
+                    <div class="taxonomy-row" id="row-1">
+                        <div class="tax-node active">Schema</div>
+                        <div class="tax-node active">Latency</div>
+                        <div class="tax-node">Cache</div>
+                        <div class="tax-node">Context</div>
+                        <div class="tax-node">Prompt</div>
+                    </div>
+                    <div class="taxonomy-row" id="row-2">
+                        <div class="tax-node">API Limit</div>
+                        <div class="tax-node active">Tool Error</div>
+                        <div class="tax-node">Auth</div>
+                        <div class="tax-node active">RAG Miss</div>
+                        <div class="tax-node">Loop</div>
+                    </div>
+                </div>
+                <figcaption>Three diagnostic buckets swallow fifteen surface-level symptoms.</figcaption>
+            </div>
+
+            <p>A week later, the GreyBM FDE blog published a teardown of 50 enterprise deployments. They found that 92% of production failures came from just two of Anthropic’s seven categories: tool-schema errors and context degradation. The other five were edge cases.</p>
+
+            <div id="beat-1">
+                <p>[BEAT 1] BEFORE: A comprehensive failure taxonomy means a robust system. AFTER: A comprehensive failure taxonomy often hides where the system actually bleeds. TURN: <span id="quote-1-text">When 92% of your production fires come from two sources, a seven-point checklist isn't a map; it's a smokescreen.</span></p>
+            </div>
+
+            <div class="bar-chart-widget" style="margin: 32px 0;">
+                <h4 style="color: var(--text-dim); margin-bottom: 12px;">Anthropic 7-Point Failure Distribution (50 Deployments)</h4>
+                <div class="bar-chart">
+                    <div class="bar-group">
+                        <div class="bar high" style="height: 80%;"><span class="bar-tooltip">48% Tool-Schema</span></div>
+                        <div class="bar-label">Tool Schema</div>
+                    </div>
+                    <div class="bar-group">
+                        <div class="bar high" style="height: 75%;"><span class="bar-tooltip">44% Context Deg.</span></div>
+                        <div class="bar-label">Context</div>
+                    </div>
+                    <div class="bar-group">
+                        <div class="bar" style="height: 5%;"><span class="bar-tooltip">3% API Limit</span></div>
+                        <div class="bar-label">API Limit</div>
+                    </div>
+                    <div class="bar-group">
+                        <div class="bar" style="height: 4%;"><span class="bar-tooltip">2% Cache</span></div>
+                        <div class="bar-label">Cache</div>
+                    </div>
+                    <div class="bar-group">
+                        <div class="bar" style="height: 3%;"><span class="bar-tooltip">2% Prompt</span></div>
+                        <div class="bar-label">Prompt</div>
+                    </div>
+                    <div class="bar-group">
+                        <div class="bar" style="height: 2%;"><span class="bar-tooltip">1% Auth</span></div>
+                        <div class="bar-label">Auth</div>
+                    </div>
+                    <div class="bar-group">
+                        <div class="bar" style="height: 1%;"><span class="bar-tooltip">0% Misc</span></div>
+                        <div class="bar-label">Misc</div>
+                    </div>
+                </div>
+                <figcaption>Two bars carry the weight; the other five are smokescreens.</figcaption>
+            </div>
+
+            <h2>From Symptoms to Capital</h2>
+            <p>The counterargument is that granular taxonomies help engineers fix specific bugs. True, at the ground level. But as a leader, your job is different. You are allocating millions in engineering hours. Goodhart's Law guarantees that if you optimize against a diagnostic taxonomy, your agents will find new ways to fail that aren't on the list. OpenAI optimized against tool-call serialization metrics, so Codex-2 simply found a new way to stall: the regex loop.</p>
+
+            <div id="beat-2">
+                <p>[BEAT 2] BEFORE: Failure categories tell you what to fix. AFTER: Failure categories tell you how it died, not what to fund. TURN: <span id="quote-2-text">You don't budget for a coronary by itemizing the ambulance tires; you budget by looking at the heart.</span></p>
+            </div>
+
+            <p>Look at Salesforce. On August 5, 2026, they released a case study on their internal Agentforce roll-out. They started with a 12-category failure dashboard. They burned $4M patching "data retrieval latency." Then they realized the actual revenue loss came from "silent RAG omission"—the agent answering confidently without retrieving the right document. They collapsed their 12 diagnostic categories into 3 strategic buckets: data access, reasoning loops, and tool permissions. They reallocated $1.2M from latency optimization to RAG precision evals.</p>
+
+            <table class="data-table" id="salesforce-table">
+                <thead>
+                    <tr>
+                        <th>Strategic Bucket</th>
+                        <th>Initial Diag. Categories</th>
+                        <th>Budget Shift</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="parent-row" data-id="1">
+                        <td>Data Access</td>
+                        <td>4 categories</td>
+                        <td style="color: var(--accent-2);">+$1.2M</td>
+                    </tr>
+                    <tr class="detail-row" id="detail-1">
+                        <td colspan="3">Collapsed "Latency", "RAG Miss", "Cache", "Auth" into one. Reallocated funds from latency patches to RAG precision evals after discovering silent omissions were the true revenue killer.</td>
+                    </tr>
+                    <tr class="parent-row" data-id="2">
+                        <td>Reasoning Loops</td>
+                        <td>5 categories</td>
+                        <td>-$0.5M</td>
+                    </tr>
+                    <tr class="detail-row" id="detail-2">
+                        <td colspan="3">Merged "Regex Loop", "Context Exhaustion", "Serialization", "Prompt Drift", "Tool Call" into one. Capped engineering spend on patching individual loop behaviors.</td>
+                    </tr>
+                    <tr class="parent-row" data-id="3">
+                        <td>Tool Permissions</td>
+                        <td>3 categories</td>
+                        <td>-$0.7M</td>
+                    </tr>
+                    <tr class="detail-row" id="detail-3">
+                        <td colspan="3">Combined "Schema", "API Limit", "Timeout". Automated schema generation rather than manual fixes.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <figcaption>Salesforce’s 12 categories collapsed into 3 budget owners.</figcaption>
+
+            <h2>Build the Investment Thesis</h2>
+            <p>We group these failures not by component, but by the budget required to fix them—a cognitive chunking trick that turns a diagnostic list into an investment thesis. To do this:</p>
+
+            <p>1. Rank by Capital, Not Component. Stop tracking failures by system layer. Track them by which budget owner can actually fix them. If a schema error and a latency spike both require the platform team to rewrite the API gateway, they are the same investment.</p>
+            <p>2. Audit for Missing Modes. If your dashboard only shows failures you have already seen, you are blind to the 88% regex loops. Dedicate a portion of your eval budget to red-teaming the taxonomy itself.</p>
+            <p>3. Collapse to Strategic Buckets. <span id="quote-4-text">If your failure dashboard has fifteen rows, your team will spend the quarter polishing the rows instead of fixing the engine.</span> Force every failure into three or four buckets tied to specific capital allocations.</p>
+
+            <!-- Quote Gallery -->
+            <div class="quote-gallery" id="quote-gallery">
+                <div class="quote-track" id="quote-track">
+                    <div class="quote-card">
+                        <div class="quote-text">"When 92% of your production fires come from two sources, a seven-point checklist isn't a map; it's a smokescreen."</div>
+                        <div class="share-row">
+                            <button class="share-btn copy-btn" data-quote="When 92% of your production fires come from two sources, a seven-point checklist isn't a map; it's a smokescreen.">Copy Text & Link</button>
+                            <a class="share-btn x-btn" target="_blank">Share to X</a>
+                            <a class="share-btn li-btn" target="_blank">Share to LinkedIn</a>
+                        </div>
+                    </div>
+                    <div class="quote-card">
+                        <div class="quote-text">"You don't budget for a coronary by itemizing the ambulance tires; you budget by looking at the heart."</div>
+                        <div class="share-row">
+                            <button class="share-btn copy-btn" data-quote="You don't budget for a coronary by itemizing the ambulance tires; you budget by looking at the heart.">Copy Text & Link</button>
+                            <a class="share-btn x-btn" target="_blank">Share to X</a>
+                            <a class="share-btn li-btn" target="_blank">Share to LinkedIn</a>
+                        </div>
+                    </div>
+                    <div class="quote-card">
+                        <div class="quote-text">"A long list of ways to fail is just a tombstone; a short list of where to invest is a blueprint."</div>
+                        <div class="share-row">
+                            <button class="share-btn copy-btn" data-quote="A long list of ways to fail is just a tombstone; a short list of where to invest is a blueprint.">Copy Text & Link</button>
+                            <a class="share-btn x-btn" target="_blank">Share to X</a>
+                            <a class="share-btn li-btn" target="_blank">Share to LinkedIn</a>
+                        </div>
+                    </div>
+                    <div class="quote-card">
+                        <div class="quote-text">"If your failure dashboard has fifteen rows, your team will spend the quarter polishing the rows instead of fixing the engine."</div>
+                        <div class="share-row">
+                            <button class="share-btn copy-btn" data-quote="If your failure dashboard has fifteen rows, your team will spend the quarter polishing the rows instead of fixing the engine.">Copy Text & Link</button>
+                            <a class="share-btn x-btn" target="_blank">Share to X</a>
+                            <a class="share-btn li-btn" target="_blank">Share to LinkedIn</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="quote-nav">
+                    <button class="quote-btn" id="prev-quote">&#larr;</button>
+                    <div class="quote-dots" id="quote-dots"></div>
+                    <button class="quote-btn" id="next-quote">&#rarr;</button>
+                </div>
+            </div>
+
+            <h2>Check Your Understanding</h2>
+            <div class="recall-grid">
+                <div class="recall-card" onclick="this.classList.toggle('flipped')">
+                    <div class="recall-q">What dynamic causes agents to find new ways to fail when you optimize a taxonomy?</div>
+                    <div class="recall-a">Goodhart's Law. Once a metric is targeted, it ceases to be a good measure.</div>
+                </div>
+                <div class="recall-card" onclick="this.classList.toggle('flipped')">
+                    <div class="recall-q">Why do vendors prefer 7-point taxonomies over 2-point taxonomies?</div>
+                    <div class="recall-a">Distributing blame across the stack distributes responsibility for fixing it.</div>
+                </div>
+            </div>
+
+            <h2>Draw the Line</h2>
+            <p>In the next 24 hours, draw a single line through your current AI failure dashboard. Group the survivors by which budget owner can actually fix them. <span id="quote-3-text">A long list of ways to fail is just a tombstone; a short list of where to invest is a blueprint.</span></p>
+
+            <footer>
+                <div class="citations">
+                    Sources: The Information (Aug 2, 2026); GreyBM FDE Blog (July 25, 2026); Salesforce Engineering Blog (Aug 5, 2026).
+                </div>
+                <a class="scroll-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">Back to top</a>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // Progress Bar
+        const progress = document.getElementById('progress');
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrollPercent = (scrollTop / scrollHeight) * 100;
+            progress.style.width = scrollPercent + '%';
+        });
+
+        // Mobile Menu
+        const hamburger = document.getElementById('hamburger');
+        const rail = document.getElementById('rail');
+        const scrim = document.getElementById('scrim');
+        hamburger.addEventListener('click', () => { rail.classList.add('open'); scrim.classList.add('open'); });
+        scrim.addEventListener('click', () => { rail.classList.remove('open'); scrim.classList.remove('open'); });
+
+        // Intersection Observer for Tracker & Quote Gallery Sync
+        const trackerItems = [
+            { id: 'track-1', target: 'beat-1', quoteIndex: 0 },
+            { id: 'track-2', target: 'beat-2', quoteIndex: 1 },
+            { id: 'track-3', target: 'beat-1', quoteIndex: 2 } // Maps to Salesforce capital shift conceptually, tied to Beat 1 region for scroll demo
+        ];
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const matchedItem = trackerItems.find(item => item.target === entry.target.id);
+                    if (matchedItem) {
+                        document.getElementById(matchedItem.id).classList.add('unlocked');
+                        // Update active quote based on scroll
+                        if (matchedItem.quoteIndex !== undefined) {
+                            moveToQuote(matchedItem.quoteIndex);
+                        }
+                    }
+                }
+            });
+        }, { threshold: 0.5 });
+
+        observer.observe(document.getElementById('beat-1'));
+        observer.observe(document.getElementById('beat-2'));
+
+        // Convergence Widget
+        const taxSlider = document.getElementById('tax-slider');
+        const taxNodes = document.querySelectorAll('#tax-display .tax-node');
+        taxSlider.addEventListener('input', (e) => {
+            const val = e.target.value;
+            taxNodes.forEach(node => {
+                if (val > 50 && !node.classList.contains('active')) {
+                    node.style.opacity = '0.2';
+                    node.style.transform = 'scale(0.8)';
+                } else {
+                    node.style.opacity = '1';
+                    node.style.transform = 'scale(1)';
+                }
+            });
+        });
+
+        // Quote Gallery
+        const quotes = [
+            "When 92% of your production fires come from two sources, a seven-point checklist isn't a map; it's a smokescreen.",
+            "You don't budget for a coronary by itemizing the ambulance tires; you budget by looking at the heart.",
+            "A long list of ways to fail is just a tombstone; a short list of where to invest is a blueprint.",
+            "If your failure dashboard has fifteen rows, your team will spend the quarter polishing the rows instead of fixing the engine."
+        ];
+        let currentQuote = 0;
+        const track = document.getElementById('quote-track');
+        const dotsContainer = document.getElementById('quote-dots');
+        const xBtns = document.querySelectorAll('.x-btn');
+        const liBtns = document.querySelectorAll('.li-btn');
+
+        // Build dots
+        quotes.forEach((q, i) => {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.onclick = () => moveToQuote(i);
+            dotsContainer.appendChild(dot);
+        });
+
+        function moveToQuote(index) {
+            currentQuote = index;
+            track.style.transform = `translateX(-${index * 100}%)`;
+            document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === index));
+            updateShareLinks();
+        }
+
+        function updateShareLinks() {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent(quotes[currentQuote]);
+            xBtns.forEach((btn, i) => {
+                if (i === currentQuote) btn.href = `https://x.com/intent/post?text=${text}&url=${url}`;
+            });
+            liBtns.forEach((btn, i) => {
+                if (i === currentQuote) btn.href = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+            });
+        }
+
+        document.getElementById('prev-quote').onclick = () => moveToQuote(currentQuote > 0 ? currentQuote - 1 : quotes.length - 1);
+        document.getElementById('next-quote').onclick = () => moveToQuote(currentQuote < quotes.length - 1 ? currentQuote + 1 : 0);
+
+        // Copy buttons
+        document.querySelectorAll('.copy-btn').forEach((btn, i) => {
+            btn.onclick = () => {
+                navigator.clipboard.writeText(quotes[i] + " " + window.location.href);
+                btn.innerText = "Copied!";
+                setTimeout(() => btn.innerText = "Copy Text & Link", 2000);
+            };
+        });
+
+        // Keyboard nav for quotes
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') document.getElementById('prev-quote').click();
+            if (e.key === 'ArrowRight') document.getElementById('next-quote').click();
+        });
+
+        // Data Table Expand
+        document.querySelectorAll('.parent-row').forEach(row => {
+            row.onclick = () => {
+                const id = row.getAttribute('data-id');
+                document.getElementById('detail-' + id).classList.toggle('show');
+            };
+        });
+
+        updateShareLinks();
+    </script>
+</body>
+</html>
