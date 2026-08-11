@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Renting Your Own Moat — Applied AI Engineering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ═══ RESET & TOKENS ═══ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f8f9fa;--fg:#1a2744;--fg-mid:#3d4f6a;--fg-light:#6b7280;
+  --accent:#e8912d;--teal:#2dd4a8;--red:#e84057;--amber:#f5a623;
+  --card:#fff;--card-border:#e2e5ea;--glass:rgba(255,255,255,.72);
+  --rail-w:220px;--max-w:calc(660px + 260px);--body-w:660px;
+  --font-body:'DM Sans',system-ui,sans-serif;--font-display:'DM Serif Display',Georgia,serif;
+  --radius:8px;--shadow:0 2px 8px rgba(26,39,68,.08);
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:var(--fg);background:var(--bg);line-height:1.7;font-size:17px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+h1,h2,h3{font-family:var(--font-display);font-weight:400;color:var(--fg);line-height:1.2}
+h1{font-size:clamp(2.1rem,5vw,3.1rem);margin-bottom:.6em}
+h2{font-size:1.55rem;margin:2.2em 0 .7em}
+h3{font-size:1.2rem;margin:1.6em 0 .5em}
+p{margin-bottom:1.1em}
+strong{font-weight:700}
+code{font-family:'DM Mono',monospace;font-size:.9em;background:#eef0f4;padding:.15em .4em;border-radius:3px}
+
+/* ═══ PROGRESS BAR ═══ */
+#progress{position:fixed;top:0;left:0;height:3px;width:0%;z-index:1000;
+  background:linear-gradient(90deg,var(--teal),var(--accent));transition:width .15s linear}
+
+/* ═══ TOPBAR ═══ */
+#topbar{position:fixed;top:3px;left:0;right:0;z-index:999;height:52px;
+  background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--card-border);display:flex;align-items:center;padding:0 1.2rem}
+#topbar .home{font-weight:700;font-size:.92rem;letter-spacing:.02em;color:var(--fg)}
+#topbar .breadcrumb{font-size:.82rem;color:var(--fg-light);margin-left:1.2rem}
+#topbar .reading-time{margin-left:auto;font-size:.78rem;color:var(--fg-light);white-space:nowrap}
+#hamburger{display:none;background:none;border:none;font-size:1.4rem;color:var(--fg);cursor:pointer;margin-left:1rem}
+
+/* ═══ LAYOUT ═══ */
+.wrap{max-width:var(--max-w);margin:0 auto;display:grid;grid-template-columns:var(--rail-w) 1fr;gap:2rem;padding:72px 1.2rem 3rem}
+#rail{position:sticky;top:72px;align-self:start;max-height:calc(100vh - 80px);overflow-y:auto}
+#rail nav{font-size:.82rem;color:var(--fg-light);line-height:1.9}
+#rail nav a{color:var(--fg-mid);display:block;padding:.15em 0}
+#rail nav a:hover{color:var(--accent)}
+main{max-width:var(--body-w);width:100%}
+
+/* ═══ HERO ═══ */
+.hero{margin-bottom:2.5rem}
+.hero .date-line{font-size:.82rem;color:var(--fg-light);margin-bottom:.5rem}
+
+/* ═══ SPECTRUM WIDGET ═══ */
+.spectrum{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:1.5rem;margin:1.8rem 0;box-shadow:var(--shadow)}
+.spectrum-bar{height:32px;border-radius:6px;margin-bottom:1rem;
+  background:linear-gradient(90deg,var(--accent) 0%,var(--accent) 35%,#d4d8de 35%,#d4d8de 65%,var(--teal) 65%,var(--teal) 100%)}
+.spectrum-labels{display:flex;justify-content:space-between;font-size:.78rem;color:var(--fg-light)}
+.spectrum-caption{font-size:.82rem;color:var(--fg-light);font-style:italic;margin-top:.8rem;line-height:1.5}
+
+/* ═══ PULL QUOTE ═══ */
+.pull-quote{border-left:4px solid var(--accent);background:rgba(232,145,45,.06);padding:1.2rem 1.5rem;margin:2rem 0;border-radius:0 var(--radius) var(--radius) 0;font-family:var(--font-display);font-size:1.15rem;line-height:1.5;color:var(--fg)}
+
+/* ═══ DEPENDENCY ACCUMULATOR (Centerpiece) ═══ */
+.accumulator{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:1.5rem;margin:2rem 0;box-shadow:var(--shadow)}
+.accumulator h3{margin-top:0;font-size:1rem;font-family:var(--font-body);font-weight:700;color:var(--fg-mid)}
+#accCanvas{width:100%;height:260px;display:block}
+#accSlider{width:100%;margin:.8rem 0;accent-color:var(--accent);cursor:pointer}
+.acc-label{display:flex;justify-content:space-between;font-size:.78rem;color:var(--fg-light)}
+.acc-month{font-weight:700;color:var(--accent)}
+.acc-caption{font-size:.82rem;color:var(--fg-light);font-style:italic;margin-top:.8rem;line-height:1.5}
+
+/* ═══ DEPRECATION TIMELINE (Data Visual 1) ═══ */
+.dep-timeline{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:1.5rem;margin:2rem 0;box-shadow:var(--shadow)}
+.dep-timeline h3{margin-top:0;font-size:1rem;font-family:var(--font-body);font-weight:700;color:var(--fg-mid)}
+#depSvg{width:100%;height:220px}
+.dep-controls{display:flex;gap:.6rem;margin-top:.8rem}
+.dep-controls button{padding:.4rem 1rem;border:1px solid var(--card-border);border-radius:var(--radius);background:var(--bg);font-size:.82rem;cursor:pointer;color:var(--fg-mid);transition:all .15s}
+.dep-controls button:hover{border-color:var(--accent);color:var(--accent)}
+.dep-controls button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.dep-detail{font-size:.85rem;color:var(--fg-mid);margin-top:.8rem;min-height:3.5rem;line-height:1.5}
+.dep-caption{font-size:.82rem;color:var(--fg-light);font-style:italic;margin-top:.8rem;line-height:1.5}
+.dep-legend{display:flex;gap:1.2rem;margin-top:.6rem;font-size:.75rem;color:var(--fg-light)}
+.dep-legend span{display:flex;align-items:center;gap:.3rem}
+.dep-legend .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+/* ═══ CAPABILITY TABLE (Data Visual 2) ═══ */
+.cap-table-wrap{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:1.5rem;margin:2rem 0;box-shadow:var(--shadow)}
+.cap-table-wrap h3{margin-top:0;font-size:1rem;font-family:var(--font-body);font-weight:700;color:var(--fg-mid)}
+#capTable{width:100%;border-collapse:collapse;font-size:.85rem}
+#capTable th{text-align:left;padding:.6rem .8rem;border-bottom:2px solid var(--card-border);color:var(--fg-light);font-weight:500;cursor:pointer;white-space:nowrap;user-select:none}
+#capTable th:hover{color:var(--accent)}
+#capTable th .sort-arrow{margin-left:.3rem;font-size:.7rem}
+#capTable td{padding:.55rem .8rem;border-bottom:1px solid var(--card-border);color:var(--fg-mid)}
+#capTable tr.expandable{cursor:pointer}
+#capTable tr.expandable:hover{background:rgba(232,145,45,.04)}
+#capTable tr.detail-row{display:none}
+#capTable tr.detail-row.open{display:table-row}
+#capTable tr.detail-row td{padding:.4rem .8rem .7rem 2.4rem;font-size:.82rem;color:var(--fg-light);border-bottom:1px solid var(--card-border)}
+.coupling-deep{color:var(--red);font-weight:700}
+.coupling-mid{color:var(--amber);font-weight:500}
+.coupling-shallow{color:var(--teal);font-weight:500}
+.cap-caption{font-size:.82rem;color:var(--fg-light);font-style:italic;margin-top:.8rem;line-height:1.5}
+
+/* ═══ QUOTE GALLERY ═══ */
+.quote-gallery{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:1.2rem;margin:2rem 0;box-shadow:var(--shadow);overflow:hidden}
+.quote-gallery h3{margin-top:0;font-size:1rem;font-family:var(--font-body);font-weight:700;color:var(--fg-mid)}
+.quote-track{display:flex;gap:1rem;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;padding:.5rem 0;transition:transform .35s ease}
+.quote-track::-webkit-scrollbar{display:none}
+.quote-card{min-width:280px;max-width:320px;flex-shrink:0;scroll-snap-align:start;background:var(--bg);border:1px solid var(--card-border);border-radius:var(--radius);padding:1rem 1.2rem;display:flex;flex-direction:column;gap:.7rem}
+.quote-card.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.quote-card .qt{font-family:var(--font-display);font-size:.95rem;line-height:1.45;color:var(--fg)}
+.quote-card .share-row{display:flex;gap:.5rem;flex-wrap:wrap}
+.quote-card .share-row button,.quote-card .share-row a{font-size:.72rem;padding:.25rem .55rem;border:1px solid var(--card-border);border-radius:4px;background:var(--card);color:var(--fg-light);cursor:pointer;transition:all .15s;text-decoration:none;display:inline-flex;align-items:center}
+.quote-card .share-row button:hover,.quote-card .share-row a:hover{border-color:var(--accent);color:var(--accent)}
+.quote-nav{display:flex;align-items:center;justify-content:center;gap:.8rem;margin-top:.8rem}
+.quote-nav button{background:none;border:1px solid var(--card-border);border-radius:50%;width:28px;height:28px;cursor:pointer;color:var(--fg-light);font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.quote-nav button:hover{border-color:var(--accent);color:var(--accent)}
+.quote-dots{display:flex;gap:.35rem}
+.quote-dots span{width:7px;height:7px;border-radius:50%;background:var(--card-border);transition:background .2s}
+.quote-dots span.active{background:var(--accent)}
+.quote-counter{font-size:.72rem;color:var(--fg-light)}
+
+/* ═══ RECALL CARDS ═══ */
+.recall-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin:2rem 0}
+.recall-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:1.2rem;cursor:pointer;min-height:120px;position:relative;transition:transform .3s;perspective:600px}
+.recall-card:hover{transform:translateY(-2px)}
+.recall-card .front,.recall-card .back{transition:opacity .35s}
+.recall-card .back{position:absolute;inset:0;padding:1.2rem;opacity:0;background:var(--card);border-radius:var(--radius);display:flex;align-items:center}
+.recall-card.flipped .front{opacity:0}
+.recall-card.flipped .back{opacity:1}
+.recall-card .q{font-family:var(--font-display);font-size:.92rem;color:var(--fg-mid);line-height:1.4}
+.recall-card .a{font-size:.85rem;color:var(--fg);line-height:1.5}
+.recall-card .tag{font-size:.7rem;color:var(--teal);margin-top:.5rem;font-weight:500}
+
+/* ═══ CONCEPT MAP ═══ */
+.concept-map{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:1.5rem;margin:2rem 0;box-shadow:var(--shadow)}
+.concept-map h3{margin-top:0;font-size:1rem;font-family:var(--font-body);font-weight:700;color:var(--fg-mid)}
+#conceptSvg{width:100%;height:260px}
+
+/* ═══ THREE THINGS TRACKER ═══ */
+.three-things{position:fixed;bottom:1.2rem;right:1.2rem;z-index:998;background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);box-shadow:0 4px 20px rgba(26,39,68,.12);font-size:.82rem;overflow:hidden;transition:max-height .3s ease;width:260px}
+.three-things.collapsed{max-height:48px}
+.three-things.expanded{max-height:300px}
+.tt-header{display:flex;align-items:center;justify-content:space-between;padding:.6rem .9rem;cursor:pointer;font-weight:700;color:var(--fg-mid)}
+.tt-header .chevron{transition:transform .2s}
+.three-things.expanded .tt-header .chevron{transform:rotate(180deg)}
+.tt-list{padding:0 .9rem .7rem}
+.tt-item{display:flex;align-items:flex-start;gap:.5rem;padding:.35rem 0;color:var(--fg-light);line-height:1.4}
+.tt-item .icon{flex-shrink:0;width:16px;height:16px;border-radius:50%;border:1.5px solid var(--card-border);display:flex;align-items:center;justify-content:center;font-size:.65rem;margin-top:.15rem;transition:all .2s}
+.tt-item.unlocked .icon{border-color:var(--teal);color:var(--teal)}
+.tt-item.locked .icon{border-color:var(--card-border);color:transparent}
+
+/* ═══ SCROLL REVEAL ═══ */
+.reveal-section{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal-section.visible{opacity:1;transform:translateY(0)}
+.reveal-section.shifted .before-text{display:none}
+.reveal-section.shifted .after-text{display:block}
+.reveal-section .after-text{display:none}
+
+/* ═══ FOOTER ═══ */
+footer{border-top:1px solid var(--card-border);margin-top:3rem;padding:2rem 0;font-size:.82rem;color:var(--fg-light);line-height:1.6}
+footer .citations{margin-bottom:1.2rem}
+footer .citations strong{color:var(--fg-mid)}
+footer .footer-links{display:flex;gap:1.5rem;align-items:center}
+footer .back-top{margin-left:auto;cursor:pointer;color:var(--accent)}
+
+/* ═══ REDUCED MOTION ═══ */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none!important;animation:none!important}
+  .reveal-section{opacity:1;transform:none}
+  .quote-track{scroll-snap-type:none}
+  #accSlider{accent-color:var(--accent)}
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:880px){
+  .wrap{grid-template-columns:1fr;padding-top:64px}
+  #rail{display:none}
+  #hamburger{display:block}
+  #drawer{position:fixed;top:0;left:-280px;width:280px;height:100vh;background:var(--card);z-index:1001;padding:5rem 1.5rem 2rem;transition:left .3s ease;box-shadow:4px 0 20px rgba(0,0,0,.1)}
+  #drawer.open{left:0}
+  #scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:1000}
+  #scrim.open{display:block}
+  .three-things{width:220px;bottom:.8rem;right:.8rem}
+}
+@media(max-width:500px){
+  body{font-size:15px}
+  .quote-card{min-width:240px;max-width:260px}
+}
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div id="progress"></div>
+
+<!-- Topbar -->
+<header id="topbar">
+  <a href="https://iggym.github.io/applied-ai-engineering/" class="home">← Applied AI Eng</a>
+  <span class="breadcrumb">/ Renting Your Own Moat</span>
+  <span class="reading-time">~8 min read</span>
+  <button id="hamburger" aria-label="Menu">☰</button>
+</header>
+
+<!-- Mobile Drawer -->
+<div id="scrim"></div>
+<nav id="drawer">
+  <a href="#cover-charge">The Cover Charge</a>
+  <a href="#dependency-rent">Dependency Rent</a>
+  <a href="#compounding-line">The Compounding Line</a>
+  <a href="#four-levers">Four Levers</a>
+</nav>
+
+<div class="wrap">
+  <!-- Sidebar Rail -->
+  <aside id="rail">
+    <nav>
+      <a href="#cover-charge">The Cover Charge</a>
+      <a href="#dependency-rent">Dependency Rent</a>
+      <a href="#compounding-line">The Compounding Line</a>
+      <a href="#four-levers">Four Levers</a>
+      <hr style="margin:.8rem 0;border-color:var(--card-border)">
+      <strong style="font-size:.78rem;color:var(--fg-mid)">Also in this issue</strong>
+      <a href="#accumulator-widget">Dependency Accumulator</a>
+      <a href="#deprecation-timeline">Deprecation Timeline</a>
+      <a href="#cap-table">Capability Recovery</a>
+      <a href="#quotes">Quotable Lines</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Hero -->
+    <div class="hero">
+      <p class="date-line">April 14, 2025 &middot; Build-vs-Buy Calculus</p>
+      <h1>Renting Your Own Moat</h1>
+    </div>
+
+    <!-- Spectrum Widget -->
+    <div class="spectrum">
+      <div class="spectrum-bar" role="img" aria-label="Spectrum from vendor dependency on the left to internal ownership on the right"></div>
+      <div class="spectrum-labels">
+        <span>Vendor absorbs your roadmap</span>
+        <span>You own your abstraction layer</span>
+      </div>
+      <p class="spectrum-caption">From paying rent on someone else's moat to building your own — the spectrum isn't cheap-vs-expensive, it's dependent-vs-compounding.</p>
+    </div>
+
+    <!-- Opening -->
+    <p>In March 2025, Klarna published the number that stopped the procurement world: 1,200 SaaS vendors consolidated to roughly 25. Annual savings: $13 million. The fintech press called it austerity. The AI engineering press called it an AI story. Both missed what actually happened.</p>
+
+    <p>Each of those 1,200 vendors represented a decision Klarna had outsourced to someone else's roadmap. A function the company no longer performed. An integration it couldn't untangle without risk, because the vendor's API had become the shape of Klarna's own process. A data flow it didn't control, flowing through someone else's infrastructure, subject to someone else's deprecation schedule.</p>
+
+    <p>The thirteen million wasn't the story. The story was <strong>capability recovery</strong>. Every vendor function that moved internal became something Klarna could change in days instead of negotiating for months. The cost savings were a lagging indicator. The leading indicator was that Klarna stopped renting the components of its own operation and started owning them.</p>
+
+    <p>Now extend that pattern to AI infrastructure, where the dependency dynamics run deeper. The vendor doesn't just host your data. They host your model's behavior — its outputs, its failure modes, its quirks. They host your prompt library, your evaluation criteria, your error handling. Your entire reasoning pipeline lives inside someone else's abstraction, and they can deprecate any layer of it with ninety days' notice.</p>
+
+    <!-- The Cover Charge -->
+    <h2 id="cover-charge">The Cover Charge</h2>
+
+    <p>The industry frames build-versus-buy for AI as a simple cost comparison: per-token API pricing on one side, GPU amortization and ML engineering salaries on the other. That framing omits the actual profit center.</p>
+
+    <p>Per-token pricing covers compute cost and customer acquisition. It's designed to get you integrated fast and deep. The margin comes later, from the switching cost that accumulates invisibly once your prompt engineering, your eval suites, your error handling, and your feature flags are all coupled to one model's specific behaviors. <span class="beat-marker" data-beat="1">[BEAT 1]</span></p>
+
+    <div class="pull-quote" id="quote-1-anchor">
+      The per-token price is the cover charge, not the bill.
+    </div>
+
+    <p>OpenAI's deprecation cycle made this concrete in the first quarter of 2025. When model versions were sunset — gpt-4 base, multiple gpt-3.5-turbo variants — enterprises running production systems on those models received ninety-day migration windows. Each production use case required re-prompting, re-evaluation, and regression testing against the new model's behavior. Practitioners on the OpenAI community forum reported two to six weeks of engineering work per use case. A company with eight production deployments — a modest footprint — faced three to twelve months of unplanned migration labor. That cost never appears in any pricing sheet. It's priced into the dependency itself.</p>
+
+    <!-- Dependency Accumulator (Centerpiece Widget) -->
+    <div class="accumulator" id="accumulator-widget">
+      <h3>Drag the timeline — watch the real cost emerge</h3>
+      <canvas id="accCanvas"></canvas>
+      <input type="range" id="accSlider" min="0" max="24" value="0" step="1" aria-label="Months on vendor platform">
+      <div class="acc-label">
+        <span>Month <span class="acc-month" id="accMonth">0</span></span>
+        <span>24 months</span>
+      </div>
+      <p class="acc-caption">The amber line is what you think you're paying. The red spikes are what you actually pay when deprecation forces migration. The teal line is the internal-platform path — steeper at first, flat later.</p>
+    </div>
+
+    <!-- Dependency Rent -->
+    <h2 id="dependency-rent">Dependency Rent</h2>
+
+    <p>There's a term for this in systems thinking: <strong>dependency rent</strong>. It's the ongoing cost of not owning a layer your system depends on. You pay it in three forms. Integration coupling — the engineering hours already spent adapting your system to the vendor's interface, which must be re-spent when the interface changes. Capability atrophy — the skills your team no longer practices because the vendor handles that function, which means you can't perform it yourself when you need to. Roadmap mismatch — the vendor builds what serves their growth, not yours, and you adapt your product to their platform's capabilities instead of the reverse.</p>
+
+    <!-- Scroll-driven perspective reveal -->
+    <div class="reveal-section" id="reveal-extraction">
+      <p class="before-text">Klarna experienced all three forms at once. The vendor consolidation was a big procurement decision with a clean payoff.</p>
+      <p class="after-text">Klarna experienced all three forms at once. The vendor consolidation wasn't a procurement decision; it was a <strong>dependency extraction</strong>. And extraction is always more expensive than the original integration, because the vendor has had years to make leaving hard. <span class="beat-marker" data-beat="2">[BEAT 2]</span></p>
+    </div>
+
+    <div class="pull-quote" id="quote-3-anchor">
+      Klarna didn't save thirteen million dollars by switching vendors — they saved it by becoming their own.
+    </div>
+
+    <!-- Deprecation Timeline (Data Visual 1) -->
+    <div class="dep-timeline" id="deprecation-timeline">
+      <h3>Sunset notices stacked — click each event</h3>
+      <svg id="depSvg" viewBox="0 0 600 220" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="dep-controls" id="depControls"></div>
+      <div class="dep-detail" id="depDetail">Select a deprecation event to see the downstream migration cost.</div>
+      <div class="dep-legend">
+        <span><span class="dot" style="background:var(--red)"></span> ≤30 days to sunset</span>
+        <span><span class="dot" style="background:var(--amber)"></span> 31–60 days</span>
+        <span><span class="dot" style="background:var(--teal)"></span> 61–90 days</span>
+      </div>
+      <p class="dep-caption">Color encodes urgency — how many days until the model stops responding. Each bar's height reflects the estimated enterprise migration load.</p>
+    </div>
+
+    <!-- The Compounding Line -->
+    <h2 id="compounding-line">The Compounding Line</h2>
+
+    <p>Klarna's vendor story and the OpenAI deprecation story look like separate events. They're the same mechanism at different timescales. Klarna hit the late-stage cost of accumulated dependency — the moment when switching costs are so high that you either keep paying rent or mount a painful extraction. The deprecation cycle is the early-stage version: each model version you adopt weaves another strand into the dependency web, adding to the switching cost you'll eventually face.</p>
+
+    <div class="pull-quote" id="quote-2-anchor">
+      Every quarter you stay on a vendor's abstraction layer is a quarter you didn't invest in your own.
+    </div>
+
+    <p>This is the compounding asymmetry the build-versus-buy debate usually ignores. Vendor spend is an operating expense that maintains your current position. Internal platform investment is a capital expense that compounds. The organization that owns its AI abstraction layer can swap models in days, not months. It can run experiments the vendor wouldn't prioritize. It can keep its prompt engineering and evaluation logic intact when a model gets deprecated, because those assets live in its own repository, not in a vendor's configuration panel.</p>
+
+    <p>The principal-agent problem is structural. The vendor's incentive is to make integration deep and switching expensive — that's where margin lives after the initial customer-acquisition pricing expires. Databricks' $1.3 billion acquisition of MosaicML wasn't a bet on training infrastructure efficiency. It was a bet that owning the training layer creates stickiness that per-token pricing alone can't deliver. The same logic explains why every major AI vendor is bundling evaluation tooling, deployment infrastructure, and fine-tuning pipelines into their platform. Each bundle is another coupling layer. Each layer makes leaving harder.</p>
+
+    <p>The strongest counterargument is real: most organizations lack the engineering capacity to build and maintain an internal AI platform, and the talent that exists is expensive. This is true for the first year. The gateway abstraction layer that enterprises adopted in early 2025 changes the intermediate calculus. Organizations running a gateway pattern — the LiteLLM or Portkey architecture — reduced model-switching time from approximately three weeks to roughly two days. The gateway doesn't replace the vendor. It makes vendor choice <strong>reversible</strong>. And reversibility is what turns a dependency into a commodity.</p>
+
+    <!-- Capability Table (Data Visual 2) -->
+    <div class="cap-table-wrap" id="cap-table">
+      <h3>Klarna's extraction — click a row to see what replaced it</h3>
+      <table id="capTable">
+        <thead>
+          <tr>
+            <th data-sort="category">Vendor Category <span class="sort-arrow">↕</span></th>
+            <th data-sort="count">Vendors Cut <span class="sort-arrow">↕</span></th>
+            <th data-sort="coupling">Coupling Depth <span class="sort-arrow">↕</span></th>
+            <th>Internal Replacement</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p class="cap-caption">Coupling depth measures how tangled the vendor's API was in Klarna's core flows — deep means months to extract, shallow means weeks.</p>
+    </div>
+
+    <!-- Four Levers -->
+    <h2 id="four-levers">Four Levers</h2>
+
+    <p>What shifts the calculus within a single quarter:</p>
+
+    <p><strong>Audit your coupling.</strong> Count the production systems where a single vendor's model deprecation would trigger an unplanned migration. If the number exceeds two, you're already paying dependency rent — it just doesn't appear on any invoice.</p>
+
+    <p><strong>Insert an abstraction layer now.</strong> A gateway proxy costs two to four engineering weeks to stand up. A gateway doesn't make inference cheaper; it makes the next migration nearly free. <span id="quote-4-anchor"></span> That's the cost event you're actually optimizing for, even if it hasn't happened yet.</p>
+
+    <div class="pull-quote">
+      A gateway doesn't make inference cheaper; it makes the next migration nearly free.
+    </div>
+
+    <p><strong>Own your evals.</strong> Vendor-provided evaluation benchmarks are optimized to show vendor models favorably. Goodhart's law, applied to marketing decks. Build your own evaluation suite against your own production data. This is the asset that survives any model migration, and it's the one vendors most want you to depend on them for.</p>
+
+    <p><strong>Price the option value.</strong> When comparing build versus buy, add a line item for the cost of the next forced migration — estimated at two to six weeks of engineering time per production use case, times the number of use cases, times the probability of a deprecation event within eighteen months. That single number changes the decision in most cases.</p>
+
+    <div class="pull-quote" id="quote-5-anchor">
+      The vendor's roadmap is not your strategy, but most organizations can't tell the difference until the deprecation notice arrives.
+    </div>
+
+    <!-- Recall Cards -->
+    <div class="recall-cards">
+      <div class="recall-card" tabindex="0" role="button" aria-label="Recall card: click to reveal answer">
+        <div class="front">
+          <p class="q">What does per-token API pricing actually cover?</p>
+          <p class="tag">Click to reveal</p>
+        </div>
+        <div class="back">
+          <p class="a">Compute cost and customer acquisition. The margin comes from switching cost accumulated after integration.</p>
+        </div>
+      </div>
+      <div class="recall-card" tabindex="0" role="button" aria-label="Recall card: click to reveal answer">
+        <div class="front">
+          <p class="q">What three forms does dependency rent take?</p>
+          <p class="tag">Click to reveal</p>
+        </div>
+        <div class="back">
+          <p class="a">Integration coupling, capability atrophy, and roadmap mismatch.</p>
+        </div>
+      </div>
+      <div class="recall-card" tabindex="0" role="button" aria-label="Recall card: click to reveal answer">
+        <div class="front">
+          <p class="q">What does a gateway actually optimize for?</p>
+          <p class="tag">Click to reveal</p>
+        </div>
+        <div class="back">
+          <p class="a">Not inference cost — migration cost. It makes vendor choice reversible, turning a dependency into a commodity.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Concept Map -->
+    <div class="concept-map">
+      <h3>Two paths, two outcomes</h3>
+      <svg id="conceptSvg" viewBox="0 0 600 260" preserveAspectRatio="xMidYMid meet">
+        <!-- Vendor path -->
+        <text x="20" y="30" font-size="13" fill="#e8912d" font-weight="700" font-family="DM Sans,sans-serif">Vendor API</text>
+        <line x1="80" y1="38" x2="160" y2="65" stroke="#e8912d" stroke-width="2" marker-end="url(#arrowO)"/>
+        <text x="130" y="80" font-size="11" fill="#3d4f6a" font-family="DM Sans,sans-serif">Dependency Rent</text>
+        <line x1="210" y1="80" x2="300" y2="65" stroke="#e8912d" stroke-width="2" marker-end="url(#arrowO)"/>
+        <text x="270" y="55" font-size="11" fill="#3d4f6a" font-family="DM Sans,sans-serif">Capability Atrophy</text>
+        <line x1="370" y1="60" x2="460" y2="80" stroke="#e84057" stroke-width="2" marker-end="url(#arrowR)"/>
+        <text x="430" y="95" font-size="11" fill="#e84057" font-weight="600" font-family="DM Sans,sans-serif">Forced Migration</text>
+
+        <!-- Internal path -->
+        <text x="20" y="200" font-size="13" fill="#2dd4a8" font-weight="700" font-family="DM Sans,sans-serif">Internal Platform</text>
+        <line x1="130" y1="195" x2="220" y2="175" stroke="#2dd4a8" stroke-width="2" marker-end="url(#arrowT)"/>
+        <text x="180" y="170" font-size="11" fill="#3d4f6a" font-family="DM Sans,sans-serif">Reversibility</text>
+        <line x1="270" y1="170" x2="370" y2="175" stroke="#2dd4a8" stroke-width="2" marker-end="url(#arrowT)"/>
+        <text x="320" y="165" font-size="11" fill="#3d4f6a" font-family="DM Sans,sans-serif">Capability Compounding</text>
+        <line x1="450" y1="175" x2="530" y2="195" stroke="#2dd4a8" stroke-width="2" marker-end="url(#arrowT)"/>
+        <text x="490" y="210" font-size="11" fill="#2dd4a8" font-weight="600" font-family="DM Sans,sans-serif">Optionality</text>
+
+        <!-- Dividing line -->
+        <line x1="20" y1="130" x2="580" y2="130" stroke="#e2e5ea" stroke-width="1" stroke-dasharray="4 3"/>
+
+        <!-- Arrow markers -->
+        <defs>
+          <marker id="arrowO" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#e8912d"/></marker>
+          <marker id="arrowR" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#e84057"/></marker>
+          <marker id="arrowT" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#2dd4a8"/></marker>
+        </defs>
+      </svg>
+    </div>
+
+    <!-- Quote Gallery -->
+    <div class="quote-gallery" id="quotes">
+      <h3>Lines worth sharing</h3>
+      <div class="quote-track" id="quoteTrack"></div>
+      <div class="quote-nav">
+        <button id="quotePrev" aria-label="Previous quote">←</button>
+        <div class="quote-dots" id="quoteDots"></div>
+        <span class="quote-counter" id="quoteCounter"></span>
+        <button id="quoteNext" aria-label="Next quote">→</button>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <p>In the next twenty-four hours, open your AI vendor's deprecation page. Count the models you depend on that are scheduled for sunset in the next two quarters. That number is your dependency rent coming due. If it's greater than zero, the build-versus-buy question has already answered itself — you just haven't priced it yet.</p>
+
+    <!-- Footer -->
+    <footer>
+      <div class="citations">
+        <strong>Sources:</strong><br>
+        Klarna vendor consolidation (Sebastian Siemiatkowski, Q1 2025 public statements).<br>
+        OpenAI model deprecation cycle and community forum practitioner reports (Q1 2025).<br>
+        AI gateway pattern adoption — LiteLLM, Portkey practitioner reports (Q1 2025).<br>
+        Databricks MosaicML acquisition analysis ($1.3B, June 2023; integration analysis Q1 2025).
+      </div>
+      <div class="footer-links">
+        <a href="https://iggym.github.io/applied-ai-engineering/">← Home</a>
+        <span class="back-top" id="backTop" tabindex="0" role="button">Back to top ↑</span>
+      </div>
+    </footer>
+  </main>
+</div>
+
+<!-- Three Things Tracker -->
+<div class="three-things collapsed" id="threeThings">
+  <div class="tt-header" id="ttHeader">
+    <span>3 things to notice</span>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="tt-list">
+    <div class="tt-item locked" data-insight="1">
+      <span class="icon">✓</span>
+      <span>Per-token price ≠ vendor margin</span>
+    </div>
+    <div class="tt-item locked" data-insight="2">
+      <span class="icon">✓</span>
+      <span>Klarna's real gain: capability, not savings</span>
+    </div>
+    <div class="tt-item locked" data-insight="3">
+      <span class="icon">✓</span>
+      <span>Gateway optimizes migration, not inference</span>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══ DATA ═══ */
+const QUOTES = [
+  { id:1, text:"The per-token price is the cover charge, not the bill.", section:"cover-charge" },
+  { id:2, text:"Every quarter you stay on a vendor's abstraction layer is a quarter you didn't invest in your own.", section:"compounding-line" },
+  { id:3, text:"Klarna didn't save thirteen million dollars by switching vendors—they saved it by becoming their own.", section:"dependency-rent" },
+  { id:4, text:"A gateway doesn't make inference cheaper; it makes the next migration nearly free.", section:"four-levers" },
+  { id:5, text:"The vendor's roadmap is not your strategy, but most organizations can't tell the difference until the deprecation notice arrives.", section:"four-levers" }
+];
+
+const DEPRECATIONS = [
+  { model:"gpt-4 base", announced:"2025-01-27", sunset:"2025-06-06", useCases:12, weeksPer:4, detail:"Original GPT-4 model. High coupling in production prompt chains tuned to its specific output distribution. Re-prompting required for consistency with gpt-4o." },
+  { model:"gpt-3.5-turbo-0125", announced:"2025-02-15", sunset:"2025-05-15", useCases:8, weeksPer:3, detail:"Most widely-deployed model in enterprise. Lower per-token cost made it the default for high-volume workflows; migration required cost-reanalysis against gpt-4o-mini." },
+  { model:"gpt-4-1106-preview", announced:"2025-03-01", sunset:"2025-06-01", useCases:5, weeksPer:5, detail:"Preview model with distinct tool-calling behavior. Production systems using its function-call format required schema migration, not just re-prompting." },
+  { model:"gpt-3.5-turbo-0613", announced:"2025-03-10", sunset:"2025-06-10", useCases:6, weeksPer:2, detail:"Legacy fine-tune base. Organizations with fine-tuned variants faced complete re-training, not just prompt adjustment." }
+];
+
+const CAPABILITY_ROWS = [
+  { category:"CRM & Sales Tools", count:47, coupling:"deep", replacement:"Internal AI-assisted CRM orchestration", detail:"Klarna rebuilt customer relationship workflows using an internal LLM pipeline that generates outreach, scores leads, and syncs to their data warehouse — previously spread across 47 SaaS contracts." },
+  { category:"Content & Comms", count:83, coupling:"mid", replacement:"In-house content generation suite", detail:"Marketing copy, email campaigns, and internal comms moved to a self-hosted generation pipeline with brand-guardrail enforcement." },
+  { category:"Data & Analytics", count:112, coupling:"deep", replacement:"Unified data platform + AI query layer", detail:"The largest vendor cluster. Analytics vendors, BI tools, and ETL pipelines replaced by a central data platform with an AI-powered natural-language query interface." },
+  { category:"Customer Support", count:34, coupling:"mid", replacement:"AI customer-service orchestrator", detail:"Support ticket routing, knowledge base search, and agent-assist tools consolidated into one internal system handling 2M+ conversations/month." },
+  { category:"Dev Tooling", count:62, coupling:"shallow", replacement:"Internal developer platform", detail:"CI/CD, monitoring, and incident-management tools. Lower coupling made extraction faster; most replaced within 6 weeks each." },
+  { category:"HR & Finance", count:28, coupling:"shallow", replacement:"Streamlined SaaS (5 vendors)", detail:"Not all vendors were replaced internally. HR and finance retained 5 specialized SaaS tools where coupling was low and switching cost was negligible." }
+];
+
+/* ═══ PROGRESS BAR ═══ */
+const progressBar = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  progressBar.style.width = h > 0 ? (window.scrollY / h * 100) + '%' : '0%';
+});
+
+/* ═══ HAMBURGER / DRAWER ═══ */
+const hamburger = document.getElementById('hamburger');
+const drawer = document.getElementById('drawer');
+const scrim = document.getElementById('scrim');
+hamburger.addEventListener('click', () => { drawer.classList.toggle('open'); scrim.classList.toggle('open'); });
+scrim.addEventListener('click', () => { drawer.classList.remove('open'); scrim.classList.remove('open'); });
+drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { drawer.classList.remove('open'); scrim.classList.remove('open'); }));
+
+/* ═══ BACK TO TOP ═══ */
+document.getElementById('backTop').addEventListener('click', () => window.scrollTo({top:0,behavior:'smooth'}));
+
+/* ═══ DEPENDENCY ACCUMULATOR ═══ */
+const accCanvas = document.getElementById('accCanvas');
+const accCtx = accCanvas.getContext('2d');
+const accSlider = document.getElementById('accSlider');
+const accMonth = document.getElementById('accMonth');
+
+function drawAccumulator(month) {
+  const dpr = window.devicePixelRatio || 1;
+  const w = accCanvas.clientWidth;
+  const h = accCanvas.clientHeight;
+  accCanvas.width = w * dpr;
+  accCanvas.height = h * dpr;
+  accCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  accCtx.clearRect(0, 0, w, h);
+
+  const pad = { top: 20, right: 20, bottom: 35, left: 50 };
+  const cw = w - pad.left - pad.right;
+  const ch = h - pad.top - pad.bottom;
+  const maxCost = 600;
+
+  // Grid
+  accCtx.strokeStyle = '#e2e5ea';
+  accCtx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.top + ch * (1 - i / 4);
+    accCtx.beginPath(); accCtx.moveTo(pad.left, y); accCtx.lineTo(w - pad.right, y); accCtx.stroke();
+    accCtx.fillStyle = '#6b7280'; accCtx.font = '11px DM Sans,sans-serif'; accCtx.textAlign = 'right';
+    accCtx.fillText('$' + (maxCost * i / 4) + 'K', pad.left - 6, y + 4);
+  }
+  // X labels
+  for (let m = 0; m <= 24; m += 6) {
+    const x = pad.left + cw * m / 24;
+    accCtx.fillStyle = '#6b7280'; accCtx.font = '11px DM Sans,sans-serif'; accCtx.textAlign = 'center';
+    accCtx.fillText('M' + m, x, h - 8);
+  }
+
+  // Vendor API cost (linear) + migration spikes
+  function vendorCost(m) {
+    let base = 18 * m; // $18K/month
+    if (m >= 12) base += 120; // first deprecation spike at month 12
+    if (m >= 20) base += 180; // second deprecation spike at month 20
+    return base;
+  }
+  // Internal platform cost
+  function internalCost(m) {
+    if (m <= 3) return 100 * m / 3; // setup phase: $100K over 3 months
+    return 100 + 8 * (m - 3); // $8K/month ongoing
+  }
+
+  // Draw internal line (teal)
+  accCtx.strokeStyle = '#2dd4a8'; accCtx.lineWidth = 2.5; accCtx.beginPath();
+  for (let m = 0; m <= month; m++) {
+    const x = pad.left + cw * m / 24;
+    const y = pad.top + ch * (1 - Math.min(internalCost(m), maxCost) / maxCost);
+    m === 0 ? accCtx.moveTo(x, y) : accCtx.lineTo(x, y);
+  }
+  accCtx.stroke();
+
+  // Draw vendor line (amber + red spikes)
+  for (let m = 0; m <= month; m++) {
+    const x = pad.left + cw * m / 24;
+    const vc = vendorCost(m);
+    const y = pad.top + ch * (1 - Math.min(vc, maxCost) / maxCost);
+    if (m === 0) { accCtx.strokeStyle = '#e8912d'; accCtx.lineWidth = 2.5; accCtx.beginPath(); accCtx.moveTo(x, y); }
+    else {
+      const prevVc = vendorCost(m - 1);
+      accCtx.strokeStyle = (vc - prevVc > 50) ? '#e84057' : '#e8912d';
+      accCtx.lineWidth = (vc - prevVc > 50) ? 3 : 2.5;
+      accCtx.lineTo(x, y);
+      accCtx.stroke();
+      accCtx.beginPath(); accCtx.moveTo(x, y);
+    }
+  }
+
+  // Current month marker
+  const mx = pad.left + cw * month / 24;
+  accCtx.strokeStyle = '#1a2744'; accCtx.lineWidth = 1; accCtx.setLineDash([4,3]);
+  accCtx.beginPath(); accCtx.moveTo(mx, pad.top); accCtx.lineTo(mx, pad.top + ch); accCtx.stroke();
+  accCtx.setLineDash([]);
+
+  // Legend
+  const ly = h - 12;
+  accCtx.font = '10px DM Sans,sans-serif';
+  accCtx.fillStyle = '#e8912d'; accCtx.fillRect(pad.left, ly - 6, 12, 3); accCtx.fillStyle = '#6b7280'; accCtx.textAlign = 'left'; accCtx.fillText('Vendor path', pad.left + 16, ly);
+  accCtx.fillStyle = '#2dd4a8'; accCtx.fillRect(pad.left + 90, ly - 6, 12, 3); accCtx.fillStyle = '#6b7280'; accCtx.fillText('Internal path', pad.left + 106, ly);
+  accCtx.fillStyle = '#e84057'; accCtx.fillRect(pad.left + 190, ly - 6, 12, 3); accCtx.fillStyle = '#6b7280'; accCtx.fillText('Migration spike', pad.left + 206, ly);
+}
+
+accSlider.addEventListener('input', () => {
+  const m = parseInt(accSlider.value);
+  accMonth.textContent = m;
+  drawAccumulator(m);
+});
+drawAccumulator(0);
+
+/* ═══ DEPRECATION TIMELINE ═══ */
+const depSvg = document.getElementById('depSvg');
+const depControls = document.getElementById('depControls');
+const depDetail = document.getElementById('depDetail');
+
+function daysUntilSunset(announced, sunset) {
+  const a = new Date(announced), s = new Date(sunset);
+  return Math.round((s - a) / 86400000);
+}
+function urgencyColor(days) {
+  if (days <= 30) return '#e84057';
+  if (days <= 60) return '#f5a623';
+  return '#2dd4a8';
+}
+
+function drawDepTimeline(idx) {
+  depSvg.innerHTML = '';
+  const barW = 120, gap = 20, startX = 30, baseY = 180, maxH = 140;
+  DEPRECATIONS.forEach((d, i) => {
+    const days = daysUntilSunset(d.announced, d.sunset);
+    const h = Math.min(d.useCases * d.weeksPer / 60 * maxH, maxH);
+    const x = startX + i * (barW + gap);
+    const y = baseY - h;
+    const color = urgencyColor(days);
+
+    // Bar
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', x); rect.setAttribute('y', y); rect.setAttribute('width', barW); rect.setAttribute('height', h);
+    rect.setAttribute('rx', '4'); rect.setAttribute('fill', i === idx ? color : color + '55');
+    rect.setAttribute('stroke', color); rect.setAttribute('stroke-width', i === idx ? '2' : '0');
+    rect.style.cursor = 'pointer';
+    rect.addEventListener('click', () => selectDep(i));
+    depSvg.appendChild(rect);
+
+    // Label
+    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    txt.setAttribute('x', x + barW / 2); txt.setAttribute('y', baseY + 16);
+    txt.setAttribute('text-anchor', 'middle'); txt.setAttribute('font-size', '10');
+    txt.setAttribute('font-family', 'DM Sans,sans-serif'); txt.setAttribute('fill', '#6b7280');
+    txt.textContent = d.model;
+    depSvg.appendChild(txt);
+
+    // Days badge
+    const badge = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    badge.setAttribute('x', x + barW / 2); badge.setAttribute('y', y - 6);
+    badge.setAttribute('text-anchor', 'middle'); badge.setAttribute('font-size', '10');
+    badge.setAttribute('font-family', 'DM Sans,sans-serif'); badge.setAttribute('fill', color);
+    badge.setAttribute('font-weight', '600');
+    badge.textContent = days + 'd';
+    depSvg.appendChild(badge);
+  });
+
+  // Baseline
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line.setAttribute('x1', '10'); line.setAttribute('y1', baseY); line.setAttribute('x2', '590'); line.setAttribute('y2', baseY);
+  line.setAttribute('stroke', '#e2e5ea'); line.setAttribute('stroke-width', '1');
+  depSvg.appendChild(line);
+}
+
+function selectDep(i) {
+  drawDepTimeline(i);
+  depControls.querySelectorAll('button').forEach((b, bi) => b.classList.toggle('active', bi === i));
+  const d = DEPRECATIONS[i];
+  const days = daysUntilSunset(d.announced, d.sunset);
+  depDetail.innerHTML = `<strong>${d.model}</strong> — ${d.useCases} known enterprise use cases, ~${d.weeksPer} weeks migration each. ${days} days from announcement to sunset. ${d.detail}`;
+}
+
+// Build buttons
+DEPRECATIONS.forEach((d, i) => {
+  const btn = document.createElement('button');
+  btn.textContent = d.model;
+  btn.addEventListener('click', () => selectDep(i));
+  depControls.appendChild(btn);
+});
+drawDepTimeline(-1);
+
+/* ═══ CAPABILITY TABLE ═══ */
+const capBody = document.querySelector('#capTable tbody');
+let sortKey = null, sortDir = 1;
+
+function renderCapTable() {
+  let rows = [...CAPABILITY_ROWS];
+  if (sortKey) {
+    rows.sort((a, b) => {
+      const av = sortKey === 'coupling' ? ({deep:3,mid:2,shallow:1}[a.coupling]) : a[sortKey];
+      const bv = sortKey === 'coupling' ? ({deep:3,mid:2,shallow:1}[b.coupling]) : b[sortKey];
+      return (av - bv) * sortDir;
+    });
+  }
+  capBody.innerHTML = '';
+  rows.forEach((r, i) => {
+    const cls = 'coupling-' + r.coupling;
+    const label = {deep:'Deep',mid:'Medium',shallow:'Shallow'}[r.coupling];
+    const tr = document.createElement('tr');
+    tr.className = 'expandable';
+    tr.innerHTML = `<td>${r.category}</td><td>${r.count}</td><td class="${cls}">${label}</td><td>${r.replacement}</td>`;
+    tr.addEventListener('click', () => {
+      const next = tr.nextElementSibling;
+      if (next && next.classList.contains('detail-row')) next.classList.toggle('open');
+    });
+    capBody.appendChild(tr);
+
+    const dr = document.createElement('tr');
+    dr.className = 'detail-row';
+    dr.innerHTML = `<td colspan="4">${r.detail}</td>`;
+    capBody.appendChild(dr);
+  });
+}
+
+document.querySelectorAll('#capTable th[data-sort]').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.sort;
+    if (sortKey === key) sortDir *= -1; else { sortKey = key; sortDir = 1; }
+    renderCapTable();
+  });
+});
+renderCapTable();
+
+/* ═══ QUOTE GALLERY ═══ */
+const quoteTrack = document.getElementById('quoteTrack');
+const quoteDots = document.getElementById('quoteDots');
+const quoteCounter = document.getElementById('quoteCounter');
+let activeQuote = 0;
+
+function buildQuoteGallery() {
+  quoteTrack.innerHTML = '';
+  quoteDots.innerHTML = '';
+  QUOTES.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'quote-card' + (i === 0 ? ' active' : '');
+    card.dataset.index = i;
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('role', 'group');
+    card.setAttribute('aria-label', 'Quote ' + (i+1) + ' of ' + QUOTES.length);
+
+    const qt = document.createElement('div');
+    qt.className = 'qt';
+    qt.textContent = q.text;
+    card.appendChild(qt);
+
+    const shareRow = document.createElement('div');
+    shareRow.className = 'share-row';
+
+    // Copy
+    const copyBtn = document.createElement('button');
+    copyBtn.textContent = 'Copy Text & Link';
+    copyBtn.addEventListener('click', () => {
+      const url = window.location.href;
+      navigator.clipboard.writeText(q.text + ' ' + url).then(() => { copyBtn.textContent = 'Copied!'; setTimeout(() => copyBtn.textContent = 'Copy Text & Link', 1500); });
+    });
+    shareRow.appendChild(copyBtn);
+
+    // X
+    const xLink = document.createElement('a');
+    xLink.href = '#'; xLink.textContent = 'Share on X'; xLink.target = '_blank'; xLink.rel = 'noopener';
+    xLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      const url = window.location.href;
+      xLink.href = 'https://x.com/intent/post?text=' + encodeURIComponent(q.text) + '&url=' + encodeURIComponent(url);
+      window.open(xLink.href, '_blank');
+    });
+    shareRow.appendChild(xLink);
+
+    // LinkedIn
+    const liLink = document.createElement('a');
+    liLink.href = '#'; liLink.textContent = 'Share on LinkedIn'; liLink.target = '_blank'; liLink.rel = 'noopener';
+    liLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      const url = window.location.href;
+      liLink.href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(url);
+      window.open(liLink.href, '_blank');
+    });
+    shareRow.appendChild(liLink);
+
+    card.appendChild(shareRow);
+    quoteTrack.appendChild(card);
+
+    const dot = document.createElement('span');
+    dot.className = i === 0 ? 'active' : '';
+    quoteDots.appendChild(dot);
+  });
+  updateQuoteNav();
+}
+
+function scrollToQuote(i) {
+  activeQuote = i;
+  const cards = quoteTrack.querySelectorAll('.quote-card');
+  cards.forEach((c, ci) => c.classList.toggle('active', ci === i));
+  const dots = quoteDots.querySelectorAll('span');
+  dots.forEach((d, di) => d.classList.toggle('active', di === i));
+  quoteCounter.textContent = (i + 1) + '/' + QUOTES.length;
+  cards[i].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+}
+
+function updateQuoteNav() {
+  quoteCounter.textContent = '1/' + QUOTES.length;
+}
+
+document.getElementById('quotePrev').addEventListener('click', () => scrollToQuote(Math.max(0, activeQuote - 1)));
+document.getElementById('quoteNext').addEventListener('click', () => scrollToQuote(Math.min(QUOTES.length - 1, activeQuote + 1)));
+
+// Keyboard nav for quote gallery
+document.addEventListener('keydown', (e) => {
+  if (e.target.closest('.quote-gallery')) {
+    if (e.key === 'ArrowLeft') { scrollToQuote(Math.max(0, activeQuote - 1)); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { scrollToQuote(Math.min(QUOTES.length - 1, activeQuote + 1)); e.preventDefault(); }
+  }
+});
+
+buildQuoteGallery();
+
+/* ═══ RECALL CARDS ═══ */
+document.querySelectorAll('.recall-card').forEach(card => {
+  card.addEventListener('click', () => card.classList.toggle('flipped'));
+  card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { card.classList.toggle('flipped'); e.preventDefault(); } });
+});
+
+/* ═══ THREE THINGS TRACKER ═══ */
+const tt = document.getElementById('threeThings');
+const ttHeader = document.getElementById('ttHeader');
+ttHeader.addEventListener('click', () => tt.classList.toggle('expanded') || tt.classList.toggle('collapsed'));
+
+const insightAnchors = [
+  document.getElementById('cover-charge'),
+  document.getElementById('dependency-rent'),
+  document.getElementById('four-levers')
+];
+const ttItems = tt.querySelectorAll('.tt-item');
+
+const ttObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const idx = insightAnchors.indexOf(entry.target);
+      if (idx >= 0) {
+        ttItems[idx].classList.remove('locked');
+        ttItems[idx].classList.add('unlocked');
+      }
+    }
+  });
+}, { threshold: 0.3 });
+
+insightAnchors.forEach(a => { if (a) ttObserver.observe(a); });
+
+/* ═══ SCROLL REVEAL (Perspective Shift) ═══ */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      setTimeout(() => entry.target.classList.add('shifted'), 400);
+    }
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.reveal-section').forEach(s => revealObserver.observe(s));
+
+/* ═══ QUOTE GALLERY SCROLL-DRIVEN ACTIVE STATE ═══ */
+const quoteAnchors = [
+  document.getElementById('quote-1-anchor'),
+  document.getElementById('quote-2-anchor'),
+  document.getElementById('quote-3-anchor'),
+  document.getElementById('quote-5-anchor')
+];
+
+const quoteSectionObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      // Find matching quote by position
+      const idx = quoteAnchors.indexOf(entry.target);
+      if (idx >= 0) scrollToQuote(idx);
+    }
+  });
+}, { threshold: 0.5 });
+
+quoteAnchors.forEach(a => { if (a) quoteSectionObserver.observe(a); });
+
+// Also observe the gateway quote area (quote-4 is near four-levers)
+const fourLevers = document.getElementById('four-levers');
+if (fourLevers) {
+  const flObs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) scrollToQuote(3); // quote 4
+  }, { threshold: 0.3 });
+  flObs.observe(fourLevers);
+}
+
+/* ═══ REDUCED MOTION: static fallback for quote gallery ═══ */
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  quoteTrack.style.overflow = 'visible';
+  quoteTrack.style.flexWrap = 'wrap';
+  quoteTrack.querySelectorAll('.quote-card').forEach(c => { c.style.minWidth = '240px'; });
+}
+</script>
+</body>
+</html>
