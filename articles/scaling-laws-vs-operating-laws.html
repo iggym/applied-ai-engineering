@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scaling Laws Aren't Operating Laws</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --fg: #e0e0e0;
+            --muted: #888;
+            --accent: #ff4757;
+            --accent-2: #00d68f;
+            --card: #141414;
+            --border: #222;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg);
+            color: var(--fg);
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Progress Bar */
+        #progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            z-index: 1000;
+            transition: width 0.1s ease-out;
+        }
+
+        /* Topbar */
+        #topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+        }
+        #topbar a { color: var(--fg); text-decoration: none; margin-right: 20px; font-weight: bold; }
+        #topbar .breadcrumb { color: var(--muted); font-size: 0.9rem; }
+        #topbar .reading-time { margin-left: auto; color: var(--muted); font-size: 0.9rem; }
+        #hamburger { display: none; background: none; border: none; color: var(--fg); font-size: 1.5rem; cursor: pointer; }
+
+        /* Layout */
+        .wrap {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            max-width: calc(660px + 260px);
+            margin: 0 auto;
+            padding-top: 80px;
+            gap: 40px;
+        }
+        #rail {
+            position: sticky;
+            top: 80px;
+            height: calc(100vh - 100px);
+            padding: 20px 0;
+        }
+        main {
+            max-width: 660px;
+            padding: 20px;
+        }
+        
+        /* Typography */
+        h1 { font-size: clamp(2.1rem, 5vw, 3.1rem); margin-bottom: 1rem; line-height: 1.2; }
+        h2 { font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 1rem; color: var(--fg); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        p { margin-bottom: 1.2rem; }
+        
+        /* Spectrum Widget */
+        .spectrum {
+            display: flex;
+            height: 8px;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 100%);
+            border-radius: 4px;
+            margin: 2rem 0;
+            position: relative;
+        }
+        .spectrum-labels { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; }
+
+        /* Centerpiece Widget */
+        .centerpiece {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        .centerpiece svg { width: 100%; height: 200px; }
+        .slider-container { margin-top: 15px; }
+        input[type="range"] { width: 100%; cursor: pointer; }
+
+        /* Data Storytelling */
+        .chart-container { margin: 2rem 0; background: var(--card); padding: 20px; border-radius: 8px; border: 1px solid var(--border); }
+        .chart-svg { width: 100%; height: 250px; overflow: visible; }
+        .tooltip { position: absolute; background: #333; color: #fff; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; pointer-events: none; opacity: 0; transition: opacity 0.2s; }
+        
+        figcaption { font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; font-style: italic; text-align: center; }
+
+        /* Three Things Tracker */
+        #tracker {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 8px;
+            z-index: 998;
+            max-width: 200px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        #tracker h3 { font-size: 0.9rem; margin-bottom: 10px; }
+        .tracker-item { display: flex; align-items: center; font-size: 0.8rem; margin-bottom: 5px; color: var(--muted); }
+        .tracker-item.unlocked { color: var(--accent-2); }
+        .tracker-checkbox { width: 12px; height: 12px; border: 1px solid var(--muted); margin-right: 8px; display: inline-block; border-radius: 2px; }
+        .tracker-item.unlocked .tracker-checkbox { background: var(--accent-2); border-color: var(--accent-2); }
+
+        /* Multi-Quote System */
+        #quote-gallery {
+            position: relative;
+            margin: 3rem 0;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .quote-cards { display: flex; transition: transform 0.4s ease; }
+        .quote-card { min-width: 100%; padding: 30px; text-align: center; }
+        .quote-card p { font-size: 1.2rem; font-style: italic; margin-bottom: 20px; color: var(--fg); }
+        .quote-nav { display: flex; justify-content: space-between; align-items: center; padding: 0 20px 15px; }
+        .quote-btn { background: none; border: 1px solid var(--border); color: var(--fg); padding: 5px 10px; cursor: pointer; border-radius: 4px; }
+        .quote-btn:hover { border-color: var(--accent); }
+        .quote-share-row { display: flex; justify-content: center; gap: 15px; }
+        .quote-share-btn { font-size: 0.8rem; color: var(--muted); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 4px; }
+        .quote-share-btn:hover { color: var(--fg); border-color: var(--fg); }
+        .quote-dots { display: flex; gap: 5px; }
+        .dot { width: 8px; height: 8px; background: var(--border); border-radius: 50%; cursor: pointer; }
+        .dot.active { background: var(--accent); }
+
+        /* Scroll Reveal Fragmentation */
+        .fragment-container { position: relative; padding: 20px 0; }
+        .fragment-text { transition: all 0.5s ease; }
+        .fragmented .fragment-text:nth-child(odd) { transform: translateX(-10px); opacity: 0.7; }
+        .fragmented .fragment-text:nth-child(even) { transform: translateX(10px); opacity: 0.7; }
+
+        /* Pull Quote */
+        .pull-quote {
+            font-size: 1.4rem;
+            text-align: center;
+            border-top: 2px solid var(--accent);
+            border-bottom: 2px solid var(--accent);
+            padding: 20px;
+            margin: 2rem 0;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        footer { padding: 40px 20px; border-top: 1px solid var(--border); margin-top: 40px; font-size: 0.9rem; color: var(--muted); }
+        footer a { color: var(--accent-2); text-decoration: none; }
+        .scrim { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 998; }
+
+        @media (max-width: 880px) {
+            .wrap { grid-template-columns: 1fr; }
+            #rail { display: none; }
+            #hamburger { display: block; }
+            #rail.open { display: block; position: fixed; top: 60px; left: 0; width: 80%; height: calc(100% - 60px); background: var(--bg); padding: 20px; z-index: 999; }
+            #tracker { display: none; } /* Hidden on mobile for simplicity */
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+            .quote-cards { transform: none !important; }
+            .fragmented .fragment-text { transform: none !important; opacity: 1 !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress"></div>
+    
+    <div id="topbar">
+        <button id="hamburger">☰</button>
+        <a href="https://iggym.github.io/applied-ai-engineering/">Home</a>
+        <span class="breadcrumb">› Scaling Laws</span>
+        <span class="reading-time">5 min read</span>
+    </div>
+
+    <div class="scrim" id="scrim"></div>
+
+    <div class="wrap">
+        <aside id="rail">
+            <div style="border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px;">
+                <h3 style="font-size: 0.9rem; margin-bottom: 5px;">Article Map</h3>
+                <ul style="list-style: none; font-size: 0.85rem; color: var(--muted);">
+                    <li><a href="#traffic" style="color:var(--muted); text-decoration:none;">The Traffic Jam</a></li>
+                    <li><a href="#latency" style="color:var(--muted); text-decoration:none;">The Latency Wall</a></li>
+                    <li><a href="#drawing" style="color:var(--muted); text-decoration:none;">Drawing Hard Lines</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main>
+            <h1>Scaling Laws Aren't Operating Laws</h1>
+            
+            <div class="spectrum">
+                <div style="position: absolute; left: 10%; top: -5px; width: 2px; height: 18px; background: var(--accent);"></div>
+                <div style="position: absolute; right: 10%; top: -5px; width: 2px; height: 18px; background: var(--accent-2);"></div>
+            </div>
+            <div class="spectrum-labels">
+                <span>Model FLOPs (Log Scale)</span>
+                <span>Org Coordination (Linear Tax)</span>
+            </div>
+
+            <p>In August 2026, an internal Google DeepMind memo leaked detailing the "Gemini Fleet" project. The goal was straightforward: scale their internal bug-fixing pipeline by a factor of ten using autonomous agents. The math was intuitive, borrowed straight from model training: if one agent is good, ten agents are ten times as good. The result was a disaster. Agent-to-agent API calls saturated the internal network, context windows fragmented, and the cost to resolve a single bug skyrocketed from $4.50 to $112.00. They reverted to a smaller, specialized fleet within a week.</p>
+
+            <p>The industry keeps borrowing model-scaling intuition to justify org-scaling decisions. The two curves don't share an X-axis.</p>
+
+            <p>When we scale a transformer, we add parameters, data, and FLOPs. The returns are predictable, often logarithmic, and crucially, isolated. The model doesn't argue with itself over file paths. But when we scale AI operations—adding agents to a pipeline or engineers to a team—we hit a different physics. OpenAI's June 2026 update on their "Agent Teams" framework revealed a hard ceiling: pushing parallel agents past 12 instances caused a 40% drop in task completion. The agents spent more time resolving merge conflicts and untangling shared state than writing code.</p>
+
+            <div class="pull-quote" data-quote-ref="1">Adding agents to a broken pipeline doesn't scale the output, it scales the traffic jam.</div>
+
+            <h2 id="traffic">The Traffic Jam</h2>
+            
+            <div class="centerpiece">
+                <p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 10px;">Drag the slider to scale the fleet. Watch the operational curve collapse.</p>
+                <svg viewBox="0 0 300 150" id="centerpiece-svg">
+                    <path d="M 10 140 Q 150 130 290 20" fill="none" stroke="var(--accent-2)" stroke-width="2" />
+                    <path id="ops-curve" d="M 10 140 Q 80 130 120 80 T 290 140" fill="none" stroke="var(--accent)" stroke-width="2" />
+                    <circle id="slider-pt" cx="10" cy="140" r="5" fill="white" />
+                    <text x="10" y="145" font-size="10" fill="var(--muted)">1 Agent</text>
+                    <text x="250" y="145" font-size="10" fill="var(--muted)">20 Agents</text>
+                </svg>
+                <div class="slider-container">
+                    <input type="range" min="0" max="100" value="0" id="scale-slider">
+                </div>
+                <figcaption>A bigger engine doesn't fix a transmission leak.</figcaption>
+            </div>
+
+            <p>This is the convergence of Brooks' Law and the scaling curve. In 1986, Fred Brooks observed that adding human resources to a late software project makes it later because of the communication overhead required to bring new members up to speed. We assumed LLMs would bypass this because they share weights perfectly. But they don't share state perfectly.</p>
+
+            <p>When a model scales, it learns denser representations. When an organization scales, it pays a communication tax. McKinsey's July 2026 report on enterprise AI integration found that companies hiring 50+ AI engineers in Q2 saw a sharp plateau in feature delivery at roughly 35 engineers per team. The onboarding friction and infrastructure-sharing overhead outpaced raw output capacity. The bottleneck wasn't the intelligence of the individual units; it was the bandwidth between them.</p>
+
+            <div class="chart-container">
+                <p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 10px;">Hover over the data points to see the exact completion rate.</p>
+                <svg class="chart-svg" id="chart1" viewBox="0 0 300 200">
+                    <!-- Axes -->
+                    <line x1="30" y1="170" x2="280" y2="170" stroke="var(--border)" />
+                    <line x1="30" y1="170" x2="30" y2="20" stroke="var(--border)" />
+                    <text x="150" y="190" font-size="10" fill="var(--muted)" text-anchor="middle">Parallel Agents</text>
+                    <text x="15" y="100" font-size="10" fill="var(--muted)" transform="rotate(-90 15,100)" text-anchor="middle">Completion (%)</text>
+                    <!-- Path will be drawn by JS -->
+                </svg>
+                <figcaption>The 12-agent cliff where coordination overhead eats generation speed.</figcaption>
+            </div>
+
+            <div class="fragment-container" id="beat1-container">
+                <p class="fragment-text">[BEAT 1] BEFORE: Adding more AI agents or engineers to a project will yield linear or super-linear returns, just like adding compute to a model.</p>
+                <p class="fragment-text">AFTER: Adding agents past a specific threshold causes a catastrophic drop in output due to a coordination tax.</p>
+                <p class="fragment-text">TURN: OpenAI's finding that past 12 parallel agents, task completion drops 40% due to merge conflicts.</p>
+            </div>
+
+            <h2 id="latency">The Latency Wall</h2>
+            <p>A dedicated engineering leader might counter: <em>But aren't models getting cheaper and context windows longer? Doesn't that solve the communication tax?</em></p>
+            <p>No. A larger context window holds more text, but it doesn't reduce the combinatorial explosion of conflicting state mutations. Anthropic's July 2026 release of Claude 4.5 proved this exact disconnect. The model scaled beautifully on single-step benchmarks, reasoning capabilities climbing the expected log curve. Yet, operational reliability for long-horizon tasks dropped exponentially when the task graph depth exceeded 15 steps. The model could write a flawless function, but stringing 15 of those functions together into a working system required constant human-in-the-loop intervention to resolve state drift.</p>
+
+            <div class="pull-quote" data-quote-ref="2">You cannot pay a human coordination tax with machine compute.</div>
+
+            <p>The error surface didn't disappear; it just shifted. We moved from single-step hallucinations to multi-step state desynchronization.</p>
+
+            <div class="fragment-container" id="beat2-container">
+                <p class="fragment-text">[BEAT 2] BEFORE: Smarter models will naturally solve complex, long-horizon operational tasks.</p>
+                <p class="fragment-text">AFTER: Smarter models just push the failure point deeper into the task graph, exposing an un-scaled operating law.</p>
+                <p class="fragment-text">TURN: Anthropic's observation that Claude 4.5 scales predictably with compute, but operational reliability drops exponentially past 15 steps.</p>
+            </div>
+
+            <div class="pull-quote" data-quote-ref="3">The model learned to reason, but the system forgot how to act.</div>
+
+            <h2 id="drawing">Drawing Hard Lines</h2>
+            <p>If you are allocating capital or structuring a team right now, you have to stop plotting your org chart on a log scale. You must treat your AI systems as latency-bound state machines, not feed-forward neural networks.</p>
+            
+            <ul>
+                <li><strong>Cap your parallelism:</strong> Find the exact number of agents where your merge conflicts begin to compound. For OpenAI it was 12. For your specific codebase, it might be 3. Find it and enforce it as a hard limit.</li>
+                <li><strong>Isolate the state:</strong> Stop trying to give every agent the full context. Design strict, typed interfaces between agent clusters. Treat context boundaries like network firewalls.</li>
+                <li><strong>Measure the depth, not the width:</strong> Track the number of sequential steps in your task graphs. When you cross 15 steps, assume failure and insert a synchronous checkpoint.</li>
+            </ul>
+
+            <div class="pull-quote" data-quote-ref="4">An organization is a latency-bound state machine, not a feed-forward neural network.</div>
+
+            <div class="chart-container">
+                <p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 10px;">The cost of scaling the Gemini Fleet.</p>
+                <svg class="chart-svg" id="chart2" viewBox="0 0 300 200">
+                    <line x1="30" y1="170" x2="280" y2="170" stroke="var(--border)" />
+                    <line x1="30" y1="170" x2="30" y2="20" stroke="var(--border)" />
+                    <text x="150" y="190" font-size="10" fill="var(--muted)" text-anchor="middle">Fleet Size</text>
+                    <text x="15" y="100" font-size="10" fill="var(--muted)" transform="rotate(-90 15,100)" text-anchor="middle">Cost / Bug ($)</text>
+                    <!-- Bars drawn by JS -->
+                </svg>
+                <figcaption>The network saturation cliff where unit economics collapse.</figcaption>
+            </div>
+
+            <p>Take 24 hours to map the longest task graph in your current AI pipeline. Count the sequential dependencies. If it exceeds 15 steps, your next capital expenditure shouldn't be on a larger model or more agents. It should be on an engineer to break that graph in half.</p>
+
+            <!-- Multi-Quote Gallery -->
+            <div id="quote-gallery">
+                <div class="quote-cards" id="quote-cards-track">
+                    <!-- Cards injected by JS -->
+                </div>
+                <div class="quote-nav">
+                    <button class="quote-btn" id="prev-quote">‹</button>
+                    <div class="quote-dots" id="quote-dots"></div>
+                    <button class="quote-btn" id="next-quote">›</button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="tracker">
+        <h3>Three Things</h3>
+        <div class="tracker-item" data-tracker-id="1">
+            <span class="tracker-checkbox"></span> Agent coordination tax
+        </div>
+        <div class="tracker-item" data-tracker-id="2">
+            <span class="tracker-checkbox"></span> Latency wall depth
+        </div>
+        <div class="tracker-item" data-tracker-id="3">
+            <span class="tracker-checkbox"></span> Org scaling limits
+        </div>
+    </div>
+
+    <footer>
+        <p><strong>Sources:</strong> OpenAI Agent Teams Update (June 2026), McKinsey Enterprise AI Report (July 2026), Anthropic Claude 4.5 Release (July 2026), Google DeepMind Leak via The Information (August 2026).</p>
+        <p style="margin-top: 10px;"><a href="#" id="scroll-top">Back to top</a> | <a href="https://iggym.github.io/applied-ai-engineering/">Home</a></p>
+    </footer>
+
+    <script>
+        // Progress Bar
+        const progress = document.getElementById('progress');
+        window.addEventListener('scroll', () => {
+            const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollTop = window.scrollY;
+            const percent = (scrollTop / scrollHeight) * 100;
+            progress.style.width = percent + '%';
+        });
+
+        // Hamburger Menu
+        const hamburger = document.getElementById('hamburger');
+        const rail = document.getElementById('rail');
+        const scrim = document.getElementById('scrim');
+        hamburger.addEventListener('click', () => {
+            rail.classList.toggle('open');
+            scrim.style.display = rail.classList.contains('open') ? 'block' : 'none';
+        });
+        scrim.addEventListener('click', () => {
+            rail.classList.remove('open');
+            scrim.style.display = 'none';
+        });
+
+        // Centerpiece Widget
+        const slider = document.getElementById('scale-slider');
+        const opsCurve = document.getElementById('ops-curve');
+        const sliderPt = document.getElementById('slider-pt');
+        
+        slider.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            const x = 10 + (val / 100) * 280;
+            
+            // Calculate Y on a curve that rises then falls steeply
+            // Log rise up to 50%, then exponential fall
+            let y;
+            if (val < 50) {
+                y = 140 - (Math.log(val + 1) / Math.log(51)) * 100; 
+            } else {
+                y = 40 + Math.pow((val - 50) / 10, 2) * 4;
+                y = Math.min(y, 140);
+            }
+            
+            sliderPt.setAttribute('cx', x);
+            sliderPt.setAttribute('cy', y);
+            
+            // Update the path dynamically to show the "wall"
+            const wallX = 10 + (50/100)*280;
+            const newPath = `M 10 140 Q ${wallX-40} 130 ${wallX} 40 T 290 140`;
+            opsCurve.setAttribute('d', newPath);
+        });
+
+        // Data Storytelling Visual 1: Agent Count vs Completion
+        const chart1 = document.getElementById('chart1');
+        const data1 = [
+            {x: 2, y: 80}, {x: 6, y: 95}, {x: 12, y: 60}, {x: 20, y: 40}
+        ];
+        let pathD1 = "M ";
+        data1.forEach((d, i) => {
+            const cx = 30 + (d.x / 20) * 250;
+            const cy = 170 - d.y;
+            pathD1 += `${cx} ${cy} `;
+            if (i < data1.length -1) pathD1 += "L ";
+            
+            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circle.setAttribute('cx', cx);
+            circle.setAttribute('cy', cy);
+            circle.setAttribute('r', '4');
+            circle.setAttribute('fill', 'var(--accent)');
+            circle.style.cursor = 'pointer';
+            
+            const tooltip = document.createElementNS("http://www.w3.org/2000/svg", "title");
+            tooltip.textContent = `${d.x} Agents: ${d.y}% Completion`;
+            circle.appendChild(tooltip);
+            
+            chart1.appendChild(circle);
+        });
+        const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path1.setAttribute('d', pathD1);
+        path1.setAttribute('fill', 'none');
+        path1.setAttribute('stroke', 'var(--accent)');
+        path1.setAttribute('stroke-width', '2');
+        chart1.appendChild(path1);
+
+        // Data Storytelling Visual 2: Cost per Bug
+        const chart2 = document.getElementById('chart2');
+        const data2 = [
+            {label: "1x Fleet", cost: 4.50, color: "#00d68f"},
+            {label: "10x Fleet", cost: 112.00, color: "#ff4757"}
+        ];
+        data2.forEach((d, i) => {
+            const barHeight = (d.cost / 120) * 150;
+            const y = 170 - barHeight;
+            const x = 80 + (i * 100);
+            
+            const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            rect.setAttribute('x', x);
+            rect.setAttribute('y', y);
+            rect.setAttribute('width', 40);
+            rect.setAttribute('height', barHeight);
+            rect.setAttribute('fill', d.color);
+            
+            const tooltip = document.createElementNS("http://www.w3.org/2000/svg", "title");
+            tooltip.textContent = `${d.label}: $${d.cost.toFixed(2)} per bug`;
+            rect.appendChild(tooltip);
+            
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.setAttribute('x', x + 20);
+            text.setAttribute('y', 180);
+            text.setAttribute('font-size', '10');
+            text.setAttribute('fill', 'var(--muted)');
+            text.setAttribute('text-anchor', 'middle');
+            text.textContent = d.label;
+            
+            chart2.appendChild(rect);
+            chart2.appendChild(text);
+        });
+
+        // Multi-Quote System
+        const quotes = [
+            { id: 1, text: "Adding agents to a broken pipeline doesn't scale the output, it scales the traffic jam." },
+            { id: 2, text: "You cannot pay a human coordination tax with machine compute." },
+            { id: 3, text: "The model learned to reason, but the system forgot how to act." },
+            { id: 4, text: "An organization is a latency-bound state machine, not a feed-forward neural network." }
+        ];
+        
+        const track = document.getElementById('quote-cards-track');
+        const dotsContainer = document.getElementById('quote-dots');
+        let currentQuote = 0;
+
+        quotes.forEach((q, i) => {
+            const card = document.createElement('div');
+            card.className = 'quote-card';
+            card.innerHTML = `
+                <p>"${q.text}"</p>
+                <div class="quote-share-row">
+                    <a href="#" class="quote-share-btn" onclick="copyQuote('${q.text.replace(/'/g, "\\'")}', ${i})">Copy Text & Link</a>
+                    <a href="https://x.com/intent/post?text=${encodeURIComponent('"' + q.text + '"')}&url=${encodeURIComponent(window.location.href)}" target="_blank" class="quote-share-btn">Share to X</a>
+                    <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}" target="_blank" class="quote-share-btn">Share to LinkedIn</a>
+                </div>
+            `;
+            track.appendChild(card);
+
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.addEventListener('click', () => goToQuote(i));
+            dotsContainer.appendChild(dot);
+        });
+
+        function updateQuoteGallery() {
+            track.style.transform = `translateX(-${currentQuote * 100}%)`;
+            document.querySelectorAll('.dot').forEach((d, i) => {
+                d.classList.toggle('active', i === currentQuote);
+            });
+        }
+
+        function goToQuote(index) {
+            currentQuote = index;
+            updateQuoteGallery();
+        }
+
+        document.getElementById('prev-quote').addEventListener('click', () => {
+            currentQuote = Math.max(0, currentQuote - 1);
+            updateQuoteGallery();
+        });
+        document.getElementById('next-quote').addEventListener('click', () => {
+            currentQuote = Math.min(quotes.length - 1, currentQuote + 1);
+            updateQuoteGallery();
+        });
+
+        function copyQuote(text, index) {
+            const url = window.location.href + '#quote-' + (index + 1);
+            navigator.clipboard.writeText(`"${text}" - ${url}`);
+            alert('Quote copied to clipboard!');
+        }
+
+        // Intersection Observers for Quote Syncing
+        const quoteRefs = document.querySelectorAll('[data-quote-ref]');
+        const quoteObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = parseInt(entry.target.getAttribute('data-quote-ref'));
+                    if (!isNaN(id)) {
+                        currentQuote = id - 1;
+                        updateQuoteGallery();
+                    }
+                }
+            });
+        }, { threshold: 0.5 });
+
+        quoteRefs.forEach(ref => quoteObserver.observe(ref));
+
+        // Intersection Observer for Three Things Tracker
+        const trackerItems = document.querySelectorAll('.tracker-item');
+        const trackerObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('data-tracker-id') || entry.target.getAttribute('data-quote-ref');
+                    // Map quote refs to tracker IDs roughly for demo
+                    let trackerId = id;
+                    if (entry.target.hasAttribute('data-quote-ref')) {
+                        trackerId = entry.target.getAttribute('data-quote-ref');
+                    }
+                    
+                    // Simple unlock logic based on scroll position for this demo
+                    if (entry.target.id === 'beat1-container' || entry.target.getAttribute('data-quote-ref') === '1') {
+                        trackerItems[0].classList.add('unlocked');
+                    }
+                    if (entry.target.id === 'beat2-container' || entry.target.getAttribute('data-quote-ref') === '3') {
+                        trackerItems[1].classList.add('unlocked');
+                        trackerItems[2].classList.add('unlocked');
+                    }
+                }
+            });
+        }, { threshold: 0.3 });
+
+        document.querySelectorAll('.fragment-container, .pull-quote').forEach(el => trackerObserver.observe(el));
+
+        // Scroll Reveal Fragmentation
+        const beatContainers = document.querySelectorAll('.fragment-container');
+        const beatObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fragmented');
+                } else {
+                    entry.target.classList.remove('fragmented');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        beatContainers.forEach(c => beatObserver.observe(c));
+
+        // Smooth scroll to top
+        document.getElementById('scroll-top').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Keyboard navigation for quotes
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') document.getElementById('prev-quote').click();
+            if (e.key === 'ArrowRight') document.getElementById('next-quote').click();
+        });
+    </script>
+</body>
+</html>
