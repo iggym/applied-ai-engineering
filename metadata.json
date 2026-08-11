@@ -137,6 +137,23 @@
   "reading_time_minutes": 8,
   "pinned": false,
   "research_window": "2026-02-15 to 2026-05-15"
+},{
+  "id": "0001",
+  "slug": "the-4096-token-illusion",
+  "title": "The 4096-Token Illusion: Bridging the Vendor-Practitioner Gap in Applied AI",
+  "hook": "Vendor demos optimize for the happy path; practitioners must engineer for the 40% failure rate of the 20% tail.",
+  "path": "articles/the-4096-token-illusion.html",
+  "date": "2026-05-15",
+  "status": "published",
+  "format": "essay",
+  "tags": [
+    "applied-ai",
+    "engineering",
+    "llms"
+  ],
+  "reading_time_minutes": 7,
+  "pinned": false,
+  "research_window": "2025-05-15 to 2026-05-15"
 }
   ]
 }
