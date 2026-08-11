@@ -98,6 +98,32 @@
   "reading_time_minutes": 7,
   "pinned": false,
   "research_window": "[2025-02-01] to [2025-04-24]"
+},{
+  "id": "0047",
+  "slug": "renting-your-own-moat",
+  "title": "Renting Your Own Moat",
+  "hook": "The per-token price is the cover charge, not the bill — vendor AI's real cost is the switching expense that accumulates invisibly and hits as an emergency.",
+  "path": "articles/renting-your-own-moat.html",
+  "date": "2026-04-14",
+  "status": "published",
+  "format": "essay",
+  "tags": ["build-vs-buy", "vendor-lock-in", "dependency-rent", "ai-platforms"],
+  "reading_time_minutes": 8,
+  "pinned": false,
+  "research_window": "[2025-03-10] to [2026-04-14]"
+},{
+  "id": "0017",
+  "slug": "taming-kills-the-wolf",
+  "title": "Taming Kills the Wolf",
+  "hook": "Enterprise AI deployment is a domestication process — every guardrail is a selection event that costs capability. The wolf that won't bite is the wolf that won't hunt.",
+  "path": "articles/taming-kills-the-wolf.html",
+  "date": "2025-03-11",
+  "status": "published",
+  "format": "essay",
+  "tags": ["cross-domain-synthesis", "domestication-theory", "ai-agents", "vendor-gap"],
+  "reading_time_minutes": 8,
+  "pinned": false,
+  "research_window": "[2025-02-11] to [2025-03-11]"
 }
   ]
 }
