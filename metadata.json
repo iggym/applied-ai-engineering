@@ -124,6 +124,19 @@
   "reading_time_minutes": 8,
   "pinned": false,
   "research_window": "[2025-02-11] to [2025-03-11]"
+}, {
+  "id": "0001556",
+  "slug": "vendor-rhetoric-vs-practitioner-reality",
+  "title": "The Pipeline Illusion: Vendor Rhetoric vs. Practitioner Reality",
+  "hook": "Vendors sell the model, but practitioners spend 80% of their time maintaining the pipeline.",
+  "path": "articles/vendor-rhetoric-vs-practitioner-reality.html",
+  "date": "2026-05-15",
+  "status": "published",
+  "format": "essay",
+  "tags": ["ai-engineering", "mlops", "rag-architecture"],
+  "reading_time_minutes": 8,
+  "pinned": false,
+  "research_window": "2026-02-15 to 2026-05-15"
 }
   ]
 }
