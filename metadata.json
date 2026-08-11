@@ -80,6 +80,24 @@
     "status": "published",
     "pinned": false,
     "path": "articles/reference-nobody-finishes.html"
-  }
+  }, {
+  "id": "0072",
+  "slug": "what-postmortems-bury",
+  "title": "What Postmortems Bury",
+  "hook": "The gap between what an AI postmortem names and what actually caused the failure is the most reliable engineering maturity signal you can read from outside the organization.",
+  "path": "articles/what-postmortems-bury.html",
+  "date": "2025-04-24",
+  "status": "published",
+  "format": "essay",
+  "tags": [
+    "postmortem-literacy",
+    "ai-incidents",
+    "engineering-maturity",
+    "architectural-thinking"
+  ],
+  "reading_time_minutes": 7,
+  "pinned": false,
+  "research_window": "[2025-02-01] to [2025-04-24]"
+}
   ]
 }
