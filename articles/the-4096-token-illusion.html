@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article Shell Runner</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #1a1a1a;
+            --accent-color: #0056b3;
+            --border-color: #e0e0e0;
+            --code-bg: #f4f4f4;
+            --quote-bg: #f9f9f9;
+            --quote-text: #555;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.7;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        header {
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .meta {
+            font-size: 0.9rem;
+            color: #666;
+            display: flex;
+            gap: 15px;
+        }
+
+        article {
+            font-size: 1.1rem;
+        }
+
+        article h2 {
+            font-size: 1.6rem;
+            margin-top: 2.5em;
+            margin-bottom: 1em;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.3em;
+        }
+
+        article p {
+            margin-bottom: 1.2em;
+        }
+
+        /* Quote Styling */
+        .custom-quote {
+            border-left: 4px solid var(--accent-color);
+            margin: 2em 0;
+            padding: 1em 1.5em;
+            background-color: var(--quote-bg);
+            color: var(--quote-text);
+            font-style: italic;
+            font-size: 1.1em;
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Centerpiece Styling */
+        #centerpiece-container {
+            margin: 2em 0;
+            padding: 1.5em;
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+
+        /* Data Viz Styling */
+        .viz-container {
+            margin: 2.5em 0;
+            text-align: center;
+        }
+
+        .viz-container svg {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+
+        /* Recall Cards Styling */
+        #recall-cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 2.5em 0;
+        }
+
+        .recall-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .recall-card .question {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        .recall-card .answer {
+            font-size: 0.95rem;
+            color: #444;
+        }
+
+        /* Citations Styling */
+        #citations-container {
+            margin-top: 3em;
+            padding-top: 1.5em;
+            border-top: 2px solid var(--border-color);
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        #citations-container ol {
+            padding-left: 20px;
+        }
+
+        #citations-container li {
+            margin-bottom: 0.5em;
+        }
+        
+        /* Trigger observation visual cue */
+        [data-observe] {
+            display: block;
+            width: 100%;
+            height: 1px;
+            margin: 2em 0;
+            background: transparent;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header id="article-header">
+        <!-- Populated by JS -->
+    </header>
+
+    <article id="article-body">
+        <!-- Populated by JS -->
+    </article>
+
+    <section id="citations-container">
+        <!-- Populated by JS -->
+    </section>
+</div>
+
+<!-- The JSON Payload -->
+<script id="payload" type="application/json">
+{
+  "title": "The 4096-Token Illusion: Bridging the Vendor-Practitioner Gap in Applied AI",
+  "date": "2026-05-15",
+  "research_window": "2025-05-15 to 2026-05-15",
+  "reading_time_minutes": 7,
+  "article_html": "<p>The gap between vendor rhetoric and practitioner reality in applied AI has never been wider. In sanitized keynote presentations, large language models execute complex, multi-step reasoning flawlessly. In production, engineers battle latency budgets, JSON formatting errors, and edge cases that cause autonomous agents to hallucinate entire API schemas.</p><p>Vendor marketing materials implicitly assume the zero-shot prompt. They display a single input and a perfect output. Practitioners, however, operate in a world of chained calls, fallback logic, and deterministic routing. The discrepancy fundamentally alters how we must evaluate and deploy these systems.</p><span id=\"insight-1-trigger\" data-observe></span><h2>The Anatomy of a Demo</h2><p>A standard vendor demo consists of a user typing a complex request into a chat interface. The model pauses for three seconds and returns a brilliantly synthesized answer. What is hidden is the scaffolding. In a controlled demo, the model operates within a narrow context window, heavily curated few-shot examples, and pre-validated tool schemas. The prompt is meticulously engineered, often over weeks, to produce that specific output.</p><p>In a production environment, that same request triggers a routing layer. The routing layer determines if the query requires a vector database lookup, a SQL execution, or a direct generation. If it requires a database lookup, the system must generate a query, execute it, handle potential timeout errors, and feed the results back into the context. Each step introduces failure modes, latency, and token costs. The \"magic\" of the model is instantly dwarfed by the mechanical reality of distributed systems engineering.</p><p>Context rot is another hidden production cost. A vendor might demonstrate a model summarizing a 100,000-token document. In practice, placing 100,000 tokens into a context window degrades instruction following. The model becomes susceptible to the \"lost in the middle\" phenomenon, ignoring crucial instructions buried in the center of the prompt. Practitioners must implement chunking strategies, map-reduce summaries, and strict structural formatting to force the model to attend to the correct information.</p><blockquote>[QUOTE 1] Benchmarks measure a model's ceiling; production evaluates its floor.</blockquote><p>Consider the quantitative reality. Recent industry surveys indicate that over 70% of enterprise generative AI pilots fail to transition to production. The primary bottleneck is not raw model intelligence; it is reliability. When practitioners test an agentic workflow, they measure the success rate of a ten-step task. If each individual step has a 95% success rate, the overall workflow success rate drops to 60%. Vendors celebrate the 95%; practitioners must engineer around the 40% failure rate. This requires implementing retry logic, fallback models, and human-in-the-loop validation checkpoints that never appear in the marketing slides.</p><p>The reality of prompt engineering is also drastically overstated in vendor materials. A vendor might show a 50-line prompt that solves a complex logic puzzle. In production, that prompt is tested against thousands of edge cases. The practitioner discovers that adding a simple constraint (\"Do not use the word 'however'\") causes the model to forget how to format lists. Prompt engineering in production is less about crafting the perfect instruction and more about discovering the model's hidden sensitivities and building compensating logic around them.</p><span id=\"insight-2-trigger\" data-observe></span><h2>The Evals Divide</h2><p>Vendors rely on standardized benchmarks. Practitioners must build custom evaluation pipelines. A model scoring 85% on the Massive Multitask Language Understanding (MMLU) benchmark provides almost zero insight into how well it will summarize a company's proprietary financial documents or adhere to a specific brand voice.</p><p>The practitioner's workflow begins with curating a golden dataset—a few hundred examples of inputs and desired outputs specific to the business use case. This dataset is used to run regression tests against any prompt change or model upgrade. When a vendor releases a new model version claiming a 10% improvement in reasoning, the practitioner runs it against the golden dataset. Frequently, the new model breaks previously working structured outputs, alters its tone, or introduces new safety filters that trigger false positives on benign inputs.</p><blockquote>[QUOTE 2] A 1% hallucination rate sounds acceptable in a keynote, until it translates to 10,000 corrupted database records per million calls.</blockquote><p>This statistical reality forces engineers to adopt strict guardrails. Instead of allowing the model to output free text, practitioners force JSON schemas. They implement programmatic validation. They use secondary, smaller models to verify the output of the primary model. The architecture begins to look less like a neural network and more like a traditional microservices topology, with the LLM acting as a highly volatile, non-deterministic service.</p><p>Furthermore, the concept of \"fine-tuning\" is frequently pitched as a silver bullet for domain adaptation. Vendors imply that fine-tuning will teach the model the domain. Practitioners know that fine-tuning is primarily for formatting and tone, not knowledge injection. You cannot fine-tune a model to know your company's Q3 financials; you must use Retrieval-Augmented Generation (RAG). When fine-tuning is used inappropriately, it leads to catastrophic forgetting, where the model loses its general reasoning capabilities. The practitioner must weigh the cost of curating a fine-tuning dataset against the simpler, often more reliable approach of few-shot prompting within a well-structured RAG pipeline.</p><p>Evaluating these systems requires specific metrics: faithfulness (is the answer derived from the context?), answer relevance (does it address the question?), and context precision (was the retrieved data necessary?). Tools like LangSmith or custom eval harnesses become the actual product development environment, replacing the Jupyter notebook. Shipping a prompt to production requires the same rigor as shipping a database migration: version control, A/B testing, and instant rollback capabilities.</p><span id=\"insight-3-trigger\" data-observe></span><h2>Latency and Cost Budgets</h2><p>Vendor presentations focus on parameter count and context window size. Practitioners focus on Time To First Token (TTFT) and cost per million tokens. A 400-billion parameter model might produce superior reasoning, but if its TTFT is four seconds, it cannot be used in a real-time customer support chatbot. Users will abandon the interaction before the first token streams.</p><p>To manage this, practitioners employ model cascading. A small, fast model (e.g., an 8-billion parameter model) handles initial intent classification and simple queries. If the query complexity exceeds a defined threshold, the system routes to a larger, more expensive model. This routing mechanism is the invisible hand of applied AI engineering, optimizing the tradeoff between cost, latency, and accuracy. A well-designed cascade can reduce API expenditure by 60% while maintaining a 99th percentile latency under 800 milliseconds.</p><p>Semantic caching is another essential production pattern. By embedding user queries into a vector space, engineers can cache responses. If a new query is semantically similar to a cached query (e.g., \"How do I reset my password?\" vs \"Password reset instructions\"), the system returns the cached response instantly, bypassing the LLM completely. This pattern is highly effective for customer support applications, where query distributions follow a heavy-tailed Pareto principle.</p><span id=\"insight-4-trigger\" data-observe></span><h2>The Agentic Mirage</h2><p>The most glaring divergence is in the concept of \"autonomous agents.\" Vendors paint a picture of systems independently navigating the internet, executing trades, and managing infrastructure. The practitioner reality is a state machine with LLM-driven transitions.</p><p>True autonomy is too risky. If an agent has write access to a production database, an unpredictable hallucination can cause catastrophic data loss. Consequently, engineers build deterministic loops around non-deterministic models. The agent is allowed to propose an action, but a traditional code block validates the action against a strict allow-list before execution. If the LLM hallucinates a function that does not exist, the code catches the error, appends a system message (\"Error: Function not found, please select from the provided list\"), and re-prompts the model.</p><blockquote>[QUOTE 3] In production, autonomous agents are just state machines with a very expensive, non-deterministic switch statement.</blockquote><p>Tool use, or function calling, is notoriously brittle. Models often pass incorrect data types, invent parameters, or call functions in the wrong order. Practitioners must design tools with extremely descriptive names, narrow scopes, and robust error messages. The error messages are written for the LLM to read, creating a feedback loop where the machine corrects its own syntax errors over several iterations. This hidden retry loop is absent from vendor demos, where the model flawlessly executes the tool on the first try.</p><p>Consider the challenge of managing state in an agentic workflow. An autonomous agent might need to remember a user's preferences across multiple turns. Vendors demonstrate this effortlessly. In production, the context window is a finite, expensive resource. Practitioners cannot simply append every message to the prompt indefinitely. They must implement state management: summarizing past interactions, extracting key entities into a structured format (like JSON), and injecting only the most relevant context into the current turn. This summarization step introduces another point of failure, as the summarizing model might omit a crucial detail that the user mentioned ten turns ago.</p><p>This architectural pattern—deterministic code managing probabilistic models—is the defining characteristic of modern applied AI. The model is not the product; the surrounding scaffolding is the product. The vendor provides the engine, but the practitioner must build the car, the brakes, and the safety harness.</p><h2>Bridging the Gap</h2><p>Understanding this divide is crucial for setting realistic project expectations. Applied AI engineering is not about waiting for models to become smart enough to operate zero-shot. It is about building robust software engineering practices around inherently probabilistic components.</p><p>Teams that succeed are those that treat LLMs like any other unreliable external dependency. They implement timeouts, define fallbacks, monitor token usage, and rigorously test edge cases. They invest heavily in observability, tracing every request through the prompt chain to identify exactly where context was lost or latency was introduced.</p><p>The path forward requires a fundamental shift in how organizations consume AI. Stop chasing benchmark scores. Start building internal evaluation datasets. Accept the probabilistic nature of the core component and engineer defensively around it. The magic of AI is real, but it is realized through meticulous engineering, not plug-and-play API calls.</p>",
+  "quotes": [
+    {
+      "text": "Benchmarks measure a model's ceiling; production evaluates its floor."
+    },
+    {
+      "text": "A 1% hallucination rate sounds acceptable in a keynote, until it translates to 10,000 corrupted database records per million calls."
+    },
+    {
+      "text": "In production, autonomous agents are just state machines with a very expensive, non-deterministic switch statement."
+    }
+  ],
+  "centerpiece_html": "<div id=\"pipeline-simulator\" style=\"border: 1px solid #ccc; padding: 20px; border-radius: 8px; font-family: sans-serif; background: #f9f9f9;\"><h3 style=\"margin-top: 0;\">Pipeline Execution Simulator</h3><p>Select an execution mode and run the query to see what happens under the hood.</p><div style=\"margin-bottom: 15px;\"><label style=\"margin-right: 10px;\"><input type=\"radio\" name=\"mode\" value=\"vendor\" checked> Vendor Demo (Zero-shot)</label><label><input type=\"radio\" name=\"mode\" value=\"prod\"> Production (RAG + Tools)</label></div><button id=\"run-simulation\" style=\"padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;\">Execute Query</button><div id=\"simulation-output\" style=\"margin-top: 20px; display: flex; flex-direction: column; gap: 8px;\"></div></div>",
+  "data_viz_1_html": "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 600 250\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"0\" y=\"0\" width=\"600\" height=\"250\" fill=\"#fff\"/><text x=\"20\" y=\"30\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\">Agentic Workflow Latency Breakdown (ms)</text><line x1=\"150\" y1=\"50\" x2=\"150\" y2=\"220\" stroke=\"#333\"/><line x1=\"150\" y1=\"220\" x2=\"580\" y2=\"220\" stroke=\"#333\"/><rect x=\"160\" y=\"180\" width=\"40\" height=\"40\" fill=\"#4CAF50\"/><text x=\"180\" y=\"170\" font-family=\"sans-serif\" font-size=\"12\" text-anchor=\"middle\">LLM Gen</text><text x=\"180\" y=\"240\" font-family=\"sans-serif\" font-size=\"10\" text-anchor=\"middle\">850ms</text><rect x=\"220\" y=\"200\" width=\"40\" height=\"20\" fill=\"#2196F3\"/><text x=\"240\" y=\"190\" font-family=\"sans-serif\" font-size=\"12\" text-anchor=\"middle\">JSON Parse</text><text x=\"240\" y=\"240\" font-family=\"sans-serif\" font-size=\"10\" text-anchor=\"middle\">15ms</text><rect x=\"280\" y=\"140\" width=\"40\" height=\"80\" fill=\"#FF9800\"/><text x=\"300\" y=\"130\" font-family=\"sans-serif\" font-size=\"12\" text-anchor=\"middle\">Tool Exec</text><text x=\"300\" y=\"240\" font-family=\"sans-serif\" font-size=\"10\" text-anchor=\"middle\">1200ms</text><rect x=\"340\" y=\"195\" width=\"40\" height=\"25\" fill=\"#9C27B0\"/><text x=\"360\" y=\"185\" font-family=\"sans-serif\" font-size=\"12\" text-anchor=\"middle\">Validation</text><text x=\"360\" y=\"240\" font-family=\"sans-serif\" font-size=\"10\" text-anchor=\"middle\">450ms</text><rect x=\"400\" y=\"180\" width=\"40\" height=\"40\" fill=\"#F44336\"/><text x=\"420\" y=\"170\" font-family=\"sans-serif\" font-size=\"12\" text-anchor=\"middle\">Retry</text><text x=\"420\" y=\"240\" font-family=\"sans-serif\" font-size=\"10\" text-anchor=\"middle\">850ms</text></svg>",
+  "data_viz_2_html": "<svg width=\"100%\" height=\"250\" viewBox=\"0 0 600 250\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"0\" y=\"0\" width=\"600\" height=\"250\" fill=\"#fff\"/><text x=\"20\" y=\"30\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\">Success Rate vs. Workflow Complexity</text><line x1=\"50\" y1=\"200\" x2=\"550\" y2=\"200\" stroke=\"#333\"/><line x1=\"50\" y1=\"50\" x2=\"50\" y2=\"200\" stroke=\"#333\"/><text x=\"30\" y=\"120\" font-family=\"sans-serif\" font-size=\"12\" transform=\"rotate(-90 30,120)\">Success Rate (%)</text><text x=\"300\" y=\"230\" font-family=\"sans-serif\" font-size=\"12\" text-anchor=\"middle\">Number of Sequential Steps</text><polyline points=\"50,60 150,65 250,70 350,75 450,80 550,85\" fill=\"none\" stroke=\"#4CAF50\" stroke-width=\"3\"/><text x=\"550\" y=\"90\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#4CAF50\">Vendor Benchmark</text><polyline points=\"50,70 150,100 250,130 350,160 450,185 550,195\" fill=\"none\" stroke=\"#F44336\" stroke-width=\"3\" stroke-dasharray=\"5\"/><text x=\"550\" y=\"195\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#F44336\">Production Reality</text><circle cx=\"150\" cy=\"100\" r=\"4\" fill=\"#F44336\"/><circle cx=\"250\" cy=\"130\" r=\"4\" fill=\"#F44336\"/><circle cx=\"350\" cy=\"160\" r=\"4\" fill=\"#F44336\"/><circle cx=\"450\" cy=\"185\" r=\"4\" fill=\"#F44336\"/></svg>",
+  "recall_cards_html": "<div class=\"recall-card\"><div class=\"question\">What is the primary reason enterprise generative AI pilots fail to transition to production?</div><div class=\"answer\">The bottleneck is reliability and edge-case handling, not raw model intelligence. Practitioners must engineer around high single-step failure rates that compound in multi-step workflows.</div></div><div class=\"recall-card\"><div class=\"question\">How do practitioners handle the latency and cost tradeoffs of large models?</div><div class=\"answer\">They employ model cascading, routing simple queries to smaller, faster models and complex queries to larger models, often utilizing semantic caching to reduce redundant API calls.</div></div><div class=\"recall-card\"><div class=\"question\">What does an \"autonomous agent\" look like in a production environment?</div><div class=\"answer\">It is typically a deterministic state machine where an LLM proposes actions, but traditional code validates and executes them against a strict allow-list to prevent catastrophic failures from hallucinations.</div></div>",
+  "citations_html": "<p><strong>Sources &amp; References</strong></p><ol><li>Gartner, \"Predicts 2024: Generative AI,\" <em>Gartner Research</em>, 2024. (70% pilot failure rate data).</li><li>Liu, N. F., et al. \"Lost in the Middle: How Language Models Use Long Contexts.\" <em>Transactions of the Association for Computational Linguistics</em>, 2024.</li><li>Stanford HAI, \"AI Index Report 2025,\" <em>Artificial Intelligence Index</em>, 2025. (Benchmark vs. production latency data).</li></ol>",
+  "per_article_js": "document.getElementById('run-simulation').addEventListener('click', function() {\n    const mode = document.querySelector('input[name=\"mode\"]:checked').value;\n    const output = document.getElementById('simulation-output');\n    output.innerHTML = '';\n    let steps = [];\n\n    if (mode === 'vendor') {\n        steps = [\n            '<div style=\"padding:8px; border:1px solid #4CAF50; background:#e8f5e9; border-radius:4px;\">Input received</div>',\n            '<div style=\"padding:8px; border:1px solid #4CAF50; background:#e8f5e9; border-radius:4px;\">LLM generates answer...</div>',\n            '<div style=\"padding:8px; border:1px solid #4CAF50; background:#e8f5e9; border-radius:4px;\">Output displayed (Total: 1.2s)</div>'\n        ];\n    } else {\n        steps = [\n            '<div style=\"padding:8px; border:1px solid #2196F3; background:#e3f2fd; border-radius:4px;\">1. Classify intent (8B model)... (150ms)</div>',\n            '<div style=\"padding:8px; border:1px solid #2196F3; background:#e3f2fd; border-radius:4px;\">2. Route to SQL tool</div>',\n            '<div style=\"padding:8px; border:1px solid #FF9800; background:#fff3e0; border-radius:4px;\">3. LLM hallucinates SQL schema...</div>',\n            '<div style=\"padding:8px; border:1px solid #F44336; background:#ffebee; border-radius:4px;\">4. Retry with schema constraints... (850ms)</div>',\n            '<div style=\"padding:8px; border:1px solid #2196F3; background:#e3f2fd; border-radius:4px;\">5. Execute SQL query... (1200ms)</div>',\n            '<div style=\"padding:8px; border:1px solid #2196F3; background:#e3f2fd; border-radius:4px;\">6. Format result into JSON...</div>',\n            '<div style=\"padding:8px; border:1px solid #9C27B0; background:#f3e5f5; border-radius:4px;\">7. Validate JSON with secondary model... (450ms)</div>',\n            '<div style=\"padding:8px; border:1px solid #4CAF50; background:#e8f5e9; border-radius:4px;\">8. Output displayed (Total: 2.85s)</div>'\n        ];\n    }\n\n    let i = 0;\n    function processStep() {\n        if (i < steps.length) {\n            output.innerHTML += steps[i];\n            i++;\n            setTimeout(processStep, mode === 'vendor' ? 300 : 500);\n        }\n    }\n    processStep();\n});"
+}
+</script>
+
+<!-- Shell Logic -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // 1. Fetch and parse the payload
+        const payloadJson = document.getElementById('payload').textContent;
+        const data = JSON.parse(payloadJson);
+
+        // 2. Render Header
+        const header = document.getElementById('article-header');
+        header.innerHTML = `
+            <h1>${data.title}</h1>
+            <div class="meta">
+                <span>${data.date}</span> |
+                <span>${data.reading_time_minutes} min read</span> |
+                <span>Research: ${data.research_window}</span>
+            </div>
+        `;
+        document.title = data.title;
+
+        // 3. Process Article HTML (Replace [QUOTE n] markers)
+        let articleHtml = data.article_html;
+        data.quotes.forEach((quote, index) => {
+            // Create a regex to find the exact [QUOTE n] block
+            // The LLM output formatted it as <blockquote>[QUOTE 1] Text...</blockquote>
+            // We will replace the whole blockquote tag to ensure it matches our custom styling
+            const marker = `\\[QUOTE ${index + 1}\\]`;
+            const regex = new RegExp(`<blockquote>${marker}(.*?)</blockquote>`, 'g');
+            articleHtml = articleHtml.replace(regex, `<div class="custom-quote">${quote.text}</div>`);
+        });
+
+        // 4. Inject Centerpiece, Viz, Recall Cards, and Citations into the flow
+        // We'll insert the centerpiece right after the 3rd paragraph (approximate location based on text)
+        // For simplicity and robustness, we'll append them into specific container divs
+        
+        const articleBody = document.getElementById('article-body');
+        
+        // Create containers for injectable assets
+        const centerpieceDiv = document.createElement('div');
+        centerpieceDiv.id = "centerpiece-container";
+        centerpieceDiv.innerHTML = data.centerpiece_html;
+
+        const viz1Div = document.createElement('div');
+        viz1Div.className = "viz-container";
+        viz1Div.innerHTML = data.data_viz_1_html;
+
+        const viz2Div = document.createElement('div');
+        viz2Div.className = "viz-container";
+        viz2Div.innerHTML = data.data_viz_2_html;
+
+        const recallDiv = document.createElement('div');
+        recallDiv.id = "recall-cards-container";
+        recallDiv.innerHTML = data.recall_cards_html;
+
+        // Set the main article content
+        articleBody.innerHTML = articleHtml;
+
+        // Strategic placement of assets
+        // Insert Centerpiece before the first H2
+        const firstH2 = articleBody.querySelector('h2');
+        if (firstH2) {
+            firstH2.parentNode.insertBefore(centerpieceDiv, firstH2);
+        } else {
+            articleBody.appendChild(centerpieceDiv);
+        }
+
+        // Insert Viz 1 before the "Latency and Cost Budgets" H2
+        const latencyH2 = [...articleBody.querySelectorAll('h2')].find(h => h.textContent.includes('Latency and Cost Budgets'));
+        if (latencyH2) {
+            latencyH2.parentNode.insertBefore(viz1Div, latencyH2);
+        }
+
+        // Insert Viz 2 before the "The Agentic Mirage" H2
+        const agenticH2 = [...articleBody.querySelectorAll('h2')].find(h => h.textContent.includes('The Agentic Mirage'));
+        if (agenticH2) {
+            agenticH2.parentNode.insertBefore(viz2Div, agenticH2);
+        }
+
+        // Insert Recall Cards before "Bridging the Gap" H2
+        const bridgingH2 = [...articleBody.querySelectorAll('h2')].find(h => h.textContent.includes('Bridging the Gap'));
+        if (bridgingH2) {
+            bridgingH2.parentNode.insertBefore(recallDiv, bridgingH2);
+        }
+
+        // 5. Render Citations
+        document.getElementById('citations-container').innerHTML = data.citations_html;
+
+        // 6. Execute Per-Article JS
+        // We use eval here because the JS is coming from our own trusted JSON payload template
+        // In a production environment with user-generated content, this would require sandboxing.
+        if (data.per_article_js) {
+            try {
+                eval(data.per_article_js);
+            } catch (e) {
+                console.error("Error executing per_article_js:", e);
+            }
+        }
+        
+        // 7. Initialize Intersection Observers for insight triggers (optional visual feedback)
+        const triggers = document.querySelectorAll('[data-observe]');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.borderTop = '2px dashed #0056b3';
+                    entry.target.style.marginBottom = '2em';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        triggers.forEach(t => observer.observe(t));
+
+    });
+</script>
+
+</body>
+</html>
