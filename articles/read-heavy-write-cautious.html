@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Read-Heavy, Write-Cautious</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --fg: #e0e0e0;
+            --muted: #888;
+            --accent: #4a9eff;
+            --danger: #ff4a4a;
+            --success: #4aff4a;
+            --card: #141414;
+            --border: #222;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--fg);
+            line-height: 1.6;
+            font-size: 18px;
+        }
+
+        #progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent), var(--danger));
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.1s ease-out;
+        }
+
+        #topbar {
+            position: fixed;
+            top: 4px;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 999;
+            justify-content: space-between;
+        }
+
+        #topbar a { color: var(--accent); text-decoration: none; font-weight: bold; }
+        #topbar .breadcrumb { color: var(--muted); font-size: 0.9rem; }
+        #topbar .meta { color: var(--muted); font-size: 0.8rem; }
+        
+        .wrap {
+            max-width: calc(660px + 260px);
+            margin: 80px auto 0;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 40px;
+        }
+
+        #rail {
+            position: sticky;
+            top: 80px;
+            height: fit-content;
+        }
+
+        main {
+            max-width: 660px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: clamp(2.1rem, 5vw, 3.1rem);
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--fg);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        p { margin-bottom: 1.5rem; }
+
+        .spectrum {
+            height: 6px;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent) 20%, var(--danger) 80%, var(--danger) 100%);
+            border-radius: 3px;
+            margin: 2rem 0;
+            position: relative;
+        }
+        .spectrum::after {
+            content: "Read-Heavy ────────────── Write-Cautious";
+            position: absolute;
+            top: 10px;
+            left: 0;
+            font-size: 0.8rem;
+            color: var(--muted);
+            width: 100%;
+            text-align: center;
+        }
+
+        .pull-quote {
+            border-left: 4px solid var(--accent);
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            font-size: 1.2rem;
+            font-style: italic;
+            background: rgba(74, 158, 255, 0.05);
+        }
+
+        .reveal-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .reveal-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .shape-shift {
+            border: 1px dashed var(--muted);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+            max-height: 40px;
+            overflow: hidden;
+            transition: max-height 0.8s ease-in-out, background 0.8s ease;
+            background: var(--card);
+        }
+        .shape-shift.visible {
+            max-height: 500px;
+            background: rgba(74, 158, 255, 0.1);
+            border-color: var(--accent);
+        }
+
+        .widget-container, .data-viz {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        figcaption {
+            font-size: 0.85rem;
+            color: var(--muted);
+            text-align: center;
+            margin-top: 0.5rem;
+            font-style: italic;
+            font-family: Georgia, serif;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin: 1rem 0;
+            accent-color: var(--accent);
+        }
+
+        .quote-gallery {
+            display: flex;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            margin: 2rem 0;
+        }
+        .quote-track {
+            display: flex;
+            transition: transform 0.5s ease;
+            width: 100%;
+        }
+        .quote-card {
+            min-width: 100%;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .quote-card p { font-size: 1.2rem; font-weight: 500; }
+        .share-row { margin-top: 1.5rem; display: flex; gap: 10px; }
+        .share-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--fg);
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: border-color 0.2s;
+        }
+        .share-btn:hover, .share-btn:focus { border-color: var(--accent); outline: none; }
+        
+        .gallery-controls { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
+        .dot { width: 8px; height: 8px; background: var(--border); border-radius: 50%; cursor: pointer; transition: background 0.3s; }
+        .dot.active { background: var(--accent); }
+
+        .three-things {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        .three-things h4 { font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--muted); text-transform: uppercase; }
+        .item { display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--muted); }
+        .item.unlocked { color: var(--fg); }
+        .check { width: 16px; height: 16px; border: 1px solid var(--muted); border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+        .item.unlocked .check { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+
+        .recall-card {
+            background: var(--card);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin: 1.5rem 0;
+            cursor: pointer;
+        }
+        .recall-q { font-weight: bold; color: var(--accent); }
+        .recall-a { max-height: 0; overflow: hidden; transition: max-height 0.5s ease, margin 0.5s ease; color: var(--fg); }
+        .recall-card.flipped .recall-a { max-height: 200px; margin-top: 1rem; }
+
+        .data-viz svg { width: 100%; height: auto; }
+        .bar { transition: opacity 0.2s; cursor: pointer; }
+        .bar:hover { opacity: 0.7; }
+        
+        .filter-btn { background: var(--bg); border: 1px solid var(--border); color: var(--fg); padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-right: 5px; }
+        .filter-btn.active { background: var(--accent); color: var(--bg); }
+
+        footer { border-top: 1px solid var(--border); margin-top: 4rem; padding: 2rem 0; font-size: 0.85rem; color: var(--muted); }
+        footer a { color: var(--accent); text-decoration: none; }
+        
+        @media (max-width: 880px) {
+            .wrap { grid-template-columns: 1fr; }
+            #rail {
+                position: fixed;
+                top: 50px;
+                right: -280px;
+                width: 260px;
+                height: calc(100vh - 50px);
+                background: var(--card);
+                z-index: 998;
+                padding: 20px;
+                transition: right 0.3s ease;
+                overflow-y: auto;
+            }
+            #rail.open { right: 0; }
+            #scrim {
+                display: none;
+                position: fixed;
+                top: 50px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: 997;
+            }
+            #scrim.open { display: block; }
+            #hamburger { display: block; cursor: pointer; font-size: 1.5rem; }
+        }
+        @media (min-width: 881px) {
+            #hamburger { display: none; }
+            #scrim { display: none; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+            .reveal-section { opacity: 1; transform: none; }
+            .shape-shift { max-height: 500px; }
+            .quote-track { transition: none; }
+        }
+    </style>
+</head>
+<body>
+    <div id="progress"></div>
+    <div id="topbar">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div id="hamburger" onclick="toggleRail()">☰</div>
+            <a href="https://iggym.github.io/applied-ai-engineering/">Home</a>
+            <span class="breadcrumb">/ Read-Heavy, Write-Cautious</span>
+        </div>
+        <div class="meta" id="reading-time">~4 min read</div>
+    </div>
+    <div id="scrim" onclick="toggleRail()"></div>
+
+    <div class="wrap">
+        <aside id="rail">
+            <div class="three-things">
+                <h4>Survival Insights</h4>
+                <div class="item" id="thing1"><div class="check"></div>Transaction boundaries</div>
+                <div class="item" id="thing2"><div class="check"></div>Plan-review load bearing</div>
+                <div class="item" id="thing3"><div class="check"></div>Rollback rate KPI</div>
+            </div>
+            <br>
+            <div class="three-things">
+                <h4>Concept Map</h4>
+                <svg width="100%" viewBox="0 0 200 150">
+                    <line x1="100" y1="30" x2="50" y2="100" stroke="#444" stroke-width="2"/>
+                    <line x1="100" y1="30" x2="150" y2="100" stroke="#444" stroke-width="2"/>
+                    <circle cx="100" cy="30" r="20" fill="#141414" stroke="var(--accent)" stroke-width="2"/>
+                    <text x="100" y="35" text-anchor="middle" fill="var(--fg)" font-size="10">Asymmetry</text>
+                    
+                    <rect x="20" y="100" width="60" height="30" fill="#141414" stroke="var(--danger)" stroke-width="2"/>
+                    <text x="50" y="120" text-anchor="middle" fill="var(--fg)" font-size="10">Write Safety</text>
+                    
+                    <rect x="120" y="100" width="60" height="30" fill="#141414" stroke="var(--accent)" stroke-width="2"/>
+                    <text x="150" y="120" text-anchor="middle" fill="var(--fg)" font-size="10">Read Speed</text>
+                </svg>
+            </div>
+        </aside>
+
+        <main>
+            <h1>Read-Heavy, Write-Cautious</h1>
+            <p><em>Across seven field-notes repos, the production systems that survived contact with real users share one design instinct — and it isn't the one vendors sell you.</em></p>
+            
+            <div class="spectrum"></div>
+
+            <h2>The Volume and The Handoff</h2>
+            <p>When Klarna deployed their AI assistant, the headline was massive: 2.3 million customer chats handled in a single month, matching the output of 700 human agents. The CEO pitched it as an autonomous triumph. The engineering team knew a different reality. A full third of those interactions—touching refunds, account modifications, and payment disputes—were quietly routed to humans. The AI could read the customer’s frustration perfectly, but it wasn't allowed to touch the ledger.</p>
+            <p>This is the pattern that keeps showing up across the production systems that actually survive contact with users. The vendors sell you autonomous agents that spin up, reason, and act. The practitioners who deploy them build something else entirely.</p>
+
+            <h2>The Traction of Asymmetry</h2>
+            <p>The surviving pattern is read-heavy, write-cautious. <span class="quote-marker" data-quote="3">[QUOTE 3]</span> Vendors sell the tire-spinning autonomy of a sports car; practitioners build the deliberate, asymmetric traction of a tractor.</p>
+            <p>In database engineering, we don’t let every process commit to the database whenever it feels like it. We use ACID transactions. We separate reads from writes. We lock rows. We enforce commit boundaries. <span class="beat-marker" data-beat="1">[BEAT 1]</span> When we look at why autonomous AI agents fail in production, we blame their reasoning capabilities. But they aren't failing because they can't think. They are failing because they lack transaction boundaries. We stopped trying to teach the agent how to think and started teaching it how to stop. <span class="quote-marker" data-quote="1">[QUOTE 1]</span></p>
+            
+            <div class="widget-container">
+                <p><strong>Try it:</strong> Drag the slider to see how Vendor Autonomy claims overlap with Practitioner Asymmetry constraints in the execution layer.</p>
+                <svg width="100%" height="120" viewBox="0 0 300 120" id="convergenceSvg">
+                    <circle id="circleA" cx="100" cy="60" r="50" fill="rgba(74, 158, 255, 0.3)" stroke="var(--accent)" stroke-width="2"></circle>
+                    <circle id="circleB" cx="200" cy="60" r="50" fill="rgba(255, 74, 74, 0.3)" stroke="var(--danger)" stroke-width="2"></circle>
+                    <text x="100" y="125" text-anchor="middle" fill="var(--muted)" font-size="10">Vendor Pitch (Write)</text>
+                    <text x="200" y="125" text-anchor="middle" fill="var(--muted)" font-size="10">Reality (Read)</text>
+                    <text id="overlapText" x="150" y="65" text-anchor="middle" fill="var(--fg)" font-size="12" font-weight="bold"></text>
+                </svg>
+                <input type="range" min="0" max="100" value="50" oninput="updateConvergence(this.value)" aria-label="Convergence slider">
+                <figcaption>The overlap where ambition meets friction.</figcaption>
+            </div>
+
+            <p>Consider GitHub’s Copilot Workspace. When they moved from inline autocomplete to multi-file generation, they didn't just let the agent write code. They forced an intermediate step: a plan. The agent reads the repository, drafts a specification, and halts. The human reviews the plan. Only then does the agent write the code. Adding this 15-second human review slowed down the write speed but doubled the code acceptance rate.</p>
+
+            <div class="reveal-section" id="beat2-section">
+                <p><span class="beat-marker" data-beat="2">[BEAT 2]</span> Engineering leaders often view human-in-the-loop as a temporary crutch for models that aren't smart enough yet. This is a fundamental misread of system design. The model writes the draft, but the human holds the commit key. <span class="quote-marker" data-quote="2">[QUOTE 2]</span> Human-in-the-loop isn't a patch for stupidity; it is a permanent architectural requirement for safe state mutation.</p>
+            </div>
+
+            <div class="shape-shift" id="shapeShiftDiv">
+                <p><strong>Click to reveal the structural shift:</strong> What happens when an agent moves from autonomous to domesticated?</p>
+                <div class="hidden-content" style="margin-top:1rem;">
+                    The agent stops writing continuously. It enters a read-heavy state, gathering context until it hits a defined, interruptible write node. The system changes from a continuous stream to a batch process.
+                </div>
+            </div>
+
+            <h2>Drafts and Commit Keys</h2>
+            <p>The strongest counterargument is that models will eventually become reliable enough to write autonomously. If GPT-6 can write flawless code or execute perfect refunds, the commit boundary is just latency. But this ignores the nature of production environments. Environments drift. Database schemas change. Edge cases exist outside the training distribution. A genius agent with no commit boundary is a liability, because autonomy scales the execution of tasks, but asymmetry scales the survival of the system. <span class="quote-marker" data-quote="4">[QUOTE 4]</span></p>
+            <p>LangChain’s ecosystem pivot proves this. In 2024, practitioners abandoned free-form autonomous loops in favor of LangGraph. They realized that agents spinning in continuous write loops hallucinate catastrophically. By wrapping agents in a state machine, engineers forced the agent into long read phases, punctuated by sharp, interruptible write nodes. They domesticated the agent by restricting its write access.</p>
+
+            <div class="data-viz">
+                <p><strong>Copilot Workspace Acceptance Rates</strong></p>
+                <svg width="100%" height="200" viewBox="0 0 300 200">
+                    <line x1="40" y1="150" x2="280" y2="150" stroke="#444" stroke-width="1"/>
+                    <rect class="bar" x="70" y="55" width="60" height="95" fill="var(--danger)" onclick="showBarDetail('Direct Write', 35)">
+                        <title>Direct Write: 35%</title>
+                    </rect>
+                    <text x="100" y="170" text-anchor="middle" fill="var(--muted)" font-size="12">Direct Write</text>
+                    <text x="100" y="45" text-anchor="middle" fill="var(--fg)" font-size="14">35%</text>
+                    
+                    <rect class="bar" x="170" y="20" width="60" height="130" fill="var(--accent)" onclick="showBarDetail('Plan-Reviewed', 65)">
+                        <title>Plan-Reviewed: 65%</title>
+                    </rect>
+                    <text x="200" y="170" text-anchor="middle" fill="var(--muted)" font-size="12">Plan-Reviewed</text>
+                    <text x="200" y="15" text-anchor="middle" fill="var(--fg)" font-size="14">65%</text>
+                </svg>
+                <div id="barDetail" style="text-align:center; margin-top:10px; font-weight:bold; color:var(--accent);">Hover/Click bars for detail</div>
+                <figcaption>A stitch in the plan saves nine in the code.</figcaption>
+            </div>
+
+            <h2>The Illusion of Autonomy</h2>
+            <p>Vendors measure success by "tasks completed." Practitioners measure success by "rollback rate." If you don't know your agent's rollback rate—the percentage of actions that have to be undone by a human or a script—you are flying blind. A high task completion rate means nothing if your engineering team is spending their weekends writing scripts to reverse agent actions.</p>
+            
+            <p><em>(Aside: Checking off the insights below uses active retrieval. Forcing your brain to predict the answer before revealing it strengthens the mental schema far better than passive reading does. No magic, just cognitive friction.)</em></p>
+
+            <div class="recall-card" onclick="flipCard(this)">
+                <div class="recall-q">What is the structural purpose of the plan-review step in Copilot Workspace?</div>
+                <div class="recall-a">It acts as a transaction commit boundary, ensuring state mutations are explicitly authorized before execution.</div>
+            </div>
+
+            <div class="data-viz">
+                <p><strong>LangGraph Node Error Matrix</strong></p>
+                <div style="margin-bottom:10px;">
+                    <button class="filter-btn active" onclick="filterNodes('all', this)">All Nodes</button>
+                    <button class="filter-btn" onclick="filterNodes('read', this)">Read Nodes</button>
+                    <button class="filter-btn" onclick="filterNodes('write', this)">Write Nodes</button>
+                </div>
+                <svg width="100%" height="150" viewBox="0 0 250 150">
+                    <!-- Read Nodes (Blue) -->
+                    <rect class="node read" x="10" y="10" width="40" height="40" fill="rgba(74, 158, 255, 0.2)" stroke="var(--accent)" stroke-width="1"></rect>
+                    <rect class="node read" x="60" y="10" width="40" height="40" fill="rgba(74, 158, 255, 0.1)" stroke="var(--accent)" stroke-width="1"></rect>
+                    <rect class="node read" x="110" y="10" width="40" height="40" fill="rgba(74, 158, 255, 0.15)" stroke="var(--accent)" stroke-width="1"></rect>
+                    
+                    <!-- Write Nodes (Red) -->
+                    <rect class="node write" x="10" y="60" width="40" height="40" fill="rgba(255, 74, 74, 0.4)" stroke="var(--danger)" stroke-width="1"></rect>
+                    <rect class="node write" x="60" y="60" width="40" height="40" fill="rgba(255, 74, 74, 0.7)" stroke="var(--danger)" stroke-width="1"></rect>
+                    <rect class="node write" x="110" y="60" width="40" height="40" fill="rgba(255, 74, 74, 0.5)" stroke="var(--danger)" stroke-width="1"></rect>
+                </svg>
+                <div style="display:flex; justify-content:center; gap:15px; margin-top:5px; font-size:0.8rem; color:var(--muted);">
+                    <span>■ Low Error (Read)</span>
+                    <span>■ High Error (Write)</span>
+                </div>
+                <figcaption>Red reads the danger, blue keeps the peace.</figcaption>
+            </div>
+
+            <h2>Auditing the Write Path</h2>
+            <p>You cannot fix an agent that writes too much by making it smarter. You fix it by restructuring its interface with the world.</p>
+            <p><strong>1. Audit the Write Frequency:</strong> Count how many state-mutating API calls your agent makes per session. If it is more than one or two, you have an architectural flaw. Bundle those writes.</p>
+            <p><strong>2. Implement Plan-Review Interrupts:</strong> Before any write operation, force the agent to output a JSON payload defining its intent. Block the write until a human or a deterministic rule approves it.</p>
+            <p><strong>3. Measure Rollback Rate:</strong> Track how often agent actions are reversed. Make this the primary KPI for your agentic pipelines, not tasks completed.</p>
+
+            <h2>Count the Commits</h2>
+            <p>Tomorrow morning, pull the logs for your most deployed agent. Count the write operations it executed in the last 24 hours without an explicit human approval gate. If that number is higher than you are comfortable with, you know exactly where to build your next transaction boundary.</p>
+
+            <div class="pull-quote">
+                "Autonomy scales the execution of tasks, but asymmetry scales the survival of the system."
+            </div>
+
+            <h2>Share the Insights</h2>
+            <div class="quote-gallery" id="quoteGallery">
+                <div class="quote-track" id="quoteTrack">
+                    <!-- Quotes injected by JS -->
+                </div>
+            </div>
+            <div class="gallery-controls" id="galleryControls"></div>
+
+            <footer>
+                <p><strong>Sources:</strong> Klarna Q2 2024 earnings call; GitHub Copilot Workspace technical previews; LangChain/LangGraph ecosystem documentation.</p>
+                <p><a href="#" onclick="scrollToTop();return false;">Back to top</a> | <a href="https://iggym.github.io/applied-ai-engineering/">Home</a></p>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // Progress Bar
+        const progress = document.getElementById('progress');
+        window.addEventListener('scroll', () => {
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrollTop = document.documentElement.scrollTop;
+            progress.style.width = (scrollTop / scrollHeight) * 100 + '%';
+        });
+
+        // Mobile Rail
+        function toggleRail() {
+            document.getElementById('rail').classList.toggle('open');
+            document.getElementById('scrim').classList.toggle('open');
+        }
+
+        function scrollToTop() { window.scrollTo({top: 0, behavior: 'smooth'}); }
+
+        // Convergence Widget
+        function updateConvergence(val) {
+            const offset = (val / 100) * 100; // 0 to 100px shift
+            const circleB = document.getElementById('circleB');
+            circleB.setAttribute('cx', 100 + offset);
+            const overlapText = document.getElementById('overlapText');
+            if (val < 20) overlapText.textContent = "Autonomy";
+            else if (val > 80) overlapText.textContent = "Paralysis";
+            else overlapText.textContent = "Conflict Zone";
+        }
+        updateConvergence(50);
+
+        // Bar Chart Detail
+        function showBarDetail(type, pct) {
+            document.getElementById('barDetail').innerText = `${type}: ${pct}% Acceptance Rate`;
+        }
+
+        // Node Filter
+        function filterNodes(type, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('.node').forEach(n => {
+                if (type === 'all') n.style.opacity = 1;
+                else if (n.classList.contains(type)) n.style.opacity = 1;
+                else n.style.opacity = 0.1;
+            });
+        }
+
+        // Recall Card
+        function flipCard(el) { el.classList.toggle('flipped'); }
+
+        // Intersection Observers
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // Three Things Tracker
+                    if (entry.target.id === 'beat2-section') {
+                        document.getElementById('thing1').classList.add('unlocked');
+                        document.getElementById('thing2').classList.add('unlocked');
+                    }
+                    if (entry.target.querySelector('h2') && entry.target.querySelector('h2').textContent === 'The Illusion of Autonomy') {
+                         document.getElementById('thing3').classList.add('unlocked');
+                    }
+                }
+            });
+        }, { threshold: 0.2 });
+
+        document.querySelectorAll('.reveal-section, .shape-shift, main > section').forEach(el => observer.observe(el));
+        // Specific observer for Autonomy section
+        const autonomySection = Array.from(document.querySelectorAll('h2')).find(h => h.textContent === 'The Illusion of Autonomy').parentElement;
+        observer.observe(autonomySection);
+
+        // Multi-Quote Share System
+        const quotes = [
+            { id: 1, text: "We stopped trying to teach the agent how to think and started teaching it how to stop." },
+            { id: 2, text: "The model writes the draft, but the human holds the commit key." },
+            { id: 3, text: "Vendors sell the tire-spinning autonomy of a sports car; practitioners build the deliberate, asymmetric traction of a tractor." },
+            { id: 4, text: "Autonomy scales the execution of tasks, but asymmetry scales the survival of the system." }
+        ];
+
+        const track = document.getElementById('quoteTrack');
+        const controls = document.getElementById('galleryControls');
+        
+        quotes.forEach((q, i) => {
+            const card = document.createElement('div');
+            card.className = 'quote-card';
+            card.innerHTML = `
+                <p>"${q.text}"</p>
+                <div class="share-row">
+                    <button class="share-btn" onclick="copyQuote(${i})">Copy Text & Link</button>
+                    <button class="share-btn" onclick="shareX(${i})">Share to X</button>
+                    <button class="share-btn" onclick="shareLinkedIn(${i})">Share to LinkedIn</button>
+                </div>
+            `;
+            track.appendChild(card);
+
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.onclick = () => goToQuote(i);
+            controls.appendChild(dot);
+        });
+
+        let currentQuote = 0;
+        function goToQuote(index) {
+            currentQuote = index;
+            track.style.transform = `translateX(-${index * 100}%)`;
+            document.querySelectorAll('.dot').forEach((d, i) => {
+                d.classList.toggle('active', i === index);
+            });
+        }
+
+        function copyQuote(i) {
+            const url = window.location.href;
+            navigator.clipboard.writeText(`"${quotes[i].text}" - ${url}`);
+            alert("Copied to clipboard!");
+        }
+        function shareX(i) {
+            const url = window.location.href;
+            const text = encodeURIComponent(`"${quotes[i].text}"`);
+            window.open(`https://x.com/intent/post?text=${text}&url=${encodeURIComponent(url)}`, '_blank');
+        }
+        function shareLinkedIn(i) {
+            const url = window.location.href;
+            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+        }
+
+        // Keyboard navigation for gallery
+        document.getElementById('quoteGallery').setAttribute('tabindex', '0');
+        document.getElementById('quoteGallery').addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' && currentQuote < quotes.length - 1) goToQuote(currentQuote + 1);
+            if (e.key === 'ArrowLeft' && currentQuote > 0) goToQuote(currentQuote - 1);
+        });
+
+        // Contextual Quote Seeding
+        const quoteMarkers = document.querySelectorAll('.quote-marker');
+        const quoteObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const quoteId = entry.target.getAttribute('data-quote');
+                    const index = quotes.findIndex(q => q.id == quoteId);
+                    if (index !== -1 && index !== currentQuote) {
+                        goToQuote(index);
+                    }
+                }
+            });
+        }, { threshold: 0.5 });
+
+        quoteMarkers.forEach(m => quoteObserver.observe(m));
+    </script>
+</body>
+</html>
