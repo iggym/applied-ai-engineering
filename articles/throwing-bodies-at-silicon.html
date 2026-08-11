@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Throwing Bodies at Silicon</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f1115;
+            --surface: #1a1d24;
+            --text: #e4e6eb;
+            --text-dim: #9ca3af;
+            --accent: #3b82f6;
+            --accent-2: #8b5cf6;
+            --border: #2a2d36;
+            --glass: rgba(26, 29, 36, 0.7);
+            --success: #10b981;
+            --danger: #ef4444;
+            --warn: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        ::selection {
+            background: var(--accent);
+            color: white;
+        }
+
+        #progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            z-index: 1000;
+            transition: width 0.1s ease-out;
+        }
+
+        #topbar {
+            position: sticky;
+            top: 0;
+            background: var(--glass);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .home-link {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 1.1rem;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .home-link:hover {
+            border-color: var(--accent);
+        }
+
+        .breadcrumb {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .reading-time {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            background: var(--surface);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .wrap {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            max-width: calc(660px + 260px);
+            margin: 0 auto;
+            gap: 40px;
+            padding: 40px 24px;
+        }
+
+        #rail {
+            position: sticky;
+            top: 80px;
+            align-self: start;
+            height: max-content;
+            border-right: 1px solid var(--border);
+            padding-right: 20px;
+        }
+
+        #rail ul {
+            list-style: none;
+        }
+
+        #rail li a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: block;
+            padding: 8px 0;
+            transition: color 0.2s;
+            border-left: 2px solid transparent;
+            padding-left: 12px;
+            margin-left: -14px;
+        }
+
+        #rail li a.active, #rail li a:hover {
+            color: var(--text);
+            border-left-color: var(--accent);
+        }
+
+        main {
+            max-width: 660px;
+        }
+
+        h1 {
+            font-size: clamp(2.1rem, 5vw, 3.1rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-top: 48px;
+            margin-bottom: 16px;
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            color: var(--text);
+        }
+
+        .pull-quote {
+            font-family: 'Lora', serif;
+            font-style: italic;
+            font-size: 1.4rem;
+            line-height: 1.4;
+            color: var(--accent);
+            border-left: 4px solid var(--accent-2);
+            padding-left: 24px;
+            margin: 32px 0;
+        }
+
+        .spectrum {
+            display: flex;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 24px 0;
+        }
+        .spectrum-old { flex: 1; background: var(--danger); }
+        .spectrum-new { flex: 1; background: var(--success); }
+        .spectrum-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-bottom: 32px;
+        }
+
+        /* Three Things Tracker */
+        #things-tracker {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            width: 240px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 90;
+            font-size: 0.85rem;
+        }
+        #things-tracker h4 {
+            margin-bottom: 12px;
+            color: var(--text);
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+        .thing-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            color: var(--text-dim);
+            transition: color 0.3s;
+        }
+        .thing-item.unlocked {
+            color: var(--success);
+        }
+        .thing-checkbox {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--text-dim);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+        .thing-item.unlocked .thing-checkbox {
+            background: var(--success);
+            border-color: var(--success);
+        }
+        .thing-item.unlocked .thing-checkbox::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Bespoke Centerpiece Widget */
+        .centerpiece {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 40px 0;
+        }
+        .widget-controls {
+            margin-bottom: 20px;
+        }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 6px;
+            background: var(--bg);
+            border-radius: 3px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .widget-svg-container {
+            position: relative;
+            height: 250px;
+            margin-top: 20px;
+        }
+        .widget-svg-container svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+        figcaption {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-top: 12px;
+            text-align: center;
+            font-style: italic;
+            border-top: 1px solid var(--border);
+            padding-top: 12px;
+        }
+
+        /* Data Storytelling Visuals */
+        .data-viz {
+            margin: 40px 0;
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid var(--border);
+        }
+        .chart-container {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            align-items: flex-end;
+            height: 200px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+        .bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100px;
+            position: relative;
+        }
+        .bar {
+            width: 40px;
+            background: var(--accent);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.5s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        .bar.latency { background: var(--danger); }
+        .bar:hover .bar-tooltip {
+            opacity: 1;
+        }
+        .bar-tooltip {
+            position: absolute;
+            top: -40px;
+            background: var(--bg);
+            border: 1px solid var(--accent);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .bar-label {
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-align: center;
+        }
+        
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+            margin: 20px 0;
+        }
+        .heat-cell {
+            aspect-ratio: 1;
+            background: var(--success);
+            border-radius: 2px;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .heat-cell:hover {
+            transform: scale(1.2);
+            z-index: 10;
+            border: 1px solid white;
+        }
+        .heat-legend {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            justify-content: flex-end;
+            margin-top: 12px;
+        }
+        .legend-box {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        /* Sortable Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        .data-table th, .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .data-table th {
+            color: var(--accent);
+            cursor: pointer;
+            user-select: none;
+        }
+        .data-table th:hover {
+            color: var(--accent-2);
+        }
+        .row-detail {
+            display: none;
+            background: var(--bg);
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+        .row-detail.visible {
+            display: table-row;
+        }
+
+        /* Quote Gallery */
+        #quotes-gallery {
+            margin: 60px 0;
+            border-top: 2px solid var(--accent);
+            padding-top: 40px;
+        }
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .gallery-controls {
+            display: flex;
+            gap: 8px;
+        }
+        .gallery-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .gallery-btn:hover {
+            background: var(--accent);
+        }
+        .quote-cards {
+            display: flex;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            gap: 16px;
+            padding-bottom: 16px;
+        }
+        .quote-card {
+            flex: 0 0 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            scroll-snap-align: start;
+        }
+        .quote-card p {
+            font-family: 'Lora', serif;
+            font-style: italic;
+            font-size: 1.2rem;
+            margin-bottom: 24px;
+            color: var(--text);
+        }
+        .share-row {
+            display: flex;
+            gap: 8px;
+        }
+        .share-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .share-btn:hover {
+            border-color: var(--accent);
+            color: var(--text);
+        }
+        .dots {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-top: 16px;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--border);
+            cursor: pointer;
+        }
+        .dot.active {
+            background: var(--accent);
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 80px;
+            padding: 40px 24px;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .footer-links a {
+            color: var(--text);
+            text-decoration: none;
+        }
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        /* Scroll Reveal */
+        .reveal-text {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .reveal-text.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 880px) {
+            .wrap {
+                grid-template-columns: 1fr;
+            }
+            #rail {
+                display: none;
+            }
+            .hamburger {
+                display: block;
+            }
+            #things-tracker {
+                width: 200px;
+                bottom: 10px;
+                right: 10px;
+                transform: scale(0.9);
+                transform-origin: bottom right;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+                scroll-behavior: auto !important;
+            }
+            .reveal-text {
+                opacity: 1;
+                transform: none;
+            }
+            .quote-cards {
+                display: flex;
+                flex-direction: column;
+                overflow: visible;
+            }
+            .quote-card {
+                margin-bottom: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="progress"></div>
+    
+    <header id="topbar">
+        <div class="topbar-left">
+            <button class="hamburger" id="hamburger">☰</button>
+            <a href="https://iggym.github.io/applied-ai-engineering/" class="home-link">Applied AI Eng</a>
+            <span class="breadcrumb">/ Throwing Bodies at Silicon</span>
+        </div>
+        <div class="reading-time">4 min read</div>
+    </header>
+
+    <div class="wrap">
+        <nav id="rail">
+            <ul>
+                <li><a href="#opening" class="active">Opening</a></li>
+                <li><a href="#reframe">The Reframe</a></li>
+                <li><a href="#connections">Hidden Connections</a></li>
+                <li><a href="#nuance">Credibility</a></li>
+                <li><a href="#agency">Agency</a></li>
+                <li><a href="#quotes-gallery">Quotes</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <article id="opening">
+                <h1>Throwing Bodies at Silicon</h1>
+                <p>In July 2026, Klarna paused the expansion of its customer service AI. Over the previous six months, the team had increased model token throughput by 300% by throwing vast compute at the system. The result was a 45% increase in end-to-end resolution latency. The bottleneck wasn't the model's intelligence; it was a legacy database API taking two seconds to return a customer's transaction history. They scaled the transformer, but the legacy API still capped resolution speed.</p>
+                <p>The executives were furious. They had approved a massive compute budget based on the promise that scaling the model would scale the business. Instead, they got a faster brain attached to a paralyzed nervous system. The customer still waited. The resolution time still crawled. The compute spend skyrocketed.</p>
+            </article>
+
+            <section id="reframe">
+                <h2>The X-Axis Mismatch</h2>
+                <p>The industry keeps borrowing model-scaling intuition to justify org-scaling decisions. The two curves don't share an X-axis. <mark data-quote="1">[QUOTE 1]</mark> When you scale a transformer, you pour in parameters and data, and capability predictably rises along a smooth logarithmic curve. When you scale an AI engineering organization, you pour in headcount, and coordination costs explode along a quadratic curve. We confuse the two because both involve the word "scaling," but they obey entirely different physics.</p>
+                
+                <div class="spectrum">
+                    <div class="spectrum-old"></div>
+                    <div class="spectrum-new"></div>
+                </div>
+                <div class="spectrum-labels">
+                    <span>Compute Scaling (Logarithmic)</span>
+                    <span>Org Scaling (Quadratic)</span>
+                </div>
+
+                <p>Model scaling is an algorithmic triumph. Organizational scaling is a systems problem. The Chinchilla laws tell us exactly how much data and compute a model needs to improve. There is no Chinchilla law for a 200-person platform team. When you treat your engineering org like a neural network, assuming more nodes will automatically capture more complexity, you guarantee a coordination collapse.</p>
+            </section>
+
+            <section id="connections">
+                <h2>Hardware Meets Human Physics</h2>
+                <p class="reveal-text">Look at JPMorgan's June 2026 internal reorganization. They doubled their internal AI platform team, expecting deployment frequency to rise. Instead, deployment frequency halved over the subsequent quarter. <mark data-beat="1">[BEAT 1]</mark></p>
+                <div class="reveal-text" style="border-left: 2px solid var(--warn); padding-left: 16px; margin: 16px 0; font-size: 0.9rem; color: var(--text-dim);">
+                    <strong>BEFORE:</strong> Adding AI engineers scales AI output linearly.<br>
+                    <strong>AFTER:</strong> Adding AI engineers creates integration debt that slows output exponentially.<br>
+                    <strong>TURN:</strong> JPMorgan’s AI division found that doubling team size halved the deployment frequency of their internal models.
+                </div>
+                <p class="reveal-text">The team spent their time in alignment meetings negotiating API contracts rather than shipping code. They treated the platform like a model, assuming more parameters (engineers) would yield better performance. Instead, they hit the hardcoded limit of human communication overhead. The cost of a new engineer isn't just their salary; it's the communication overhead they impose on every other engineer. In a neural network, adding a parameter costs a fraction of a watt. In an org, adding an engineer costs the attention of ten others.</p>
+
+                <div class="centerpiece" id="centerpiece-widget">
+                    <div class="widget-controls">
+                        <div class="slider-label">
+                            <span>Scale Resource</span>
+                            <span id="scale-value">50%</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="50" id="scale-slider" aria-label="Scale Resource Slider">
+                    </div>
+                    <div class="widget-svg-container">
+                        <svg id="curve-svg" viewBox="0 0 400 200" preserveAspectRatio="none">
+                            <!-- Grid lines -->
+                            <line x1="0" y1="180" x2="400" y2="180" stroke="var(--border)" stroke-width="2"/>
+                            <line x1="20" y1="0" x2="20" y2="200" stroke="var(--border)" stroke-width="2"/>
+                            
+                            <!-- Compute Curve (Logarithmic) -->
+                            <path id="compute-path" d="M 20 180 Q 100 180 200 80 T 380 30" fill="none" stroke="var(--accent)" stroke-width="3"/>
+                            
+                            <!-- Org Curve (Quadratic Crash) -->
+                            <path id="org-path" d="M 20 180 C 100 180 150 100 200 50 C 250 20 300 150 380 180" fill="none" stroke="var(--danger)" stroke-width="3" stroke-dasharray="5,5"/>
+                            
+                            <!-- Labels -->
+                            <text x="150" y="20" fill="var(--accent)" font-size="12">Compute (Log)</text>
+                            <text x="150" y="170" fill="var(--danger)" font-size="12">Org (Quad)</text>
+                        </svg>
+                    </div>
+                    <figcaption>Fig. 1: The compute curve climbs cleanly; the org curve climbs, sickens, and crashes.</figcaption>
+                </div>
+
+                <p class="reveal-text">The same physics apply to hardware. Meta's July 2026 disclosure of a 19-hour outage on their 100k GPU Llama 4 training cluster wasn't a model failure; it was an orchestration collapse. A single node failure cascaded across the rack because the network topology prioritized raw bandwidth over fault isolation. Blast radius scales exponentially with compute. <mark data-beat="2">[BEAT 2]</mark></p>
+                <div class="reveal-text" style="border-left: 2px solid var(--warn); padding-left: 16px; margin: 16px 0; font-size: 0.9rem; color: var(--text-dim);">
+                    <strong>BEFORE:</strong> More compute yields predictable, linear capability gains.<br>
+                    <strong>AFTER:</strong> More compute creates unpredictable, exponential operational bottlenecks.<br>
+                    <strong>TURN:</strong> Meta's 100k GPU cluster experienced a 19-hour downtime because a single node failure cascaded across the rack.
+                </div>
+                <p class="reveal-text">When you pack 100,000 GPUs into a single cluster, you aren't just scaling model capability; you are scaling the probability of a hardware fault interacting with a software bug. The model recovers; the training run does not. The checkpointing mechanism failed under the cascading load, meaning the system couldn't save its state before shutting down. They scaled the compute, but the orchestration layer was operating on a linear assumption of failure.</p>
+
+                <div class="pull-quote reveal-text">You cannot bypass coordination costs by buying more GPUs, because the hardware and the humans operate on different physics. <mark data-quote="2">[QUOTE 2]</mark></div>
+            </section>
+
+            <section id="nuance">
+                <h2>The Brooks' Law Bottleneck</h2>
+                <p>The dynamic at play is the misapplication of the Chinchilla scaling laws to Brooks' Law. Adding manpower to a late software project makes it later. This isn't a new insight, but the AI industry keeps ignoring it because the compute scaling curves are so intoxicating. We see the smooth upward trajectory of model benchmarks and assume that throwing resources at the org will yield the same smooth trajectory.</p>
+                <p>The counterargument: better models write better code, automating ops. But they don't write the organizational interfaces required to deploy it safely. A model can generate a flawless Kubernetes manifest, but it cannot negotiate the API contract between two opposing engineering fiefdoms. Automation requires standardization, and standardization requires organizational consensus, which does not scale with compute.</p>
+                <p>Klarna learned this the hard way. Their model could process a refund in milliseconds, but the customer still waited two seconds for the legacy API to verify the transaction. The model's speed became irrelevant. The operating law—the speed of the slowest integrated system—capped the outcome. They optimized the brain and ignored the nervous system.</p>
+
+                <!-- Data Storytelling Visual 1: Klarna -->
+                <div class="data-viz">
+                    <h4 style="margin-bottom: 16px; text-align: center;">Klarna's Resolution Crisis</h4>
+                    <div class="chart-container">
+                        <div class="bar-group">
+                            <div class="bar" style="height: 120px;">
+                                <div class="bar-tooltip">Throughput: +300%</div>
+                            </div>
+                            <div class="bar-label">Model Throughput</div>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar latency" style="height: 60px;">
+                                <div class="bar-tooltip">Bottleneck: Legacy DB API (2s)</div>
+                            </div>
+                            <div class="bar-label">Resolution Latency</div>
+                        </div>
+                    </div>
+                    <figcaption>Fig. 2: A brain in overdrive, a nervous system on life support.</figcaption>
+                </div>
+
+                <!-- Data Storytelling Visual 2: Meta Heatmap -->
+                <div class="data-viz">
+                    <h4 style="margin-bottom: 16px; text-align: center;">Meta 100k GPU Cluster - Cascade Failure</h4>
+                    <div class="heatmap-grid" id="heatmap"></div>
+                    <div class="heat-legend">
+                        <div class="legend-box" style="background: var(--success);"></div><span>Healthy</span>
+                        <div class="legend-box" style="background: var(--warn);"></div><span>Struggling</span>
+                        <div class="legend-box" style="background: var(--danger);"></div><span>Failed (19h)</span>
+                    </div>
+                    <figcaption>Fig. 3: One red node burns down the whole silicon forest.</figcaption>
+                </div>
+            </section>
+
+            <section id="agency">
+                <h2>Defining the Operating Law</h2>
+                <p>You have three high-leverage actions within your control.</p>
+                <p>First, measure resolution latency, not token throughput. If your dashboard celebrates tokens generated per second while your customers wait for a database query, you are optimizing the wrong axis. Track the time from user input to system resolution, and hunt down the non-AI bottlenecks.</p>
+                <p style="background: var(--surface); padding: 12px; border-radius: 8px; border-left: 4px solid var(--accent-2); font-size: 0.9rem; color: var(--text-dim);"><em>Learning Aside: We retain concepts better when we predict an outcome before learning the answer—a technique called prediction error. Stop and predict: in your current AI project, what is the single slowest non-model component? The discomfort of not knowing is the mechanism that encodes the lesson.</em></p>
+                <p>Second, cap GPU cluster blast radius. Implement cellular architectures where a single node failure drops a cell, not the entire training run. Meta's 19-hour outage proves that monolithic clusters are a single point of failure. If a cluster is too big to fail, it is too big. Divide your 100k cluster into four 25k cells with independent orchestration.</p>
+                <p>Third, structure teams around bounded contexts before adding headcount. <mark data-quote="3">[QUOTE 3]</mark> Doubling your AI team halves your deployment frequency when you scale headcount before scaling your organizational architecture. Define the API contracts first, then hire against them. Do not assume the team will self-organize like a neural network. Humans require explicit interfaces.</p>
+
+                <!-- Data Storytelling Visual 3: JPMorgan Table -->
+                <div class="data-viz">
+                    <h4 style="margin-bottom: 16px;">JPMorgan Reorg Impact</h4>
+                    <table class="data-table" id="org-table">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable(0)">Quarter</th>
+                                <th onclick="sortTable(1)">Team Size</th>
+                                <th onclick="sortTable(2)">Deploy Freq.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr onclick="toggleDetail(this)">
+                                <td>Q1 2026</td>
+                                <td>100</td>
+                                <td>24/week</td>
+                            </tr>
+                            <tr class="row-detail">
+                                <td colspan="3">Baseline coordination overhead. API contracts loosely defined.</td>
+                            </tr>
+                            <tr onclick="toggleDetail(this)">
+                                <td>Q2 2026</td>
+                                <td>200</td>
+                                <td>12/week</td>
+                            </tr>
+                            <tr class="row-detail">
+                                <td colspan="3">Doubled headcount. Alignment meetings consumed 40% of engineering time.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <figcaption>Fig. 4: Doubling the nodes halves the throughput.</figcaption>
+                </div>
+            </section>
+
+            <section id="quotes-gallery">
+                <div class="gallery-header">
+                    <h3>Quotable Moments</h3>
+                    <div class="gallery-controls">
+                        <button class="gallery-btn" id="prev-quote" aria-label="Previous quote">‹</button>
+                        <button class="gallery-btn" id="next-quote" aria-label="Next quote">›</button>
+                    </div>
+                </div>
+                <div class="quote-cards" id="quote-cards-container">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="dots" id="quote-dots"></div>
+            </section>
+
+            <section id="cta">
+                <h2>Audit the Metric</h2>
+                <p>Audit your current AI project's primary metric today. If it measures model capacity instead of end-to-end operational latency, kill it before lunch.</p>
+            </section>
+        </main>
+    </div>
+
+    <div id="things-tracker">
+        <h4>3 Things Tracker <span id="tracker-toggle">−</span></h4>
+        <div id="tracker-body">
+            <div class="thing-item" data-insight="1">
+                <div class="thing-checkbox"></div>
+                <span>Latency > Throughput</span>
+            </div>
+            <div class="thing-item" data-insight="2">
+                <div class="thing-checkbox"></div>
+                <span>Blast Radius scales exponentially</span>
+            </div>
+            <div class="thing-item" data-insight="3">
+                <div class="thing-checkbox"></div>
+                <span>Brooks' Law > Chinchilla</span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-links">
+            <a href="https://iggym.github.io/applied-ai-engineering/">Home</a>
+            <a href="#" id="scroll-top">Back to Top</a>
+        </div>
+        <p><strong>Sources:</strong> Klarna Q2 2026 Pause Memo; JPMorgan Internal AI Reorg Memo (June 2026); Meta Llama 4 Cluster Postmortem (July 2026).</p>
+        <p style="margin-top: 8px;">&copy; 2026 Applied AI Engineering</p>
+    </footer>
+
+    <script>
+        // --- Progress Bar & Scroll ---
+        const progress = document.getElementById('progress');
+        const updateProgress = () => {
+            const scrollTop = document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrlPct = (scrollTop / scrollHeight) * 100;
+            progress.style.width = scrlPct + '%';
+        };
+        window.addEventListener('scroll', updateProgress);
+
+        // --- Centerpiece Widget ---
+        const slider = document.getElementById('scale-slider');
+        const scaleValue = document.getElementById('scale-value');
+        const computePath = document.getElementById('compute-path');
+        const orgPath = document.getElementById('org-path');
+        
+        slider.addEventListener('input', (e) => {
+            const val = e.target.value;
+            scaleValue.textContent = val + '%';
+            // Simple visual feedback: opacity changes based on slider
+            computePath.style.opacity = val > 50 ? 1 : 0.3;
+            orgPath.style.opacity = val < 50 ? 1 : 0.3;
+        });
+
+        // --- Quote Gallery ---
+        const quotes = [
+            { id: 1, text: "The industry keeps borrowing model-scaling intuition to justify org-scaling decisions. The two curves don't share an X-axis.", source: "The X-Axis Mismatch" },
+            { id: 2, text: "You cannot bypass coordination costs by buying more GPUs, because the hardware and the humans operate on different physics.", source: "Hardware Meets Human Physics" },
+            { id: 3, text: "Doubling your AI team halves your deployment frequency when you scale headcount before scaling your organizational architecture.", source: "Defining the Operating Law" }
+        ];
+
+        const quoteContainer = document.getElementById('quote-cards-container');
+        const dotsContainer = document.getElementById('quote-dots');
+        let currentQuote = 0;
+
+        function buildQuotes() {
+            quotes.forEach((q, i) => {
+                const card = document.createElement('div');
+                card.className = 'quote-card';
+                card.innerHTML = `
+                    <p>"${q.text}"</p>
+                    <div class="share-row">
+                        <a href="#" class="share-btn" onclick="copyQuote(${i}); return false;">Copy Text & Link</a>
+                        <a href="https://x.com/intent/post?text=${encodeURIComponent('"' + q.text + '"')}&url=${encodeURIComponent(window.location.href)}" target="_blank" class="share-btn">Share to X</a>
+                        <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}" target="_blank" class="share-btn">Share to LinkedIn</a>
+                    </div>
+                `;
+                quoteContainer.appendChild(card);
+
+                const dot = document.createElement('div');
+                dot.className = 'dot' + (i === 0 ? ' active' : '');
+                dot.onclick = () => scrollToQuote(i);
+                dotsContainer.appendChild(dot);
+            });
+        }
+
+        function scrollToQuote(index) {
+            currentQuote = index;
+            const cardWidth = quoteContainer.querySelector('.quote-card').offsetWidth + 16; // width + gap
+            quoteContainer.scrollTo({ left: cardWidth * index, behavior: 'smooth' });
+            updateDots();
+        }
+
+        function updateDots() {
+            document.querySelectorAll('.dot').forEach((d, i) => {
+                d.classList.toggle('active', i === currentQuote);
+            });
+        }
+
+        document.getElementById('prev-quote').onclick = () => currentQuote > 0 && scrollToQuote(currentQuote - 1);
+        document.getElementById('next-quote').onclick = () => currentQuote < quotes.length - 1 && scrollToQuote(currentQuote + 1);
+        
+        // Keyboard nav for quotes
+        document.addEventListener('keydown', (e) => {
+            if (e.target.closest('.quote-card') || e.target.closest('.gallery-btn')) {
+                if (e.key === 'ArrowRight') document.getElementById('next-quote').click();
+                if (e.key === 'ArrowLeft') document.getElementById('prev-quote').click();
+            }
+        });
+
+        function copyQuote(index) {
+            const text = `"${quotes[index].text}" - ${window.location.href}`;
+            navigator.clipboard.writeText(text);
+            alert('Quote copied!');
+        }
+
+        buildQuotes();
+
+        // --- Heatmap Generator ---
+        const heatmap = document.getElementById('heatmap');
+        for (let i = 0; i < 100; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'heat-cell';
+            let color = 'var(--success)';
+            if (i === 42) color = 'var(--danger)'; // The failed node
+            else if (i > 40 && i < 45) color = 'var(--warn)'; // struggling neighbors
+            cell.style.background = color;
+            cell.title = i === 42 ? "Failed Node - Triggered 19h outage" : "Healthy Node";
+            heatmap.appendChild(cell);
+        }
+
+        // --- Table Sort & Detail ---
+        function toggleDetail(row) {
+            const detail = row.nextElementSibling;
+            if (detail && detail.classList.contains('row-detail')) {
+                detail.classList.toggle('visible');
+            }
+        }
+
+        function sortTable(colIndex) {
+            const table = document.getElementById('org-table');
+            const tbody = table.querySelector('tbody');
+            let rows = Array.from(tbody.querySelectorAll('tr:not(.row-detail)'));
+            let switching = true;
+            
+            // Simple sort for demo table
+            rows.sort((a, b) => {
+                let valA = a.cells[colIndex].innerText;
+                let valB = b.cells[colIndex].innerText;
+                // Natural sort for numbers
+                if (!isNaN(valA) && !isNaN(valB)) return Number(valA) - Number(valB);
+                return valA.localeCompare(valB);
+            });
+
+            // Re-append rows
+            rows.forEach(row => {
+                tbody.appendChild(row);
+                if(row.nextElementSibling && row.nextElementSibling.classList.contains('row-detail')) {
+                    tbody.appendChild(row.nextElementSibling);
+                }
+            });
+        }
+
+        // --- Intersection Observer for Reveals ---
+        const reveals = document.querySelectorAll('.reveal-text');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        reveals.forEach(r => observer.observe(r));
+
+        // --- Three Things Tracker ---
+        const trackerBody = document.getElementById('tracker-body');
+        document.getElementById('tracker-toggle').onclick = () => {
+            trackerBody.style.display = trackerBody.style.display === 'none' ? 'block' : 'none';
+            document.getElementById('tracker-toggle').textContent = trackerBody.style.display === 'none' ? '+' : '−';
+        };
+
+        const things = document.querySelectorAll('.thing-item');
+        const sectionsForThings = [
+            document.querySelector('#nuance p:nth-child(3)'), // Klarna latency insight
+            document.querySelector('#connections .reveal-text:nth-child(5)'), // Meta blast radius
+            document.querySelector('#agency p:nth-child(1)') // Brooks law
+        ];
+
+        const thingObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Logic to unlock specific tracker item based on entry target
+                    if (entry.target === sectionsForThings[0]) things[0].classList.add('unlocked');
+                    if (entry.target === sectionsForThings[1]) things[1].classList.add('unlocked');
+                    if (entry.target === sectionsForThings[2]) things[2].classList.add('unlocked');
+                }
+            });
+        }, { threshold: 0.5 });
+
+        sectionsForThings.forEach(s => s && thingObserver.observe(s));
+
+        // --- Active Rail Link ---
+        const railLinks = document.querySelectorAll('#rail a');
+        const sections = document.querySelectorAll('section, article');
+        
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id;
+                    railLinks.forEach(link => {
+                        link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+                    });
+                }
+            });
+        }, { threshold: 0.3 });
+
+        sections.forEach(s => sectionObserver.observe(s));
+
+        // --- Smooth Scroll to Top ---
+        document.getElementById('scroll-top').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
