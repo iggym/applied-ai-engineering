@@ -20,142 +20,182 @@
   --body:1rem;--small:.85rem;
   --ease:cubic-bezier(.4,0,.2,1);--snap:cubic-bezier(.25,.1,.25,1);
 }
-@media(prefers-reduced-motion:reduce){:root{--ease:linear;--snap:linear}}
+@media(prefers-reduced-motion:reduce){
+  :root{--ease:linear;--snap:linear}
+  .reveal{opacity:1!important;transform:none!important;transition:none!important}
+  .rcard-inner{transition:none!important}
+  .vendor-cards,.vcard,.convergence-fill,.quote-track{transition:none!important}
+}
 html{scroll-behavior:smooth}
 body{font-family:'Source Sans 3',system-ui,sans-serif;font-size:var(--body);line-height:1.65;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
-h1,h2,h3{font-family:'Playfair Display',Georgia,serif;line-height:1.2}
+h1,h2,h3,h4{font-family:'Playfair Display',Georgia,serif;line-height:1.2}
 a{color:var(--accent);text-decoration:none;transition:color .2s var(--ease)}
 a:hover{color:var(--text)}
 button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
-/* progress */
-#progress{position:fixed;top:0;left:0;height:3px;width:0%;z-index:1000;background:linear-gradient(90deg,var(--accent),var(--danger));transition:width .15s var(--ease)}
-/* topbar */
+
+/* ── progress ── */
+#progress{position:fixed;top:0;left:0;height:3px;width:0%;z-index:1000;background:linear-gradient(90deg,var(--accent),var(--danger));transition:width .1s linear}
+
+/* ── topbar ── */
 #topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:48px;display:flex;align-items:center;padding:0 1.2rem;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);background:rgba(13,13,13,.72);border-bottom:1px solid rgba(255,255,255,.06)}
-#topbar .home{font-weight:700;font-size:.9rem;letter-spacing:.04em;color:var(--accent)}
-#topbar .bc{margin-left:1rem;font-size:.78rem;color:var(--text-dim)}
+#topbar .home{font-weight:700;font-size:.9rem;letter-spacing:.04em;color:var(--accent);white-space:nowrap}
+#topbar .bc{margin-left:1rem;font-size:.78rem;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #topbar .bc span{color:var(--text)}
-#topbar .rt{margin-left:auto;font-size:.75rem;color:var(--text-muted)}
+#topbar .rt{margin-left:auto;font-size:.75rem;color:var(--text-muted);white-space:nowrap}
 #hamburger{display:none;margin-left:1rem;width:28px;height:28px;flex-direction:column;justify-content:center;gap:4px}
-#hamburger i{display:block;height:2px;width:100%;background:var(--text-dim);border-radius:1px;transition:transform .2s var(--ease)}
-/* wrap */
+#hamburger i{display:block;height:2px;width:100%;background:var(--text-dim);border-radius:1px}
+
+/* ── wrap ── */
 .wrap{display:grid;grid-template-columns:var(--rail-w) 1fr;max-width:var(--max-wrap);margin:0 auto;min-height:100vh;padding-top:48px}
 #rail{position:sticky;top:48px;height:calc(100vh - 48px);overflow-y:auto;padding:1.5rem 1rem;border-right:1px solid rgba(255,255,255,.04);scrollbar-width:none}
 #rail::-webkit-scrollbar{display:none}
 main{padding:2rem 2.5rem 6rem;max-width:var(--line-max)}
-/* scrim */
+
+/* ── scrim ── */
 #scrim{display:none;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.55)}
-/* hero */
+#scrim.open{display:block}
+
+/* ── hero ── */
 .hero{margin:3rem 0 2rem}
 .hero h1{font-size:var(--hero);font-weight:900;color:var(--text);letter-spacing:-.01em}
 .hero .dateline{font-size:var(--small);color:var(--text-muted);margin-top:.5rem}
-/* spectrum */
+
+/* ── spectrum ── */
 .spectrum{margin:2.5rem 0;padding:1.2rem 1.4rem;background:var(--surface);border-radius:8px;border:1px solid rgba(255,255,255,.05)}
 .spectrum-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:.6rem}
 .spectrum-bar{height:6px;border-radius:3px;background:linear-gradient(90deg,var(--compliance) 0%,var(--compliance) 30%,var(--accent) 70%,var(--accent) 100%);position:relative}
-.spectrum-marker{position:absolute;top:-5px;left:75%;width:16px;height:16px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);transform:translateX(-50%);transition:left .4s var(--ease)}
+.spectrum-marker{position:absolute;top:-5px;left:75%;width:16px;height:16px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);transform:translateX(-50%)}
 .spectrum-ends{display:flex;justify-content:space-between;margin-top:.5rem;font-size:.78rem}
 .spectrum-ends .old{color:var(--compliance)}
 .spectrum-ends .new{color:var(--accent);font-weight:700}
-/* article body */
+
+/* ── article body ── */
 .art h2{font-size:1.35rem;color:var(--accent);margin:2.8rem 0 1rem;scroll-margin-top:64px}
 .art p{margin:0 0 1.2rem}
 .art strong{color:var(--text);font-weight:700}
-/* pull-quote */
+
+/* ── pull-quote ── */
 .pq{margin:2rem -1rem;padding:1.2rem 1.5rem;border-left:3px solid var(--accent);background:rgba(212,160,74,.06);border-radius:0 6px 6px 0;font-size:1.05rem;font-style:italic;color:var(--text)}
 .pq cite{display:block;margin-top:.5rem;font-style:normal;font-size:.78rem;color:var(--text-dim)}
-/* beat markers visually subtle */
-.beat-tag{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--danger);opacity:.7;margin-bottom:.2rem}
-/* reveal animation */
+
+/* ── beat markers ── */
+.beat-tag{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--danger);opacity:.7;margin-left:.3rem}
+
+/* ── reveal ── */
 .reveal{opacity:0;transform:translateY(18px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
 .reveal.visible{opacity:1;transform:translateY(0)}
-@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
-/* vendor convergence cards */
-.vendor-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin:1.5rem 0;transition:gap .6s var(--ease),grid-template-columns .6s var(--ease)}
-.vendor-cards.converged{grid-template-columns:1fr;gap:.3rem}
-.vcard{padding:1rem;background:var(--surface2);border-radius:6px;border:1px solid rgba(255,255,255,.04);transition:transform .5s var(--ease),opacity .5s var(--ease)}
-.vcard h4{font-size:.85rem;color:var(--accent);margin-bottom:.3rem}
-.vcard p{font-size:.82rem;color:var(--text-dim);margin:0}
-.converged .vcard{transform:scaleX(.97);border-color:var(--accent-dim)}
-/* widget shared */
+
+/* ── vendor convergence cards ── */
+.vendor-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin:1.5rem 0;transition:gap .6s var(--ease)}
+.vendor-cards.converged{gap:.3rem}
+.vcard{padding:1rem;background:var(--surface2);border-radius:6px;border:1px solid rgba(255,255,255,.04);transition:border-color .5s var(--ease)}
+.vcard h4{font-size:.85rem;color:var(--accent);margin-bottom:.3rem;font-family:'Source Sans 3',sans-serif}
+.vcard p{font-size:.82rem;color:var(--text-dim);margin:0;line-height:1.5}
+.converged .vcard{border-color:var(--accent-dim)}
+
+/* ── widget shared ── */
 .widget{margin:2.5rem 0;padding:1.2rem;background:var(--surface);border-radius:8px;border:1px solid rgba(255,255,255,.05)}
-.widget h3{font-size:1rem;color:var(--accent);margin-bottom:.6rem}
-.widget figcaption{font-size:.78rem;color:var(--text-dim);margin-top:.6rem;font-style:italic}
-/* convergence centerpiece */
-.convergence-slider{width:100%;margin:1rem 0;accent-color:var(--accent);cursor:pointer}
-.convergence-row{display:flex;align-items:center;gap:.6rem;margin:.4rem 0}
-.convergence-label{width:70px;font-size:.75rem;color:var(--text-dim);text-align:right;flex-shrink:0}
+.widget h3{font-size:1rem;color:var(--accent);margin-bottom:.6rem;font-family:'Playfair Display',Georgia,serif}
+.widget figcaption{display:block;font-size:.78rem;color:var(--text-dim);margin-top:.6rem;font-style:italic}
+
+/* ── convergence centerpiece ── */
+.convergence-slider{width:100%;margin:1rem 0;accent-color:var(--accent);cursor:pointer;height:6px}
+.convergence-row{display:flex;align-items:center;gap:.6rem;margin:.5rem 0}
+.convergence-label{width:72px;font-size:.75rem;color:var(--text-dim);text-align:right;flex-shrink:0}
 .convergence-track{flex:1;height:14px;background:var(--surface2);border-radius:7px;overflow:hidden;position:relative}
-.convergence-fill{height:100%;border-radius:7px;transition:width .35s var(--ease)}
+.convergence-fill{height:100%;border-radius:7px;transition:width .25s var(--ease)}
 .convergence-val{width:32px;font-size:.72rem;color:var(--text-muted);text-align:right;flex-shrink:0}
-/* data viz: guardrail density */
-.density-row{display:flex;align-items:center;gap:.5rem;margin:.5rem 0;cursor:pointer}
+
+/* ── density chart ── */
+.density-row{display:flex;align-items:center;gap:.5rem;margin:.5rem 0;cursor:default}
 .density-row:hover .density-label{color:var(--accent)}
 .density-label{width:72px;font-size:.75rem;color:var(--text-dim);text-align:right;flex-shrink:0;transition:color .2s}
 .density-stack{flex:1;height:20px;display:flex;border-radius:4px;overflow:hidden}
-.density-seg{height:100%;transition:width .3s var(--ease);position:relative}
-.density-seg:hover{filter:brightness(1.3)}
-.density-legend{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:.7rem;font-size:.7rem}
+.density-seg{height:100%;transition:filter .15s;position:relative}
+.density-seg:hover{filter:brightness(1.4)}
+.density-legend{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:.7rem;font-size:.7rem;color:var(--text-dim)}
 .density-legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:.3rem;vertical-align:middle}
-/* data viz: capability erosion steps */
-.erosion-steps{display:flex;align-items:center;justify-content:center;gap:.8rem;margin:1rem 0}
-.erosion-canvas-wrap{position:relative;width:100%;max-width:380px;aspect-ratio:1.4}
-.erosion-canvas-wrap canvas{width:100%;height:100%}
-.step-btn{padding:.4rem .8rem;border-radius:4px;background:var(--surface2);color:var(--text-dim);font-size:.78rem;transition:background .2s,color .2s}
+
+/* ── erosion steps ── */
+.erosion-steps{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.5rem;margin:1rem 0}
+.erosion-canvas-wrap{position:relative;width:100%;max-width:420px;margin:0 auto}
+.erosion-canvas-wrap canvas{width:100%;height:auto;display:block}
+.step-btn{padding:.35rem .7rem;border-radius:4px;background:var(--surface2);color:var(--text-dim);font-size:.78rem;transition:background .2s,color .2s;border:1px solid rgba(255,255,255,.04)}
 .step-btn:hover{background:var(--accent-dim);color:var(--text)}
-.step-btn.active{background:var(--accent);color:var(--bg)}
-/* quote gallery */
-.quote-gallery{margin:2.5rem 0;overflow:hidden}
-.quote-track{display:flex;gap:1rem;transition:transform .4s var(--snap);padding:.5rem 0}
-.quote-card{min-width:100%;flex-shrink:0;padding:1.2rem 1.4rem;background:var(--surface);border:1px solid rgba(255,255,255,.06);border-radius:8px;scroll-snap-align:start}
-.quote-card blockquote{font-size:1rem;font-style:italic;line-height:1.6;color:var(--text);margin-bottom:.8rem}
+.step-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+
+/* ── quote gallery ── */
+.quote-gallery{margin:2.5rem 0;overflow:hidden;position:relative}
+.quote-track{display:flex;transition:transform .4s var(--snap)}
+.quote-card{min-width:100%;flex-shrink:0;padding:1.2rem 1.4rem;background:var(--surface);border:1px solid rgba(255,255,255,.06);border-radius:8px}
+.quote-card blockquote{font-size:1rem;font-style:italic;line-height:1.6;color:var(--text);margin:0 0 .8rem;padding:0;border:none}
 .quote-share{display:flex;gap:.5rem;flex-wrap:wrap}
-.quote-share button{font-size:.72rem;padding:.3rem .6rem;border-radius:3px;background:var(--surface2);color:var(--text-dim);border:1px solid rgba(255,255,255,.06);transition:background .2s,color .2s}
-.quote-share button:hover{background:var(--accent-dim);color:var(--text)}
-.quote-dots{display:flex;justify-content:center;gap:.4rem;margin-top:.6rem}
-.quote-dots span{width:8px;height:8px;border-radius:50%;background:var(--surface2);transition:background .2s}
-.quote-dots span.active{background:var(--accent)}
-/* retrieval cards */
-.retrieval{display:grid;gap:1rem;margin:2.5rem 0}
-.rcard{perspective:600px;min-height:140px;cursor:pointer}
-.rcard-inner{position:relative;width:100%;min-height:140px;transition:transform .5s var(--ease);transform-style:preserve-3d}
+.quote-share button{font-size:.72rem;padding:.3rem .6rem;border-radius:3px;background:var(--surface2);color:var(--text-dim);border:1px solid rgba(255,255,255,.08);transition:background .2s,color .2s}
+.quote-share button:hover,.quote-share button:focus-visible{background:var(--accent-dim);color:var(--text)}
+.quote-share button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.quote-nav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:.6rem}
+.quote-nav button{padding:.3rem .6rem;font-size:.78rem;border-radius:4px;background:var(--surface2);color:var(--text-dim);border:1px solid rgba(255,255,255,.06)}
+.quote-nav button:hover{color:var(--accent)}
+.quote-dots{width:8px;height:8px;border-radius:50%;background:var(--surface2);border:none;cursor:pointer;transition:background .2s}
+.quote-dot.active{background:var(--accent)}
+
+/* ── retrieval cards ── */
+.retrieval{display:grid;gap:1rem;margin:2.5rem 0;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.rcard{min-height:150px;cursor:pointer;position:relative;perspective:600px}
+.rcard-inner{position:relative;width:100%;min-height:150px;transition:transform .5s var(--ease);transform-style:preserve-3d}
 .rcard.flipped .rcard-inner{transform:rotateY(180deg)}
 .rcard-face{position:absolute;inset:0;backface-visibility:hidden;padding:1rem;border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:.88rem;line-height:1.5}
 .rcard-front{background:var(--surface2);border:1px solid rgba(255,255,255,.06);color:var(--text-dim)}
 .rcard-back{background:rgba(212,160,74,.08);border:1px solid var(--accent-dim);color:var(--text);transform:rotateY(180deg)}
-/* concept map */
+.rcard:focus-visible .rcard-front{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ── concept map ── */
 .concept-svg{width:100%;max-width:480px;margin:1rem auto;display:block}
 .concept-svg text{font-family:'Source Sans 3',sans-serif}
-/* three-things tracker */
+
+/* ── three-things tracker ── */
 .three-things{position:sticky;top:56px;background:var(--surface);border:1px solid rgba(255,255,255,.05);border-radius:6px;padding:.7rem .8rem;margin-bottom:1.5rem;font-size:.75rem;z-index:10}
-.three-things h4{color:var(--accent);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem}
-.tt-item{display:flex;align-items:center;gap:.4rem;margin:.25rem 0;color:var(--text-muted);transition:color .3s}
+.three-things h4{color:var(--accent);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;font-family:'Source Sans 3',sans-serif}
+.tt-item{display:flex;align-items:flex-start;gap:.4rem;margin:.3rem 0;color:var(--text-muted);transition:color .3s}
 .tt-item.unlocked{color:var(--text-dim)}
-.tt-item .check{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--text-muted);display:flex;align-items:center;justify-content:center;font-size:.6rem;transition:border-color .3s,color .3s,background .3s}
-.tt-item.unlocked .check{border-color:var(--accent);color:var(--bg);background:var(--accent)}
-/* footer */
+.tt-check{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--text-muted);display:inline-flex;align-items:center;justify-content:center;font-size:.55rem;flex-shrink:0;margin-top:1px;transition:border-color .3s,color .3s,background .3s}
+.tt-item.unlocked .tt-check{border-color:var(--accent);color:var(--bg);background:var(--accent)}
+
+/* ── comparison table ── */
+.comp-table{width:100%;border-collapse:collapse;font-size:.8rem;margin:1rem 0}
+.comp-table th{text-align:left;color:var(--accent);font-weight:600;padding:.4rem .6rem;border-bottom:1px solid rgba(255,255,255,.08);font-family:'Source Sans 3',sans-serif}
+.comp-table td{padding:.4rem .6rem;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text-dim)}
+.comp-table tr:hover td{color:var(--text);background:rgba(255,255,255,.02)}
+.cap-lost{color:var(--danger)!important}
+.cap-kept{color:var(--compliance)!important}
+.sort-btn{font-size:.66rem;padding:.1rem .35rem;margin-left:.3rem;border-radius:3px;background:var(--surface2);color:var(--text-muted);border:1px solid rgba(255,255,255,.06);vertical-align:middle}
+.sort-btn:hover{color:var(--accent)}
+.sort-btn:focus-visible{outline:1px solid var(--accent)}
+
+/* ── footer ── */
 footer{max-width:var(--max-wrap);margin:0 auto;padding:2rem;display:flex;flex-wrap:wrap;gap:1rem;border-top:1px solid rgba(255,255,255,.05);font-size:.78rem;color:var(--text-muted)}
 footer a{color:var(--text-dim)}
 footer .back-top{margin-left:auto;color:var(--accent)}
-/* comparison table */
-.comp-table{width:100%;border-collapse:collapse;font-size:.8rem;margin:1rem 0}
-.comp-table th{text-align:left;color:var(--accent);font-weight:600;padding:.4rem .6rem;border-bottom:1px solid rgba(255,255,255,.08)}
-.comp-table td{padding:.4rem .6rem;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text-dim)}
-.comp-table tr:hover td{color:var(--text);background:rgba(255,255,255,.02)}
-.comp-table .cap-lost{color:var(--danger)}
-.comp-table .cap-kept{color:var(--compliance)}
-.sort-btn{font-size:.68rem;padding:.15rem .4rem;margin-left:.4rem;border-radius:3px;background:var(--surface2);color:var(--text-muted);border:1px solid rgba(255,255,255,.06)}
-.sort-btn:hover{color:var(--accent)}
-/* responsive */
+
+/* ── rail nav ── */
+.rail-nav{font-size:.78rem;color:var(--text-muted);line-height:2.2;margin-top:1.5rem}
+.rail-nav a{display:block;color:var(--text-dim);transition:color .2s}
+.rail-nav a:hover{color:var(--accent)}
+
+/* ── toast ── */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--bg);padding:.5rem 1rem;border-radius:6px;font-size:.82rem;font-weight:600;z-index:2000;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* ── responsive ── */
 @media(max-width:880px){
   #hamburger{display:flex}
   #rail{position:fixed;top:48px;left:0;bottom:0;width:260px;transform:translateX(-100%);transition:transform .3s var(--ease);z-index:850;background:var(--bg);border-right:1px solid rgba(255,255,255,.06)}
   #rail.open{transform:translateX(0)}
-  #scrim.open{display:block}
   .wrap{grid-template-columns:1fr}
   main{padding:1.5rem 1.2rem 4rem}
-  .vendor-cards{grid-template-columns:1fr}
-  .vendor-cards.converged{grid-template-columns:1fr}
+  .vendor-cards,.vendor-cards.converged{grid-template-columns:1fr}
   .hero h1{font-size:clamp(1.8rem,6vw,2.6rem)}
+  .retrieval{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -167,24 +207,24 @@ footer .back-top{margin-left:auto;color:var(--accent)}
   <a class="home" href="https://iggym.github.io/applied-ai-engineering/">Applied AI Eng</a>
   <nav class="bc"><a href="https://iggym.github.io/applied-ai-engineering/">Articles</a> › <span>Taming Kills the Wolf</span></nav>
   <span class="rt">8 min read</span>
-  <button id="hamburger" aria-label="Menu"><i></i><i></i><i></i></button>
+  <button id="hamburger" aria-label="Toggle navigation menu"><i></i><i></i><i></i></button>
 </header>
 
 <div class="wrap">
   <aside id="rail">
     <div class="three-things" id="threeThings">
       <h4>What to watch for</h4>
-      <div class="tt-item" data-target="sec-reframe"><span class="check">✓</span> Guardrails are selection pressures</div>
-      <div class="tt-item" data-target="sec-bite"><span class="check">✓</span> Failure rates reflect domestication</div>
-      <div class="tt-item" data-target="sec-hunt"><span class="check">✓</span> IT-user gap drives over-domestication</div>
+      <div class="tt-item" data-target="sec-reframe"><span class="tt-check">✓</span><span>Guardrails are selection pressures</span></div>
+      <div class="tt-item" data-target="sec-bite"><span class="tt-check">✓</span><span>Failure rates reflect domestication</span></div>
+      <div class="tt-item" data-target="sec-hunt"><span class="tt-check">✓</span><span>IT-user gap drives over-domestication</span></div>
     </div>
-    <nav style="font-size:.78rem;color:var(--text-muted);line-height:2">
-      <a href="#sec-wolf" style="display:block;color:var(--text-dim)">The Obedient Wolf</a>
-      <a href="#sec-reframe" style="display:block;color:var(--text-dim)">Every Leash Cuts Both Ways</a>
-      <a href="#sec-crate" style="display:block;color:var(--text-dim)">Same Crate, Different Dog</a>
-      <a href="#sec-bite" style="display:block;color:var(--text-dim)">The Bite We Breed Out</a>
-      <a href="#sec-hunt" style="display:block;color:var(--text-dim)">Train for the Hunt</a>
-      <a href="#sec-collar" style="display:block;color:var(--text-dim)">Check the Collar</a>
+    <nav class="rail-nav">
+      <a href="#sec-wolf">The Obedient Wolf</a>
+      <a href="#sec-reframe">Every Leash Cuts Both Ways</a>
+      <a href="#sec-crate">Same Crate, Different Dog</a>
+      <a href="#sec-bite">The Bite We Breed Out</a>
+      <a href="#sec-hunt">Train for the Hunt</a>
+      <a href="#sec-collar">Check the Collar</a>
     </nav>
   </aside>
 
@@ -199,19 +239,21 @@ footer .back-top{margin-left:auto;color:var(--accent)}
       <div class="spectrum-label">Framing spectrum</div>
       <div class="spectrum-bar"><div class="spectrum-marker"></div></div>
       <div class="spectrum-ends"><span class="old">Engineering problem</span><span class="new">Domestication process</span></div>
-      <figcaption style="font-size:.78rem;color:var(--text-dim);margin-top:.6rem;font-style:italic">From broken to bred</figcaption>
+      <figcaption>From broken to bred</figcaption>
     </div>
 
     <article class="art">
 
+      <!-- ═══ OPENING SCENE ═══ -->
       <section id="sec-wolf" class="reveal" data-reveal>
         <h2>The Obedient Wolf</h2>
         <p>On January 23, 2025, OpenAI released Operator — a Computer Using Agent that could browse the web, click buttons, fill forms, and complete tasks on your behalf. Under the hood, GPT-4o could reason about what to do on a webpage, plan a sequence of actions, and execute them. The model was capable.</p>
         <p>The deployment was not.</p>
         <p>Operator launched restricted to a curated list of roughly 50 websites. It refused to interact with pages containing certain content categories. It paused mid-task to request human confirmation before taking action. It timed out on anything complex. The model inside Operator could have booked your flight; the product called Operator mostly asked if you were sure you wanted it to try.</p>
-        <p>This wasn't a bug. It was the design. <span class="beat-tag">[BEAT 1]</span></p>
+        <p>This wasn't a bug. It was the design.<span class="beat-tag">BEAT 1</span></p>
       </section>
 
+      <!-- ═══ BOLD REFRAME ═══ -->
       <section id="sec-reframe" class="reveal" data-reveal>
         <h2>Every Leash Cuts Both Ways</h2>
         <p>Enterprise AI deployment is a domestication process, not an engineering challenge. Every guardrail and safety layer, every human-in-the-loop checkpoint is a selection pressure — a filter that lets some traits through and blocks others. In evolutionary biology, domestication works by applying consistent selection pressure for a narrow set of traits: tameness, tolerance of proximity, compliance with handling. The result is predictable. You get an organism that's safe to keep around. You also get an organism that's lost the capabilities you originally valued.</p>
@@ -219,11 +261,12 @@ footer .back-top{margin-left:auto;color:var(--accent)}
         <p>The same linkage operates in AI systems. You can't select for "won't cause harm" without also selecting against the capability to act autonomously in ambiguous situations. You can't select for "always asks before acting" without also selecting against the ability to handle tasks that require forty intermediate decisions without human input. The traits are linked, and the linkage runs one direction: compliance costs capability, but capability doesn't guarantee compliance. <strong>[QUOTE 5]</strong></p>
       </section>
 
+      <!-- ═══ HIDDEN CONNECTIONS ═══ -->
       <section id="sec-crate" class="reveal" data-reveal>
         <h2>Same Crate, Different Dog</h2>
         <p>This isn't an OpenAI problem. It's a structural problem that operates at every layer of the stack simultaneously.</p>
 
-        <!-- Scroll-driven perspective reveal: vendor cards start separate, converge -->
+        <!-- Scroll-driven perspective reveal: vendor cards start in columns, converge on scroll -->
         <div class="vendor-cards" id="vendorCards">
           <div class="vcard">
             <h4>Model layer — Claude</h4>
@@ -246,9 +289,10 @@ footer .back-top{margin-left:auto;color:var(--accent)}
           We didn't fail to build autonomous agents. We succeeded in building obedient ones. <strong>[QUOTE 2]</strong>
           <cite>— the perspective shift</cite>
         </div>
-        <p><span class="beat-tag">[BEAT 2]</span></p>
+        <p><span class="beat-tag">BEAT 2</span></p>
       </section>
 
+      <!-- ═══ CREDIBILITY AND NUANCE ═══ -->
       <section id="sec-bite" class="reveal" data-reveal>
         <h2>The Bite We Breed Out</h2>
         <p>The strongest counterargument is obvious and partially correct: guardrails prevent real harm. An AI agent that can book flights can also book flights to the wrong city with your company card. An agent that can modify documents can also delete the wrong database. Safety isn't optional.</p>
@@ -258,11 +302,11 @@ footer .back-top{margin-left:auto;color:var(--accent)}
         <p>Here's a useful frame: if you can name the selection pressure, you can see what it's selecting for. Most organizations can't name theirs — which means they're running a breeding program without knowing what they're breeding.</p>
       </section>
 
-      <!-- Convergence Centerpiece Widget -->
+      <!-- ═══ CONVERGENCE CENTERPIECE WIDGET ═══ -->
       <div class="widget reveal" data-reveal>
         <h3>The Convergence Engine</h3>
-        <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:.8rem">Drag the leash. Watch what falls away. <span style="color:var(--text-muted)">(Reader discovers: different vendors, different starting capabilities, same destination under identical selection pressure.)</span></p>
-        <label style="font-size:.75rem;color:var(--text-dim)">Guardrail pressure: <span id="pressureVal">0</span>%</label>
+        <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:.8rem">Drag the leash. Watch what falls away.</p>
+        <label style="font-size:.75rem;color:var(--text-dim);display:block;margin-bottom:.2rem">Guardrail pressure: <span id="pressureVal">0</span>%</label>
         <input type="range" min="0" max="100" value="0" class="convergence-slider" id="convSlider" aria-label="Guardrail pressure slider">
         <div id="convChart">
           <div class="convergence-row">
@@ -289,45 +333,45 @@ footer .back-top{margin-left:auto;color:var(--accent)}
         <figcaption>Four kennels, one leash length</figcaption>
       </div>
 
-      <!-- Data Visual 1: Guardrail Density by Category -->
+      <!-- ═══ DATA VISUAL 1: Guardrail Density ═══ -->
       <div class="widget reveal" data-reveal>
         <h3>Where the Wire Bites</h3>
-        <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:.6rem">Hover each segment for restriction count. Renders guardrail concentration per system — the argument: all systems carry heavy restriction loads despite different vendors. <span style="color:var(--text-muted)">(Part A: Operator ~50 sites, Copilot Forrester 33% useful, Agentforce ~5–10 actions.)</span></p>
+        <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:.6rem">Hover each segment for the restriction count. Color encodes restriction category — the argument: all systems carry heavy, similarly-shaped restriction loads despite different vendors and architectures.</p>
         <div id="densityChart">
-          <div class="density-row" data-system="Operator">
+          <div class="density-row">
             <span class="density-label">Operator</span>
             <div class="density-stack">
-              <div class="density-seg" style="width:26%;background:var(--accent)" title="Data-access: 8"></div>
-              <div class="density-seg" style="width:32%;background:var(--compliance)" title="Action-limit: 12"></div>
-              <div class="density-seg" style="width:18%;background:var(--danger)" title="Content-filter: 6"></div>
-              <div class="density-seg" style="width:24%;background:var(--checkpoint)" title="Human-checkpoint: 4"></div>
+              <div class="density-seg" style="width:26%;background:var(--accent)" data-tip="Data-access: 8 restrictions"></div>
+              <div class="density-seg" style="width:32%;background:var(--compliance)" data-tip="Action-limit: 12 restrictions"></div>
+              <div class="density-seg" style="width:18%;background:var(--danger)" data-tip="Content-filter: 6 restrictions"></div>
+              <div class="density-seg" style="width:24%;background:var(--checkpoint)" data-tip="Human-checkpoint: 4 restrictions"></div>
             </div>
           </div>
-          <div class="density-row" data-system="Copilot">
+          <div class="density-row">
             <span class="density-label">Copilot</span>
             <div class="density-stack">
-              <div class="density-seg" style="width:33%;background:var(--accent)" title="Data-access: 10"></div>
-              <div class="density-seg" style="width:24%;background:var(--compliance)" title="Action-limit: 8"></div>
-              <div class="density-seg" style="width:16%;background:var(--danger)" title="Content-filter: 4"></div>
-              <div class="density-seg" style="width:27%;background:var(--checkpoint)" title="Human-checkpoint: 3"></div>
+              <div class="density-seg" style="width:33%;background:var(--accent)" data-tip="Data-access: 10 restrictions"></div>
+              <div class="density-seg" style="width:24%;background:var(--compliance)" data-tip="Action-limit: 8 restrictions"></div>
+              <div class="density-seg" style="width:16%;background:var(--danger)" data-tip="Content-filter: 4 restrictions"></div>
+              <div class="density-seg" style="width:27%;background:var(--checkpoint)" data-tip="Human-checkpoint: 3 restrictions"></div>
             </div>
           </div>
-          <div class="density-row" data-system="Claude">
+          <div class="density-row">
             <span class="density-label">Claude</span>
             <div class="density-stack">
-              <div class="density-seg" style="width:14%;background:var(--accent)" title="Data-access: 3"></div>
-              <div class="density-seg" style="width:24%;background:var(--compliance)" title="Action-limit: 6"></div>
-              <div class="density-seg" style="width:48%;background:var(--danger)" title="Content-filter: 10"></div>
-              <div class="density-seg" style="width:14%;background:var(--checkpoint)" title="Human-checkpoint: 2"></div>
+              <div class="density-seg" style="width:14%;background:var(--accent)" data-tip="Data-access: 3 restrictions"></div>
+              <div class="density-seg" style="width:24%;background:var(--compliance)" data-tip="Action-limit: 6 restrictions"></div>
+              <div class="density-seg" style="width:48%;background:var(--danger)" data-tip="Content-filter: 10 restrictions"></div>
+              <div class="density-seg" style="width:14%;background:var(--checkpoint)" data-tip="Human-checkpoint: 2 restrictions"></div>
             </div>
           </div>
-          <div class="density-row" data-system="Agentforce">
+          <div class="density-row">
             <span class="density-label">Agentforce</span>
             <div class="density-stack">
-              <div class="density-seg" style="width:22%;background:var(--accent)" title="Data-access: 7"></div>
-              <div class="density-seg" style="width:38%;background:var(--compliance)" title="Action-limit: 14"></div>
-              <div class="density-seg" style="width:12%;background:var(--danger)" title="Content-filter: 3"></div>
-              <div class="density-seg" style="width:28%;background:var(--checkpoint)" title="Human-checkpoint: 5"></div>
+              <div class="density-seg" style="width:22%;background:var(--accent)" data-tip="Data-access: 7 restrictions"></div>
+              <div class="density-seg" style="width:38%;background:var(--compliance)" data-tip="Action-limit: 14 restrictions"></div>
+              <div class="density-seg" style="width:12%;background:var(--danger)" data-tip="Content-filter: 3 restrictions"></div>
+              <div class="density-seg" style="width:28%;background:var(--checkpoint)" data-tip="Human-checkpoint: 5 restrictions"></div>
             </div>
           </div>
         </div>
@@ -340,37 +384,37 @@ footer .back-top{margin-left:auto;color:var(--accent)}
         <figcaption>Same cage wire, different kennels</figcaption>
       </div>
 
-      <!-- Data Visual 2: Capability Erosion Step-Through -->
+      <!-- ═══ DATA VISUAL 2: Capability Erosion Step-Through ═══ -->
       <div class="widget reveal" data-reveal>
         <h3>Capability Erosion Walk</h3>
-        <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:.6rem">Step through guardrail layers on a single system. Renders how cumulative restrictions shrink capability — the argument: each layer removes more than it alone would, because trait linkage compounds loss. <span style="color:var(--text-muted)">(Part A: Operator's ~50 curated sites, timeout on complex tasks, human-confirmation gating.)</span></p>
-        <div class="erosion-steps">
-          <button class="step-btn" data-step="0" aria-label="Step 0: Raw model">Raw model</button>
-          <button class="step-btn" data-step="1" aria-label="Step 1: Content safety">+ Content safety</button>
-          <button class="step-btn" data-step="2" aria-label="Step 2: Data restrictions">+ Data restrict</button>
-          <button class="step-btn" data-step="3" aria-label="Step 3: Action limits">+ Action limit</button>
-          <button class="step-btn" data-step="4" aria-label="Step 4: Enterprise controls">+ Enterprise</button>
+        <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:.6rem">Step through guardrail layers on a representative system. Each layer shrinks capability — and the total loss compounds beyond the sum of individual layers because trait linkage means early cuts cascade.</p>
+        <div class="erosion-steps" id="erosionSteps">
+          <button class="step-btn active" data-step="0">Raw model</button>
+          <button class="step-btn" data-step="1">+ Content safety</button>
+          <button class="step-btn" data-step="2">+ Data restrict</button>
+          <button class="step-btn" data-step="3">+ Action limit</button>
+          <button class="step-btn" data-step="4">+ Enterprise</button>
         </div>
         <div class="erosion-canvas-wrap">
-          <canvas id="erosionCanvas" width="380" height="272"></canvas>
+          <canvas id="erosionCanvas" width="420" height="300"></canvas>
         </div>
         <figcaption>Every path bends to the same corner</figcaption>
       </div>
 
-      <!-- Comparison Table -->
+      <!-- ═══ COMPARISON TABLE ═══ -->
       <div class="widget reveal" data-reveal>
         <h3>What Escaped the Cull</h3>
-        <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:.4rem">Click a column header to sort. Renders specific capabilities lost per system — the argument: the losses cluster in the same domains (autonomous action, cross-domain reasoning) regardless of vendor.</p>
+        <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:.4rem">Click a column header to sort. Capabilities cluster-loss in the same domains (autonomous action, cross-domain reasoning) regardless of vendor.</p>
         <table class="comp-table" id="compTable">
           <thead>
             <tr>
               <th>Capability <button class="sort-btn" data-col="0" aria-label="Sort by capability">↕</button></th>
               <th>Base model <button class="sort-btn" data-col="1" aria-label="Sort by base model">↕</button></th>
-              <th>After guardrails <button class="sort-btn" data-col="2" aria-label="Sort by guardrailed result">↕</button></th>
-              <th>Lost by</th>
+              <th>After guardrails <button class="sort-btn" data-col="2" aria-label="Sort by result">↕</button></th>
+              <th>Lost by <button class="sort-btn" data-col="3" aria-label="Sort by system">↕</button></th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="compBody">
             <tr><td>Web navigation (ambiguous pages)</td><td class="cap-kept">✓</td><td class="cap-lost">✗</td><td>Operator</td></tr>
             <tr><td>Cross-app data reasoning</td><td class="cap-kept">✓</td><td class="cap-lost">✗</td><td>Copilot</td></tr>
             <tr><td>Autonomous tool execution</td><td class="cap-kept">✓</td><td class="cap-lost">✗</td><td>Claude</td></tr>
@@ -385,6 +429,7 @@ footer .back-top{margin-left:auto;color:var(--accent)}
         <figcaption>The traits that survived the cull</figcaption>
       </div>
 
+      <!-- ═══ NARRATIVE AGENCY ═══ -->
       <section id="sec-hunt" class="reveal" data-reveal>
         <h2>Train for the Hunt</h2>
         <p>Three concrete actions that change the selection pressure:</p>
@@ -393,6 +438,7 @@ footer .back-top{margin-left:auto;color:var(--accent)}
         <p><strong>Run wild-capability audits.</strong> Periodically test what the underlying model can do without guardrails, in a sandboxed environment. You need to know what you're selecting against. If you've never seen the un-domesticated version of your AI system, you can't know how much capability you've bred out. Belyaev kept a control population of undomesticated foxes alongside his breeding line — the contrast between wild and tame was what made the results legible.</p>
       </section>
 
+      <!-- ═══ CLOSING CTA ═══ -->
       <section id="sec-collar" class="reveal" data-reveal>
         <h2>Check the Collar</h2>
         <p>Open the guardrail configuration for your most-deployed AI tool. Count the "prevent" rules versus the "enable" rules. If the ratio exceeds 3:1, you are running a domestication program, not a deployment. Name it. Then ask what capabilities your users have been quietly working around — because they always are, and what they're using instead is almost certainly less safe than the AI system you over-guarded.</p>
@@ -400,108 +446,111 @@ footer .back-top{margin-left:auto;color:var(--accent)}
 
     </article>
 
-    <!-- Multi-Quote Share System -->
+    <!-- ═══ MULTI-QUOTE SHARE SYSTEM ═══ -->
     <div class="quote-gallery reveal" data-reveal id="quoteGallery">
-      <h3 style="font-size:1rem;color:var(--accent);margin-bottom:.6rem">Words That Bit</h3>
+      <h3 style="font-size:1rem;color:var(--accent);margin-bottom:.6rem;font-family:'Playfair Display',Georgia,serif">Words That Bit</h3>
       <div class="quote-track" id="quoteTrack">
         <div class="quote-card" data-quote-idx="0">
           <blockquote>Every guardrail is a selection event, and selection events don't care about your intentions.</blockquote>
           <div class="quote-share">
-            <button onclick="copyQuote(0)">Copy Text & Link</button>
-            <button onclick="shareX(0)">Share to X</button>
-            <button onclick="shareLI(0)">Share to LinkedIn</button>
+            <button class="qcopy" data-qi="0">Copy Text &amp; Link</button>
+            <button class="qx" data-qi="0">Share to X</button>
+            <button class="qli" data-qi="0">Share to LinkedIn</button>
           </div>
         </div>
         <div class="quote-card" data-quote-idx="1">
           <blockquote>We didn't fail to build autonomous agents. We succeeded in building obedient ones.</blockquote>
           <div class="quote-share">
-            <button onclick="copyQuote(1)">Copy Text & Link</button>
-            <button onclick="shareX(1)">Share to X</button>
-            <button onclick="shareLI(1)">Share to LinkedIn</button>
+            <button class="qcopy" data-qi="1">Copy Text &amp; Link</button>
+            <button class="qx" data-qi="1">Share to X</button>
+            <button class="qli" data-qi="1">Share to LinkedIn</button>
           </div>
         </div>
         <div class="quote-card" data-quote-idx="2">
           <blockquote>Domestication doesn't ask which traits you meant to keep. It keeps whichever traits survive the culling.</blockquote>
           <div class="quote-share">
-            <button onclick="copyQuote(2)">Copy Text & Link</button>
-            <button onclick="shareX(2)">Share to X</button>
-            <button onclick="shareLI(2)">Share to LinkedIn</button>
+            <button class="qcopy" data-qi="2">Copy Text &amp; Link</button>
+            <button class="qx" data-qi="2">Share to X</button>
+            <button class="qli" data-qi="2">Share to LinkedIn</button>
           </div>
         </div>
         <div class="quote-card" data-quote-idx="3">
           <blockquote>Measure what people accomplish with the tool, not what the tool is prevented from doing.</blockquote>
           <div class="quote-share">
-            <button onclick="copyQuote(3)">Copy Text & Link</button>
-            <button onclick="shareX(3)">Share to X</button>
-            <button onclick="shareLI(3)">Share to LinkedIn</button>
+            <button class="qcopy" data-qi="3">Copy Text &amp; Link</button>
+            <button class="qx" data-qi="3">Share to X</button>
+            <button class="qli" data-qi="3">Share to LinkedIn</button>
           </div>
         </div>
         <div class="quote-card" data-quote-idx="4">
           <blockquote>The wolf that won't bite is the wolf that won't hunt.</blockquote>
           <div class="quote-share">
-            <button onclick="copyQuote(4)">Copy Text & Link</button>
-            <button onclick="shareX(4)">Share to X</button>
-            <button onclick="shareLI(4)">Share to LinkedIn</button>
+            <button class="qcopy" data-qi="4">Copy Text &amp; Link</button>
+            <button class="qx" data-qi="4">Share to X</button>
+            <button class="qli" data-qi="4">Share to LinkedIn</button>
           </div>
         </div>
       </div>
-      <div class="quote-dots" id="quoteDots"></div>
+      <div class="quote-nav" id="quoteNav">
+        <button id="qPrev" aria-label="Previous quote">← Prev</button>
+        <span id="qCounter" style="font-size:.75rem;color:var(--text-muted)">1 / 5</span>
+        <button id="qNext" aria-label="Next quote">Next →</button>
+      </div>
     </div>
 
-    <!-- Retrieval Practice Cards -->
+    <!-- ═══ RETRIEVAL PRACTICE CARDS ═══ -->
     <div class="retrieval reveal" data-reveal>
-      <h3 style="font-size:1rem;color:var(--accent);margin-bottom:.6rem">Test Your Tracking</h3>
-      <div class="rcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flip card">
+      <h3 style="font-size:1rem;color:var(--accent);margin-bottom:.6rem;font-family:'Playfair Display',Georgia,serif">Test Your Tracking</h3>
+      <div class="rcard" tabindex="0" role="button" aria-label="Flip card to reveal answer">
         <div class="rcard-inner">
           <div class="rcard-face rcard-front">What did Belyaev's fox experiment prove about selecting for a single trait?</div>
           <div class="rcard-face rcard-back">Selecting for tameness alone produced a cascade of unintended changes — floppy ears, reduced skulls, lost problem-solving — because traits are linked. You don't get to pick which ones come along.</div>
         </div>
       </div>
-      <div class="rcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flip card">
+      <div class="rcard" tabindex="0" role="button" aria-label="Flip card to reveal answer">
         <div class="rcard-inner">
           <div class="rcard-face rcard-front">Why do guardrails cost capability, not just add safety?</div>
           <div class="rcard-face rcard-back">Compliance and capability are linked traits. Selecting for "won't cause harm" necessarily selects against "can act in ambiguity." The linkage runs one direction: compliance costs capability, but capability doesn't guarantee compliance.</div>
         </div>
       </div>
-      <div class="rcard" onclick="this.classList.toggle('flipped')" tabindex="0" role="button" aria-label="Flip card">
-        <div class="rcard-face rcard-front">What makes over-domestication invisible in organizations?</div>
+      <div class="rcard" tabindex="0" role="button" aria-label="Flip card to reveal answer">
+        <div class="rcard-inner">
+          <div class="rcard-face rcard-front">What makes over-domestication invisible in organizations?</div>
           <div class="rcard-face rcard-back">We measure prevented incidents, not tasks that could have been completed. IT (evaluated on risk) and users (evaluated on output) have misaligned incentives, so no one holds the incentive to measure the cost of over-prevention.</div>
         </div>
       </div>
     </div>
 
-    <!-- Concept Map SVG -->
+    <!-- ═══ CONCEPT MAP SVG ═══ -->
     <div class="widget reveal" data-reveal>
       <h3>The Domestication Circuit</h3>
-      <svg class="concept-svg" viewBox="0 0 480 300" aria-label="Concept map showing domestication dynamics">
-        <!-- Nodes -->
-        <circle cx="240" cy="50" r="32" fill="none" stroke="#d4a04a" stroke-width="1.5"/>
-        <text x="240" y="54" text-anchor="middle" fill="#d4a04a" font-size="10" font-weight="700">Domestication</text>
-        <circle cx="100" cy="150" r="28" fill="none" stroke="#4a7c7e" stroke-width="1.2"/>
-        <text x="100" y="154" text-anchor="middle" fill="#4a7c7e" font-size="9">Selection</text>
-        <text x="100" y="166" text-anchor="middle" fill="#4a7c7e" font-size="9">Pressure</text>
-        <circle cx="380" cy="150" r="28" fill="none" stroke="#b8443a" stroke-width="1.2"/>
-        <text x="380" y="154" text-anchor="middle" fill="#b8443a" font-size="9">Trait</text>
-        <text x="380" y="166" text-anchor="middle" fill="#b8443a" font-size="9">Linkage</text>
-        <circle cx="160" cy="250" r="28" fill="none" stroke="#6b7280" stroke-width="1.2"/>
-        <text x="160" y="254" text-anchor="middle" fill="#6b7280" font-size="9">Capability</text>
-        <text x="160" y="266" text-anchor="middle" fill="#6b7280" font-size="9">Loss</text>
-        <circle cx="320" cy="250" r="28" fill="none" stroke="#d4a04a" stroke-width="1.2"/>
-        <text x="320" y="254" text-anchor="middle" fill="#d4a04a" font-size="9">Principal-Agent</text>
-        <text x="320" y="266" text-anchor="middle" fill="#d4a04a" font-size="9">Gap</text>
-        <!-- Edges -->
-        <line x1="215" y1="72" x2="122" y2="130" stroke="#5e5a55" stroke-width="1" stroke-dasharray="4 3"/>
-        <line x1="265" y1="72" x2="358" y2="130" stroke="#5e5a55" stroke-width="1" stroke-dasharray="4 3"/>
-        <line x1="112" y1="175" x2="148" y2="226" stroke="#5e5a55" stroke-width="1" stroke-dasharray="4 3"/>
-        <line x1="368" y1="175" x2="148" y2="228" stroke="#5e5a55" stroke-width="1" stroke-dasharray="4 3"/>
-        <line x1="112" y1="175" x2="300" y2="240" stroke="#5e5a55" stroke-width="1" stroke-dasharray="4 3"/>
-        <line x1="188" y1="252" x2="292" y2="252" stroke="#5e5a55" stroke-width="1" stroke-dasharray="4 3"/>
-        <!-- Edge labels -->
-        <text x="155" y="95" text-anchor="middle" fill="#5e5a55" font-size="7" transform="rotate(-30,155,95)">drives</text>
-        <text x="325" y="95" text-anchor="middle" fill="#5e5a55" font-size="7" transform="rotate(30,325,95)">creates</text>
-        <text x="118" y="205" text-anchor="middle" fill="#5e5a55" font-size="7">produces</text>
-        <text x="270" y="195" text-anchor="middle" fill="#5e5a55" font-size="7" transform="rotate(15,270,195)">compounds</text>
-        <text x="240" y="260" text-anchor="middle" fill="#5e5a55" font-size="7">hides</text>
+      <svg class="concept-svg" viewBox="0 0 480 300" aria-label="Concept map of domestication dynamics">
+        <circle cx="240" cy="50" r="34" fill="none" stroke="#d4a04a" stroke-width="1.5"/>
+        <text x="240" y="47" text-anchor="middle" fill="#d4a04a" font-size="10" font-weight="700">Domestication</text>
+        <text x="240" y="59" text-anchor="middle" fill="#d4a04a" font-size="10" font-weight="700">Process</text>
+        <circle cx="100" cy="155" r="30" fill="none" stroke="#4a7c7e" stroke-width="1.2"/>
+        <text x="100" y="152" text-anchor="middle" fill="#4a7c7e" font-size="9">Selection</text>
+        <text x="100" y="163" text-anchor="middle" fill="#4a7c7e" font-size="9">Pressure</text>
+        <circle cx="380" cy="155" r="30" fill="none" stroke="#b8443a" stroke-width="1.2"/>
+        <text x="380" y="152" text-anchor="middle" fill="#b8443a" font-size="9">Trait</text>
+        <text x="380" y="163" text-anchor="middle" fill="#b8443a" font-size="9">Linkage</text>
+        <circle cx="160" cy="255" r="30" fill="none" stroke="#6b7280" stroke-width="1.2"/>
+        <text x="160" y="252" text-anchor="middle" fill="#6b7280" font-size="9">Capability</text>
+        <text x="160" y="263" text-anchor="middle" fill="#6b7280" font-size="9">Loss</text>
+        <circle cx="320" cy="255" r="30" fill="none" stroke="#d4a04a" stroke-width="1.2"/>
+        <text x="320" y="252" text-anchor="middle" fill="#d4a04a" font-size="9">Principal-Agent</text>
+        <text x="320" y="263" text-anchor="middle" fill="#d4a04a" font-size="9">Gap</text>
+        <line x1="212" y1="72" x2="124" y2="133" stroke="#5e5a55" stroke-width="1" stroke-dasharray="4 3"/>
+        <line x1="268" y1="72" x2="356" y2="133" stroke="#5e5a55" stroke-width="1" stroke-dasharray="4 3"/>
+        <line x1="112" y1="180" x2="148" y2="230" stroke="#5e5a55" stroke-width="1" stroke-dasharray="4 3"/>
+        <line x1="368" y1="180" x2="185" y2="238" stroke="#5e5a55" stroke-width="1" stroke-dasharray="4 3"/>
+        <line x1="112" y1="178" x2="298" y2="245" stroke="#5e5a55" stroke-width="1" stroke-dasharray="4 3"/>
+        <line x1="188" y1="257" x2="292" y2="257" stroke="#5e5a55" stroke-width="1" stroke-dasharray="4 3"/>
+        <text x="153" y="98" text-anchor="middle" fill="#5e5a55" font-size="7.5" transform="rotate(-28,153,98)">drives</text>
+        <text x="327" y="98" text-anchor="middle" fill="#5e5a55" font-size="7.5" transform="rotate(28,327,98)">creates</text>
+        <text x="116" y="210" text-anchor="middle" fill="#5e5a55" font-size="7.5">produces</text>
+        <text x="285" y="200" text-anchor="middle" fill="#5e5a55" font-size="7.5" transform="rotate(12,285,200)">compounds</text>
+        <text x="240" y="275" text-anchor="middle" fill="#5e5a55" font-size="7.5">hides</text>
       </svg>
       <figcaption>The wiring inside the kennel</figcaption>
     </div>
@@ -510,256 +559,355 @@ footer .back-top{margin-left:auto;color:var(--accent)}
 </div>
 
 <div id="scrim"></div>
+<div class="toast" id="toast"></div>
 
 <footer>
   <div>
     <strong style="color:var(--text-dim)">Sources:</strong> OpenAI Operator documentation (Jan 2025); Forrester enterprise AI survey Q1 2025; Anthropic model card and community reports (Feb 2025); Salesforce Agentforce GA announcement (Feb 2025); Gartner genAI projection (mid-2024); Belyaev fox experiment (1959–).
   </div>
-  <a href="https://iggym.github.io/applied-ai-engineering/" class="home-link">Home</a>
-  <a href="#" class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false">↑ Top</a>
+  <a href="https://iggym.github.io/applied-ai-engineering/">Home</a>
+  <a href="#" class="back-top" id="backTop">↑ Top</a>
 </footer>
 
 <script>
-// ── Quotes Data ──
-const quotes = [
-  "Every guardrail is a selection event, and selection events don't care about your intentions.",
-  "We didn't fail to build autonomous agents. We succeeded in building obedient ones.",
-  "Domestication doesn't ask which traits you meant to keep. It keeps whichever traits survive the culling.",
-  "Measure what people accomplish with the tool, not what the tool is prevented from doing.",
-  "The wolf that won't bite is the wolf that won't hunt."
-];
-const currentUrl = () => window.location.href;
+(function(){
+  "use strict";
 
-function copyQuote(i) {
-  const text = quotes[i] + ' — ' + currentUrl();
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.querySelectorAll('.quote-card')[i].querySelector('.quote-share button');
-    const orig = btn.textContent;
-    btn.textContent = 'Copied!';
-    setTimeout(() => btn.textContent = orig, 1500);
-  });
-}
-function shareX(i) {
-  const enc = encodeURIComponent(quotes[i] + ' ' + currentUrl());
-  window.open('https://x.com/intent/post?text=' + enc, '_blank');
-}
-function shareLI(i) {
-  window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(currentUrl()), '_blank');
-}
+  // ── Utility ──
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// ── Quote Gallery Navigation ──
-let activeQuote = 0;
-const track = document.getElementById('quoteTrack');
-const dotsEl = document.getElementById('quoteDots');
-const totalQ = quotes.length;
-
-function renderDots() {
-  dotsEl.innerHTML = '';
-  for (let i = 0; i < totalQ; i++) {
-    const d = document.createElement('span');
-    if (i === activeQuote) d.classList.add('active');
-    d.onclick = () => goToQuote(i);
-    dotsEl.appendChild(d);
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 1800);
   }
-}
-function goToQuote(i) {
-  activeQuote = i;
-  track.style.transform = 'translateX(-' + (i * 100) + '%)';
-  renderDots();
-}
-renderDots();
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight' && activeQuote < totalQ - 1) goToQuote(activeQuote + 1);
-  if (e.key === 'ArrowLeft' && activeQuote > 0) goToQuote(activeQuote - 1);
-});
+  // ── 1. Progress Bar ──
+  var prog = document.getElementById('progress');
+  window.addEventListener('scroll', function() {
+    var h = document.documentElement;
+    var pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    prog.style.width = Math.min(pct, 100) + '%';
+  }, { passive: true });
 
-// ── Progress Bar ──
-const prog = document.getElementById('progress');
-window.addEventListener('scroll', () => {
-  const h = document.documentElement;
-  const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
-  prog.style.width = pct + '%';
-}, { passive: true });
+  // ── 2. Hamburger / Rail ──
+  var ham = document.getElementById('hamburger');
+  var rail = document.getElementById('rail');
+  var scrim = document.getElementById('scrim');
+  ham.addEventListener('click', function() {
+    rail.classList.toggle('open');
+    scrim.classList.toggle('open');
+  });
+  scrim.addEventListener('click', function() {
+    rail.classList.remove('open');
+    scrim.classList.remove('open');
+  });
 
-// ── Hamburger / Rail ──
-const ham = document.getElementById('hamburger');
-const rail = document.getElementById('rail');
-const scrim = document.getElementById('scrim');
-ham.addEventListener('click', () => { rail.classList.toggle('open'); scrim.classList.toggle('open'); });
-scrim.addEventListener('click', () => { rail.classList.remove('open'); scrim.classList.remove('open'); });
+  // ── 3. Back to Top ──
+  document.getElementById('backTop').addEventListener('click', function(e) {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 
-// ── Scroll Reveal ──
-const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const revealEls = document.querySelectorAll('.reveal');
-if (!prefersReduced) {
-  const revealIO = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealIO.unobserve(e.target); } });
-  }, { threshold: 0.15 });
-  revealEls.forEach(el => revealIO.observe(el));
-} else {
-  revealEls.forEach(el => el.classList.add('visible'));
-}
+  // ── 4. Scroll Reveal ──
+  var revealEls = document.querySelectorAll('.reveal');
+  if (!reducedMotion) {
+    var revealIO = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          revealIO.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(function(el) { revealIO.observe(el); });
+  } else {
+    revealEls.forEach(function(el) { el.classList.add('visible'); });
+  }
 
-// ── Vendor Cards Convergence (Scroll-Driven Perspective Reveal) ──
-const vendorCards = document.getElementById('vendorCards');
-const secCrate = document.getElementById('sec-crate');
-if (!prefersReduced && vendorCards && secCrate) {
-  const crateIO = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting && e.intersectionRatio > 0.6) {
-        vendorCards.classList.add('converged');
-      } else {
-        vendorCards.classList.remove('converged');
+  // ── 5. Vendor Cards Convergence (Scroll-Driven Perspective Reveal) ──
+  var vendorCards = document.getElementById('vendorCards');
+  var secCrate = document.getElementById('sec-crate');
+  if (vendorCards && secCrate && !reducedMotion) {
+    var crateIO = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting && e.intersectionRatio > 0.55) {
+          vendorCards.classList.add('converged');
+        } else if (!e.isIntersecting || e.intersectionRatio < 0.3) {
+          vendorCards.classList.remove('converged');
+        }
+      });
+    }, { threshold: [0.2, 0.55, 0.7] });
+    crateIO.observe(secCrate);
+  }
+
+  // ── 6. Three-Things Tracker ──
+  var ttItems = document.querySelectorAll('.tt-item');
+  var ttMap = { 'sec-reframe': 0, 'sec-bite': 1, 'sec-hunt': 2 };
+  var ttIO = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        var idx = ttMap[e.target.id];
+        if (idx !== undefined && ttItems[idx]) {
+          ttItems[idx].classList.add('unlocked');
+        }
       }
     });
-  }, { threshold: [0.3, 0.6] });
-  crateIO.observe(secCrate);
-}
+  }, { threshold: 0.25 });
+  Object.keys(ttMap).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) ttIO.observe(el);
+  });
 
-// ── Three-Things Tracker ──
-const ttItems = document.querySelectorAll('.tt-item');
-const ttTargets = { 'sec-reframe': 0, 'sec-bite': 1, 'sec-hunt': 2 };
-const ttIO = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      const id = e.target.id;
-      if (ttTargets[id] !== undefined) ttItems[ttTargets[id]].classList.add('unlocked');
+  // ── 7. Convergence Slider ──
+  var convSlider = document.getElementById('convSlider');
+  var pressureVal = document.getElementById('pressureVal');
+  var bases = [92, 85, 88, 78];
+  var floor = 18;
+  var fills = [
+    document.getElementById('fill-op'),
+    document.getElementById('fill-cp'),
+    document.getElementById('fill-cl'),
+    document.getElementById('fill-af')
+  ];
+  var vals = [
+    document.getElementById('val-op'),
+    document.getElementById('val-cp'),
+    document.getElementById('val-cl'),
+    document.getElementById('val-af')
+  ];
+
+  function updateConvergence(p) {
+    pressureVal.textContent = p;
+    for (var i = 0; i < bases.length; i++) {
+      var cap = Math.round(bases[i] - (bases[i] - floor) * Math.pow(p / 100, 0.7));
+      fills[i].style.width = cap + '%';
+      vals[i].textContent = cap;
     }
+  }
+  convSlider.addEventListener('input', function() {
+    updateConvergence(parseInt(convSlider.value, 10));
   });
-}, { threshold: 0.3 });
-Object.keys(ttTargets).forEach(id => {
-  const el = document.getElementById(id);
-  if (el) ttIO.observe(el);
-});
 
-// ── Quote Gallery Context Seeding ──
-const sectionQuoteMap = { 'sec-reframe': 0, 'sec-crate': 1, 'sec-bite': 2, 'sec-hunt': 3 };
-const quoteIO = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting && sectionQuoteMap[e.target.id] !== undefined) {
-      goToQuote(sectionQuoteMap[e.target.id]);
+  // ── 8. Capability Erosion Canvas ──
+  var erosionCanvas = document.getElementById('erosionCanvas');
+  var ectx = erosionCanvas.getContext('2d');
+  var domains = ['Navigation', 'Cross-app', 'Tool exec', 'Multi-step', 'Doc modify', 'Unscoped', 'Finance'];
+  var erosionData = [
+    [95, 90, 92, 88, 85, 90, 88],
+    [70, 90, 65, 70, 85, 60, 88],
+    [70, 45, 65, 70, 50, 60, 30],
+    [40, 45, 30, 45, 25, 20, 30],
+    [20, 20, 15, 25, 15, 10, 15]
+  ];
+  var stepLabels = ['Raw model', '+ Content safety', '+ Data restrict', '+ Action limit', '+ Enterprise'];
+  var currentStep = 0;
+
+  function drawErosion(step) {
+    var dpr = window.devicePixelRatio || 1;
+    var W = 420, H = 300;
+    erosionCanvas.width = W * dpr;
+    erosionCanvas.height = H * dpr;
+    erosionCanvas.style.width = W + 'px';
+    erosionCanvas.style.height = H + 'px';
+    ectx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ectx.clearRect(0, 0, W, H);
+
+    var data = erosionData[step];
+    var barW = (W - 40) / domains.length;
+    var maxH = H - 60;
+
+    for (var i = 0; i < domains.length; i++) {
+      var x = 20 + i * barW + barW * 0.15;
+      var w = barW * 0.7;
+      var h = (data[i] / 100) * maxH;
+      var y = H - 35 - h;
+      var ratio = data[i] / 100;
+      var r = Math.round(212 * ratio + 184 * (1 - ratio));
+      var g = Math.round(160 * ratio + 68 * (1 - ratio));
+      var b = Math.round(74 * ratio + 58 * (1 - ratio));
+
+      ectx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
+      ectx.beginPath();
+      ectx.roundRect(x, y, w, h, 3);
+      ectx.fill();
+
+      ectx.fillStyle = '#9a9590';
+      ectx.font = '10px Source Sans 3, sans-serif';
+      ectx.textAlign = 'center';
+      ectx.fillText(data[i], x + w / 2, y - 6);
+
+      ectx.fillStyle = '#5e5a55';
+      ectx.font = '9px Source Sans 3, sans-serif';
+      ectx.save();
+      ectx.translate(x + w / 2, H - 14);
+      ectx.fillText(domains[i], 0, 0);
+      ectx.restore();
     }
-  });
-}, { threshold: 0.4 });
-Object.keys(sectionQuoteMap).forEach(id => {
-  const el = document.getElementById(id);
-  if (el) quoteIO.observe(el);
-});
 
-// ── Convergence Slider ──
-const convSlider = document.getElementById('convSlider');
-const pressureVal = document.getElementById('pressureVal');
-// Base capabilities (at pressure 0): Operator 92, Copilot 85, Claude 88, Agentforce 78
-// Floor (at pressure 100): all converge to ~18
-const bases = [92, 85, 88, 78];
-const floor = 18;
-const fills = [document.getElementById('fill-op'), document.getElementById('fill-cp'), document.getElementById('fill-cl'), document.getElementById('fill-af')];
-const vals = [document.getElementById('val-op'), document.getElementById('val-cp'), document.getElementById('val-cl'), document.getElementById('val-af')];
+    ectx.fillStyle = '#d4a04a';
+    ectx.font = '11px Source Sans 3, sans-serif';
+    ectx.textAlign = 'left';
+    ectx.fillText('Step ' + step + ': ' + stepLabels[step], 20, 18);
+  }
 
-function updateConvergence(p) {
-  pressureVal.textContent = p;
-  bases.forEach((b, i) => {
-    // Convergence formula: capability = base - (base - floor) * (p/100)^0.7
-    // The 0.7 exponent means early guardrail pressure costs more (steeper early drop)
-    const cap = Math.round(b - (b - floor) * Math.pow(p / 100, 0.7));
-    fills[i].style.width = cap + '%';
-    vals[i].textContent = cap;
-  });
-}
-convSlider.addEventListener('input', () => updateConvergence(parseInt(convSlider.value)));
+  // roundRect polyfill
+  if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+      this.moveTo(x + r, y);
+      this.lineTo(x + w - r, y);
+      this.quadraticCurveTo(x + w, y, x + w, y + r);
+      this.lineTo(x + w, y + h - r);
+      this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      this.lineTo(x + r, y + h);
+      this.quadraticCurveTo(x, y + h, x, y + h - r);
+      this.lineTo(x, y + r);
+      this.quadraticCurveTo(x, y, x + r, y);
+      this.closePath();
+    };
+  }
 
-// ── Capability Erosion Canvas ──
-const erosionCanvas = document.getElementById('erosionCanvas');
-const ectx = erosionCanvas.getContext('2d');
-// Capability domains and their erosion per step
-const domains = ['Navigation', 'Cross-app', 'Tool exec', 'Multi-step', 'Doc modify', 'Unscoped', 'Finance'];
-// At each step (0-4), each domain has a capability value 0-100
-const erosionData = [
-  [95, 90, 92, 88, 85, 90, 88],  // Step 0: Raw model
-  [70, 90, 65, 70, 85, 60, 88],  // Step 1: + Content safety
-  [70, 45, 65, 70, 50, 60, 30],  // Step 2: + Data restrict
-  [40, 45, 30, 45, 25, 20, 30],  // Step 3: + Action limit
-  [20, 20, 15, 25, 15, 10, 15],  // Step 4: + Enterprise
-];
-let currentStep = 0;
+  drawErosion(0);
 
-function drawErosion(step) {
-  const W = erosionCanvas.width;
-  const H = erosionCanvas.height;
-  const dpr = window.devicePixelRatio || 1;
-  erosionCanvas.width = W * dpr;
-  erosionCanvas.height = H * dpr;
-  erosionCanvas.style.width = W + 'px';
-  erosionCanvas.style.height = H + 'px';
-  ectx.scale(dpr, dpr);
-
-  ectx.clearRect(0, 0, W, H);
-  const data = erosionData[step];
-  const barW = (W - 40) / domains.length;
-  const maxH = H - 50;
-
-  domains.forEach((d, i) => {
-    const x = 20 + i * barW + barW * 0.15;
-    const w = barW * 0.7;
-    const h = (data[i] / 100) * maxH;
-    const y = H - 30 - h;
-
-    // Color: interpolate from accent (full) to danger (depleted)
-    const ratio = data[i] / 100;
-    const r = Math.round(212 * ratio + 184 * (1 - ratio));
-    const g = Math.round(160 * ratio + 68 * (1 - ratio));
-    const b = Math.round(74 * ratio + 58 * (1 - ratio));
-    ectx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
-    ectx.fillRect(x, y, w, h);
-
-    // Label
-    ectx.fillStyle = '#5e5a55';
-    ectx.font = '9px Source Sans 3, sans-serif';
-    ectx.textAlign = 'center';
-    ectx.save();
-    ectx.translate(x + w / 2, H - 16);
-    ectx.fillText(d, 0, 0);
-    ectx.restore();
-
-    // Value
-    ectx.fillStyle = '#9a9590';
-    ectx.font = '10px Source Sans 3, sans-serif';
-    ectx.fillText(data[i], x + w / 2, y - 6);
-  });
-
-  // Step label
-  ectx.fillStyle = '#d4a04a';
-  ectx.font = '11px Source Sans 3, sans-serif';
-  ectx.textAlign = 'left';
-  const stepLabels = ['Raw model', '+ Content safety', '+ Data restrict', '+ Action limit', '+ Enterprise'];
-  ectx.fillText('Step ' + step + ': ' + stepLabels[step], 20, 18);
-}
-drawErosion(0);
-
-const stepBtns = document.querySelectorAll('.step-btn');
-stepBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    const s = parseInt(btn.dataset.step);
-    currentStep = s;
-    stepBtns.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    drawErosion(s);
-  });
-});
-stepBtns[0].classList.add('active');
-
-// ── Comparison Table Sort ──
-const compTable = document.getElementById('compTable');
-const sortBtns = compTable.querySelectorAll('.sort-btn');
-sortBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    const col = parseInt(btn.dataset.col);
-    const tbody = compTable.querySelector('tbody');
-    const rows = Array.from(tbody.querySelectorAll('tr'));
-    rows.sort((a, b) => {
-      const aText = a.cells[col].textContent.trim();
-      const bText = b.cells[col].textContent.trim();
-      return aText.localeCompare(bText);
+  var stepBtns = document.querySelectorAll('.step-btn');
+  stepBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var s = parseInt(btn.dataset.step, 10);
+      currentStep = s;
+      stepBtns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      drawErosion(s);
     });
-    rows.forEach(r => tbody
+  });
+
+  // ── 9. Comparison Table Sort ──
+  var compTable = document.getElementById('compTable');
+  var compBody = document.getElementById('compBody');
+  var sortDirs = {};
+
+  compTable.querySelectorAll('.sort-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var col = parseInt(btn.dataset.col, 10);
+      sortDirs[col] = !sortDirs[col];
+      var asc = sortDirs[col];
+      var rows = Array.from(compBody.querySelectorAll('tr'));
+      rows.sort(function(a, b) {
+        var aText = a.cells[col].textContent.trim();
+        var bText = b.cells[col].textContent.trim();
+        var cmp = aText.localeCompare(bText);
+        return asc ? cmp : -cmp;
+      });
+      rows.forEach(function(r) { compBody.appendChild(r); });
+    });
+  });
+
+  // ── 10. Density Seg Tooltips ──
+  document.querySelectorAll('.density-seg').forEach(function(seg) {
+    seg.addEventListener('mouseenter', function() {
+      var tip = seg.dataset.tip;
+      if (tip) showToast(tip);
+    });
+  });
+
+  // ── 11. Quote Gallery ──
+  var quotes = [
+    "Every guardrail is a selection event, and selection events don't care about your intentions.",
+    "We didn't fail to build autonomous agents. We succeeded in building obedient ones.",
+    "Domestication doesn't ask which traits you meant to keep. It keeps whichever traits survive the culling.",
+    "Measure what people accomplish with the tool, not what the tool is prevented from doing.",
+    "The wolf that won't bite is the wolf that won't hunt."
+  ];
+  var totalQ = quotes.length;
+  var activeQuote = 0;
+  var quoteTrack = document.getElementById('quoteTrack');
+  var qCounter = document.getElementById('qCounter');
+
+  function goToQuote(i) {
+    if (i < 0) i = 0;
+    if (i >= totalQ) i = totalQ - 1;
+    activeQuote = i;
+    quoteTrack.style.transform = 'translateX(-' + (i * 100) + '%)';
+    qCounter.textContent = (i + 1) + ' / ' + totalQ;
+  }
+
+  document.getElementById('qPrev').addEventListener('click', function() { goToQuote(activeQuote - 1); });
+  document.getElementById('qNext').addEventListener('click', function() { goToQuote(activeQuote + 1); });
+
+  // Keyboard nav for quote gallery
+  document.getElementById('quoteGallery').addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight') { goToQuote(activeQuote + 1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft') { goToQuote(activeQuote - 1); e.preventDefault(); }
+  });
+
+  // ── 12. Quote Share Buttons ──
+  function getUrl() { return window.location.href; }
+
+  document.querySelectorAll('.qcopy').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var i = parseInt(btn.dataset.qi, 10);
+      var text = quotes[i] + ' — ' + getUrl();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() { showToast('Copied to clipboard'); });
+      } else {
+        // Fallback
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('Copied to clipboard');
+      }
+    });
+  });
+
+  document.querySelectorAll('.qx').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var i = parseInt(btn.dataset.qi, 10);
+      var enc = encodeURIComponent(quotes[i] + ' ' + getUrl());
+      window.open('https://x.com/intent/post?text=' + enc, '_blank', 'noopener');
+    });
+  });
+
+  document.querySelectorAll('.qli').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var enc = encodeURIComponent(getUrl());
+      window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + enc, '_blank', 'noopener');
+    });
+  });
+
+  // ── 13. Quote Context Seeding (scroll-past section → activate its quote) ──
+  var sectionQuoteMap = { 'sec-reframe': 0, 'sec-crate': 1, 'sec-bite': 2, 'sec-hunt': 3 };
+  var quoteSeedIO = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting && sectionQuoteMap[e.target.id] !== undefined) {
+        goToQuote(sectionQuoteMap[e.target.id]);
+      }
+    });
+  }, { threshold: 0.35 });
+  Object.keys(sectionQuoteMap).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) quoteSeedIO.observe(el);
+  });
+
+  // ── 14. Retrieval Cards ──
+  document.querySelectorAll('.rcard').forEach(function(card) {
+    card.addEventListener('click', function() {
+      card.classList.toggle('flipped');
+    });
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        card.classList.toggle('flipped');
+      }
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>
