@@ -1,0 +1,6 @@
+# Lychee link checker configuration
+accept_missing_includes = true
+skip_missing_fragment = true
+cache = true
+cache_timeout = 3600
+timeout = 30
