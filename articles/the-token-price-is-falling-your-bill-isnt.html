@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" data-slug="the-token-price-is-falling-your-bill-isnt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Token Price Is Falling. Your Bill Isn&#x27;t. — Applied AI Engineering</title>
+<meta name="description" content="Per-token prices drop about 10x a year, but agents multiply the tokens per task faster. The unit that predicts your bill is cost per completed task.">
+<meta name="author" content="Applied AI Engineering">
+<link rel="canonical" href="https://iggym.github.io/applied-ai-engineering/articles/the-token-price-is-falling-your-bill-isnt.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Applied AI Engineering">
+<meta property="og:title" content="The Token Price Is Falling. Your Bill Isn&#x27;t.">
+<meta property="og:description" content="Per-token prices drop about 10x a year, but agents multiply the tokens per task faster. The unit that predicts your bill is cost per completed task.">
+<meta property="og:url" content="https://iggym.github.io/applied-ai-engineering/articles/the-token-price-is-falling-your-bill-isnt.html">
+<meta property="article:published_time" content="2026-10-07">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="The Token Price Is Falling. Your Bill Isn&#x27;t.">
+<meta name="twitter:description" content="Per-token prices drop about 10x a year, but agents multiply the tokens per task faster. The unit that predicts your bill is cost per completed task.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#12151B; --surface:#181C24; --surface-2:#1E232D;
+  --ink:#E7E5DF; --muted:#9A9FAB;
+  --brass:#C08A3E; --brass-ink:#D9A55A; --brass-dim:rgba(192,138,62,.35);
+  --rust:#C2604B; --rule:rgba(231,229,223,.14);
+  --max:680px; --topbar:52px;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#FAF9F7; --surface:#F0EFEC; --surface-2:#E7E5E0;
+    --ink:#1A1A1A; --muted:#5E5E5E;
+    --brass:#9A6A26; --brass-ink:#8A5C1C; --brass-dim:rgba(154,106,38,.35);
+    --rust:#A6503E; --rule:rgba(26,26,26,.14);
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:calc(var(--topbar) + 16px)}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:'Source Serif 4',Georgia,serif;
+  font-size:18px; line-height:1.65; -webkit-font-smoothing:antialiased}
+@media (min-width:760px){ body{font-size:19px} }
+a{color:var(--brass-ink); text-underline-offset:3px}
+::selection{background:var(--brass-dim)}
+:focus-visible{outline:2px solid var(--brass); outline-offset:3px}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+
+header.top{position:sticky; top:0; z-index:50; height:var(--topbar); display:flex; align-items:center;
+  justify-content:space-between; gap:12px; padding:0 16px; background:color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--rule)}
+.crumbs{font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0}
+.crumbs a{color:var(--ink); text-decoration:none}
+.crumbs a:hover{color:var(--brass-ink)}
+.top-meta{font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--brass-ink); border:1px solid var(--brass-dim);
+  padding:3px 8px; border-radius:2px; flex-shrink:0}
+.progress{position:absolute; left:0; bottom:-1px; height:2px; width:0; background:var(--brass)}
+
+nav.rail{display:none}
+@media (min-width:1180px){
+  nav.rail{display:block; position:fixed; top:calc(var(--topbar) + 56px); left:max(24px, calc(50vw - 340px - 260px)); width:210px}
+  nav.rail p{font-family:'IBM Plex Mono',monospace; font-size:.66rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin:0 0 10px}
+  nav.rail ol{list-style:none; margin:0; padding:0; border-left:1px solid var(--rule)}
+  nav.rail a{display:block; padding:5px 0 5px 14px; margin-left:-1px; border-left:2px solid transparent; color:var(--muted);
+    text-decoration:none; font-family:'IBM Plex Mono',monospace; font-size:.74rem; line-height:1.4}
+  nav.rail a:hover{color:var(--ink)}
+  nav.rail a.active{color:var(--brass-ink); border-left-color:var(--brass)}
+}
+
+main{max-width:var(--max); margin:0 auto; padding:0 16px 64px}
+.hero{padding:64px 0 28px; border-bottom:1px solid var(--rule); margin-bottom:28px}
+.eyebrow{font-family:'IBM Plex Mono',monospace; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+  display:flex; flex-wrap:wrap; gap:6px 14px; margin:0 0 18px}
+.eyebrow .docket{color:var(--brass-ink)}
+h1{font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(2rem,6vw,3rem); line-height:1.12; margin:0 0 14px; letter-spacing:-.01em}
+.hook{font-family:'Fraunces',Georgia,serif; font-style:italic; font-weight:400; font-size:1.18rem; color:var(--muted); margin:0 0 18px; max-width:56ch}
+.tags{display:flex; flex-wrap:wrap; gap:8px; margin:0; padding:0; list-style:none}
+.tags li{font-family:'IBM Plex Mono',monospace; font-size:.66rem; color:var(--brass-ink); border:1px solid var(--brass-dim); padding:2px 8px; border-radius:2px}
+figure.thesis{margin:30px 0 0; padding:18px; background:var(--surface); border:1px solid var(--rule); border-radius:4px}
+figure.thesis svg{display:block; width:100%; height:auto}
+figure.thesis figcaption, .cap{font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--muted); margin-top:10px; line-height:1.5}
+
+article h2{font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:1.6rem; line-height:1.2; margin:2.4em 0 .6em}
+article h3{font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:1.2rem; margin:1.6em 0 .4em}
+article p{margin:0 0 1.1em}
+article strong{color:var(--ink); font-weight:600}
+sup.cite a{font-family:'IBM Plex Mono',monospace; font-size:.66em; text-decoration:none; padding:0 1px}
+.thesis-line{border-left:3px solid var(--brass); padding:4px 0 4px 18px; font-size:1.08em; margin:1.4em 0}
+
+details.predict{margin:1.6em 0; border:1px dashed var(--brass-dim); border-radius:4px; padding:14px 18px; background:var(--surface)}
+details.predict summary{cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--brass-ink); letter-spacing:.04em}
+details.predict[open] summary{margin-bottom:10px}
+details.predict p:last-child{margin-bottom:0}
+
+.centerpiece{margin:2em -4px; padding:20px 18px; background:var(--surface); border:1px solid var(--rule); border-radius:6px}
+.centerpiece h3{margin-top:0}
+.centerpiece .label{font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+.centerpiece button{font:inherit; font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--ink); background:var(--surface-2);
+  border:1px solid var(--rule); border-radius:3px; padding:7px 12px; cursor:pointer; min-height:36px}
+.centerpiece button:hover{border-color:var(--brass-dim)}
+.centerpiece button[aria-pressed="true"], .centerpiece button.on{border-color:var(--brass); color:var(--brass-ink)}
+.centerpiece input[type=range]{width:100%; accent-color:var(--brass)}
+.assumptions{font-family:'IBM Plex Mono',monospace; font-size:.7rem; color:var(--muted); border-top:1px solid var(--rule); margin-top:16px; padding-top:10px; line-height:1.55}
+
+aside.counter{margin:2em 0; padding:20px 20px 6px; border:1px solid var(--rust); border-left-width:4px; border-radius:4px; background:color-mix(in srgb, var(--rust) 7%, transparent)}
+aside.counter .k{font-family:'IBM Plex Mono',monospace; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--rust); margin:0 0 8px}
+
+ol.moves{list-style:none; padding:0; margin:1.2em 0; counter-reset:m}
+ol.moves li{counter-increment:m; position:relative; padding:14px 0 14px 52px; border-bottom:1px solid var(--rule)}
+ol.moves li::before{content:counter(m,decimal-leading-zero); position:absolute; left:0; top:14px; font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--brass-ink)}
+ol.moves label{display:flex; gap:10px; align-items:flex-start; cursor:pointer}
+ol.moves input{margin-top:.45em; accent-color:var(--brass); width:16px; height:16px; flex-shrink:0}
+ol.moves .signal{display:block; font-size:.88em; color:var(--muted); margin-top:4px}
+ol.moves li.done .what{text-decoration:line-through; text-decoration-color:var(--brass-dim)}
+
+blockquote.pull{margin:2em 0; padding:0 0 0 20px; border-left:2px solid var(--brass)}
+blockquote.pull p{font-family:'Fraunces',Georgia,serif; font-style:italic; font-size:1.3rem; line-height:1.35; margin:0 0 10px}
+.share{display:flex; gap:8px; flex-wrap:wrap}
+.share a, .share button{font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--muted); background:none; border:1px solid var(--rule);
+  border-radius:2px; padding:3px 9px; text-decoration:none; cursor:pointer}
+.share a:hover, .share button:hover{color:var(--brass-ink); border-color:var(--brass-dim)}
+
+ul.carry{list-style:none; padding:0; margin:1em 0}
+ul.carry li{padding:12px 0 12px 28px; border-bottom:1px solid var(--rule); position:relative; font-family:'Fraunces',Georgia,serif; font-size:1.1rem}
+ul.carry li::before{content:'→'; position:absolute; left:0; color:var(--brass-ink)}
+
+.quiz details{border-bottom:1px solid var(--rule); padding:12px 0}
+.quiz summary{cursor:pointer; font-weight:600}
+.quiz details p{margin:10px 0 0; color:var(--muted)}
+
+section.sources ol{font-size:.86rem; color:var(--muted); padding-left:1.4em}
+section.sources li{margin-bottom:.6em; overflow-wrap:anywhere}
+section.sources li:target{color:var(--ink); background:var(--surface)}
+
+footer.end{max-width:var(--max); margin:0 auto; padding:28px 16px 56px; border-top:1px solid var(--rule);
+  display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; font-family:'IBM Plex Mono',monospace; font-size:.74rem; color:var(--muted)}
+footer.end a{color:var(--brass-ink); text-decoration:none}
+
+table.cmp{width:100%; border-collapse:collapse; font-size:.86rem; margin:1.4em 0}
+table.cmp th, table.cmp td{text-align:left; vertical-align:top; padding:9px 8px; border-bottom:1px solid var(--rule)}
+table.cmp th{font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:500}
+.scroll-x{overflow-x:auto}
+
+@media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important; scroll-behavior:auto !important} }
+
+/* ---- brief-specific ---- */
+
+.row{display:flex; flex-wrap:wrap; gap:8px; margin:10px 0}
+#ct label{display:block; margin-top:12px}
+.ct-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-top:16px}
+.ct-grid div{background:var(--surface-2); border-radius:4px; padding:10px; display:flex; flex-direction:column; gap:4px; min-width:0}
+.ct-grid b{font-family:'IBM Plex Mono',monospace; font-size:1.05rem; font-weight:500; overflow-wrap:anywhere}
+.ct-grid b.hi{color:var(--brass-ink)}
+@media (max-width:480px){ .ct-grid{grid-template-columns:1fr} }
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="crumbs"><a href="../">Applied AI Engineering</a> / The Token Price Is Falling. Your Bill Isn&#x27;t.</div>
+  <div class="top-meta">No. 017 · 6 min</div>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<nav class="rail" aria-label="Contents">
+  <p>Contents</p>
+  <ol>
+    <li><a href="#two-curves">Two Curves</a></li>
+    <li><a href="#flat-price">Why Flat Prices Break</a></li>
+    <li><a href="#counterargument">The Objection</a></li>
+    <li><a href="#moves">Four Moves Monday</a></li>
+    <li><a href="#carry">Three Things to Carry</a></li>
+    <li><a href="#check">Check Your Understanding</a></li>
+    <li><a href="#sources">Sources</a></li>
+  </ol>
+</nav>
+<main>
+<article>
+  <header class="hero">
+    <p class="eyebrow"><span class="docket">No. 017</span><span>Oct 7, 2026</span><span>6 min read</span><span>Research window: 2023-03-01 to 2026-10-07</span></p>
+    <h1>The Token Price Is Falling. Your Bill Isn&#x27;t.</h1>
+    <p class="hook">Per-token prices drop about 10x a year, but agents multiply the tokens per task faster. The unit that predicts your bill is cost per completed task.</p>
+    <ul class="tags" aria-label="Tags"><li>unit-economics</li><li>agentic-systems</li><li>pricing</li><li>strategy</li></ul>
+    <figure class="thesis">
+<svg viewBox="0 0 640 170" role="img" aria-labelledby="h5t">
+  <title id="h5t">Price per token falls steeply over time while tokens per task rise more steeply, so cost per task rises.</title>
+  <line x1="40" y1="145" x2="620" y2="145" stroke="currentColor" stroke-opacity=".3"/>
+  <line x1="40" y1="15" x2="40" y2="145" stroke="currentColor" stroke-opacity=".3"/>
+  <path d="M40 30 C 200 70, 380 120, 620 138" fill="none" stroke="#9A9FAB" stroke-width="2.5"/>
+  <path d="M40 140 C 220 132, 420 80, 620 18" fill="none" stroke="#C2604B" stroke-width="2.5" stroke-dasharray="6 4"/>
+  <path d="M40 120 C 230 118, 430 92, 620 62" fill="none" stroke="#C08A3E" stroke-width="3"/>
+  <text x="470" y="132" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor" fill-opacity=".75">$ / token</text>
+  <text x="470" y="28" font-family="IBM Plex Mono, monospace" font-size="11" fill="#C2604B">tokens / task</text>
+  <text x="470" y="58" font-family="IBM Plex Mono, monospace" font-size="11" fill="#C08A3E">$ / task</text>
+  <text x="44" y="162" font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" fill-opacity=".6">chat → RAG → agent → reasoning agent</text>
+</svg>
+    <figcaption>Schematic, log scale. One curve gets the headlines. The other two set the bill.</figcaption>
+    </figure>
+  </header>
+
+<p>On June 16, 2025, Cursor changed its $20-a-month Pro plan from a limit on requests to a limit on compute. Pro now included $20 of frontier-model usage at API prices, plus "unlimited" use of an automatic model picker. Many users read "unlimited" as covering the models they actually used. Surprise bills followed. On July 4, Cursor apologized, acknowledged that the rollout had hurt user trust, and offered refunds for unexpected charges since mid-June.<sup class="cite"><a href="#src-1" aria-label="Source 1">[1]</a></sup><sup class="cite"><a href="#src-2" aria-label="Source 2">[2]</a></sup></p>
+
+<p>Three weeks later, Anthropic announced weekly usage limits for Claude Code subscribers, effective August 28. It said some users ran the tool "continuously in the background, 24/7," and that one user consumed tens of thousands of dollars of model usage on a $200 plan.<sup class="cite"><a href="#src-3" aria-label="Source 3">[3]</a></sup></p>
+
+<p>The easy reading is that these companies mispriced their plans. Both mispriced the same thing in the same way. Each sold access as if <strong>a request</strong> were a stable unit of cost. Agents broke that assumption.</p>
+
+<p class="thesis-line">Per-token prices fall roughly 10x a year for constant capability. Agentic workloads raise <strong>tokens per task</strong> faster than that. The number that predicts your bill, and your margin if you resell AI, is <strong>cost per completed task</strong>, not cost per token.</p>
+
+<h2 id="two-curves">Two Curves</h2>
+
+<p><strong>The falling curve is real.</strong> Andreessen Horowitz estimates that for a model of equivalent capability, inference cost has fallen about 10x per year. GPT-3-level performance went from $60 to $0.06 per million tokens in three years.<sup class="cite"><a href="#src-4" aria-label="Source 4">[4]</a></sup> In July 2024, OpenAI launched GPT-4o mini at $0.15 per million input tokens and $0.60 per million output tokens, and said it beat the original GPT-4 on chat preferences.<sup class="cite"><a href="#src-5" aria-label="Source 5">[5]</a></sup></p>
+
+<p><strong>The rising curve is less visible.</strong> A chat answer is one model call. A retrieval-augmented answer adds retrieved context to every call. An agent loops: plan, call a tool, read the result, re-plan, retry on error. Every loop re-sends a growing context. Reasoning models add tokens you never see. OpenAI's documentation says reasoning tokens are billed as output tokens even though the API doesn't return them.<sup class="cite"><a href="#src-6" aria-label="Source 6">[6]</a></sup></p>
+
+<details class="predict">
+  <summary>Pause and predict: on the ARC-AGI benchmark in December 2024, how much more per task did OpenAI's o3 cost to go from 75.7% to 87.5%?</summary>
+  <p>About <strong>175 times more</strong>. The ARC Prize team reported about $26 per task for the 75.7% configuration and about $4,560 per task for the 87.5% configuration, which used 172 times more compute.<sup class="cite"><a href="#src-7" aria-label="Source 7">[7]</a></sup> At the frontier, extra capability is bought mostly with extra tokens per task.</p>
+</details>
+
+<p>Put the curves together and you get <strong>tokens-per-task inflation</strong>. If the price per token falls 10x while tokens per task rise 50x as you move from chat to an agentic workflow, cost per task rises 5x. Your price sheet shows the first number. Your invoice shows the third.</p>
+
+<div class="centerpiece" id="ct">
+  <p class="label">Interactive · Cost per completed task</p>
+  <h3>Move from chat to agent and watch which number moves</h3>
+  <div class="row" role="group" aria-label="Workload preset" id="ct-presets"></div>
+  <label class="label" for="ct-price">Blended price, $ per 1M tokens: <output id="ct-price-out"></output></label>
+  <input id="ct-price" type="range" min="0" max="100" value="60">
+  <label class="label" for="ct-tok">Tokens per attempt: <output id="ct-tok-out"></output></label>
+  <input id="ct-tok" type="range" min="0" max="100" value="20">
+  <label class="label" for="ct-succ">Success rate per attempt: <output id="ct-succ-out"></output></label>
+  <input id="ct-succ" type="range" min="20" max="100" value="90">
+  <div class="ct-grid" aria-live="polite">
+    <div><span class="label">$ / attempt</span><b id="ct-att"></b></div>
+    <div><span class="label">$ / completed task</span><b id="ct-task" class="hi"></b></div>
+    <div><span class="label">Monthly, 50k tasks</span><b id="ct-month"></b></div>
+  </div>
+  <p class="assumptions">Illustrative model, not vendor pricing. Cost per completed task = (tokens per attempt × price) ÷ success rate, assuming failed attempts are retried until one succeeds. Preset token counts are order-of-magnitude placeholders for a single chat turn, a RAG answer, a multi-step agent run, and a reasoning-model agent run. Replace them with your own logs.</p>
+</div>
+
+<h2 id="flat-price">Why Flat Prices Break</h2>
+
+<p>Seat-based and request-based pricing assume that heavy users cost a bit more than light ones. With chat, that held. Agents turn it into a power law. One developer's "request" might be a two-hour autonomous refactor that reads the whole repository several times over. Anthropic's "less than 5% of subscribers" affected by its new limits is that tail, made visible.<sup class="cite"><a href="#src-3" aria-label="Source 3">[3]</a></sup></p>
+
+<p>The same physics applies inside a company. Your AI line item grows even as unit prices fall, because your teams use each price cut to move up a tier: from chat to RAG, from RAG to agents, from agents to reasoning agents. That isn't waste. Each step usually does more useful work. But it means the budget conversation has to happen in tasks, because tokens no longer predict anything.</p>
+
+<blockquote class="pull"><p>The price sheet shows cost per token. The invoice shows cost per task. Only one of them is falling.</p></blockquote>
+
+<h2 id="counterargument">The Objection</h2>
+
+<aside class="counter" aria-labelledby="ctr5">
+  <p class="k" id="ctr5">The strongest counterargument</p>
+  <p>This is a temporary squeeze. Prices fall 10x a year. Whatever an agent costs today, the same agent will cost a tenth as much next year. Optimizing cost per task now is premature, so ship capability and let the price curve catch up.</p>
+</aside>
+
+<p>That works for a <em>fixed</em> workload, and a16z's 10x figure is explicitly for constant capability.<sup class="cite"><a href="#src-4" aria-label="Source 4">[4]</a></sup> Nobody's workload stays fixed. The teams that benefit from next year's price cut will spend it on longer tasks, bigger contexts, and more reasoning, because their competitors will. Waiting for the curve treats a moving target as a still one.</p>
+
+<p>Part of the objection is right: don't over-optimize the first version of an agent. But measuring isn't optimizing. You can't make a build-vs-buy call, price a product, or notice a runaway loop without cost per completed task, and it's cheap to instrument.</p>
+
+<h2 id="moves">Four Moves Monday</h2>
+
+<ol class="moves">
+  <li><label><input type="checkbox"><span><span class="what"><strong>Instrument cost per completed task.</strong> Tag every model call with a task ID and roll up tokens, retries, and tool calls, including tasks that failed.</span><span class="signal">Signal: a dashboard shows median and p95 $/task per workflow, and the p95 surprised someone.</span></span></label></li>
+  <li><label><input type="checkbox"><span><span class="what"><strong>Give every agent run a budget with a hard stop.</strong> Set a token or dollar ceiling per task. When it's hit, the run escalates to a person instead of looping.</span><span class="signal">Signal: no single task in the last month cost more than 10x the median.</span></span></label></li>
+  <li><label><input type="checkbox"><span><span class="what"><strong>Compare models on $/task, not $/token.</strong> A cheaper model that needs three attempts can cost more than an expensive one that needs one. Run your eval and divide.</span><span class="signal">Signal: your model-selection memo has a $/completed-task column.</span></span></label></li>
+  <li><label><input type="checkbox"><span><span class="what"><strong>If you resell AI, price outcomes, not seats.</strong> Charge per task, per resolution, or per run, or cap usage per seat in units your customers can see.</span><span class="signal">Signal: your top 5% of users are profitable, or at least priced on purpose.</span></span></label></li>
+</ol>
+
+<h2 id="carry">Three Things to Carry</h2>
+<ul class="carry">
+  <li>Token prices fall for constant capability. Your capability isn't constant.</li>
+  <li>Agents turn one request into many calls. Price and budget in completed tasks.</li>
+  <li>Cheaper per token can be dearer per task once you count the retries.</li>
+</ul>
+
+<h2 id="check">Check Your Understanding</h2>
+<div class="quiz">
+  <details><summary>Why did both Cursor and Anthropic have to change plans within weeks of each other?</summary><p>Both had priced access per request or per seat. Agentic use made cost per request extremely variable, so a small share of users consumed a large share of compute.</p></details>
+  <details><summary>Model A costs $1/M tokens with 50% success. Model B costs $1.80/M with 95% success, same tokens per attempt. Which is cheaper per task?</summary><p>Model B. A: 1 ÷ 0.5 = 2.0. B: 1.8 ÷ 0.95 ≈ 1.9 (in units of price × tokens). And B also returns fewer failures to a person.</p></details>
+  <details><summary>What does the ARC-AGI o3 result say about buying capability at the frontier?</summary><p>That the last points of accuracy can cost orders of magnitude more per task, about 175x for roughly 12 points there. Whether that's worth it depends on the value of a completed task, which is why that's the unit to measure.</p></details>
+</div>
+
+<section class="sources" aria-labelledby="sources">
+  <h2 id="sources">Sources</h2>
+  <ol>
+    <li id="src-1">Cursor, “Clarifying our pricing” (pricing changes of June 16, 2025, and refunds), Jul 4, 2025. <a href="https://cursor.com/en/blog/june-2025-pricing">https://cursor.com/en/blog/june-2025-pricing</a></li>
+    <li id="src-2">Simon Willison, “Cursor: Clarifying Our Pricing,” Jul 5, 2025. <a href="https://simonwillison.net/2025/Jul/5/cursor-clarifying-our-pricing">https://simonwillison.net/2025/Jul/5/cursor-clarifying-our-pricing</a></li>
+    <li id="src-3">TechCrunch, “Anthropic unveils new rate limits to curb Claude Code power users,” Jul 28, 2025. <a href="https://techcrunch.com/2025/07/28/anthropic-unveils-new-rate-limits-to-curb-claude-code-power-users/">https://techcrunch.com/2025/07/28/anthropic-unveils-new-rate-limits-to-curb-claude-code-power-users/</a></li>
+    <li id="src-4">Andreessen Horowitz, “Welcome to LLMflation: LLM inference cost is going down fast,” Nov 2024. <a href="https://a16z.com/llmflation-llm-inference-cost/">https://a16z.com/llmflation-llm-inference-cost/</a></li>
+    <li id="src-5">OpenAI, “GPT-4o mini: advancing cost-efficient intelligence,” Jul 18, 2024. <a href="https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/">https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/</a></li>
+    <li id="src-6">OpenAI API documentation, “Reasoning models” (reasoning tokens and billing). <a href="https://platform.openai.com/docs/guides/reasoning">https://platform.openai.com/docs/guides/reasoning</a></li>
+    <li id="src-7">ARC Prize, “OpenAI o3 Breakthrough High Score on ARC-AGI-Pub,” Dec 2024. <a href="https://arcprize.org/blog/oai-o3-pub-breakthrough">https://arcprize.org/blog/oai-o3-pub-breakthrough</a></li>
+  </ol>
+</section>
+
+</article>
+</main>
+<footer class="end">
+  <a href="../">← All briefs</a>
+  <span>No. 017 · Research window 2023-03-01 to 2026-10-07</span>
+  <a href="https://github.com/iggym/applied-ai-engineering">Source on GitHub</a>
+</footer>
+<script>
+(function(){
+  var slug = document.documentElement.getAttribute('data-slug');
+  // reading progress
+  var bar = document.querySelector('.progress');
+  function onScroll(){
+    var h = document.documentElement; var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  document.addEventListener('scroll', onScroll, {passive:true}); onScroll();
+  // contents rail
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.rail a'));
+  if ('IntersectionObserver' in window && links.length){
+    var map = {}; links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){ links.forEach(function(a){ a.classList.remove('active'); a.removeAttribute('aria-current'); });
+          var a = map[e.target.id]; if (a){ a.classList.add('active'); a.setAttribute('aria-current','true'); } }
+      });
+    }, {rootMargin:'-20% 0px -70% 0px'});
+    Object.keys(map).forEach(function(id){ var el = document.getElementById(id); if (el) io.observe(el); });
+  }
+  // moves checklist (per-viewer convenience only)
+  var store = null; try { store = window.localStorage; } catch(e){}
+  document.querySelectorAll('ol.moves input[type=checkbox]').forEach(function(cb, i){
+    var key = 'aae:' + slug + ':move:' + i;
+    try { if (store && store.getItem(key) === '1'){ cb.checked = true; } } catch(e){}
+    function paint(){ cb.closest('li').classList.toggle('done', cb.checked); }
+    paint();
+    cb.addEventListener('change', function(){ paint(); try { store && store.setItem(key, cb.checked ? '1' : '0'); } catch(e){} });
+  });
+  // share controls on pull quotes
+  var url = document.querySelector('link[rel=canonical]').href;
+  document.querySelectorAll('blockquote.pull').forEach(function(q){
+    var text = q.querySelector('p').textContent.trim();
+    var row = document.createElement('div'); row.className = 'share';
+    var x = document.createElement('a'); x.textContent = 'Share on X'; x.target = '_blank'; x.rel = 'noopener';
+    x.href = 'https://x.com/intent/post?text=' + encodeURIComponent('“' + text + '”') + '&url=' + encodeURIComponent(url);
+    var li = document.createElement('a'); li.textContent = 'LinkedIn'; li.target = '_blank'; li.rel = 'noopener';
+    li.href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(url);
+    var cp = document.createElement('button'); cp.type = 'button'; cp.textContent = 'Copy';
+    cp.addEventListener('click', function(){
+      var s = '“' + text + '” — ' + url;
+      (navigator.clipboard ? navigator.clipboard.writeText(s) : Promise.reject()).then(function(){ cp.textContent = 'Copied'; }, function(){ cp.textContent = 'Copy failed'; });
+      setTimeout(function(){ cp.textContent = 'Copy'; }, 1600);
+    });
+    row.appendChild(x); row.appendChild(li); row.appendChild(cp); q.appendChild(row);
+  });
+})();
+</script>
+<script>
+
+(function(){
+  // sliders are log-scaled: 0..100 -> range
+  function logMap(v, lo, hi){ return lo * Math.pow(hi / lo, v / 100); }
+  function inv(x, lo, hi){ return Math.round(100 * Math.log(x / lo) / Math.log(hi / lo)); }
+  var P = {lo:0.1, hi:60}, T = {lo:500, hi:5e6};
+  var PRESETS = [
+    {label:'2023 · chat on a frontier model', price:40, tok:1500, succ:90},
+    {label:'2024 · RAG on a small model', price:0.4, tok:12000, succ:85},
+    {label:'2025 · coding agent', price:6, tok:400000, succ:70},
+    {label:'2026 · reasoning agent', price:8, tok:2000000, succ:80}
+  ];
+  var price = document.getElementById('ct-price'), tok = document.getElementById('ct-tok'), succ = document.getElementById('ct-succ');
+  var pre = document.getElementById('ct-presets');
+  PRESETS.forEach(function(p, i){
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = p.label;
+    b.addEventListener('click', function(){ price.value = inv(p.price, P.lo, P.hi); tok.value = inv(p.tok, T.lo, T.hi); succ.value = p.succ; active = i; paint(); });
+    pre.appendChild(b);
+  });
+  var active = 0;
+  function money(x){ return x >= 1000 ? '$' + Math.round(x).toLocaleString() : x >= 1 ? '$' + x.toFixed(2) : '$' + x.toFixed(4); }
+  function paint(){
+    var p = logMap(+price.value, P.lo, P.hi), t = logMap(+tok.value, T.lo, T.hi), s = +succ.value / 100;
+    document.getElementById('ct-price-out').textContent = '$' + (p < 1 ? p.toFixed(2) : p.toFixed(1));
+    document.getElementById('ct-tok-out').textContent = Math.round(t).toLocaleString();
+    document.getElementById('ct-succ-out').textContent = Math.round(s * 100) + '%';
+    var att = t / 1e6 * p, task = att / s;
+    document.getElementById('ct-att').textContent = money(att);
+    document.getElementById('ct-task').textContent = money(task);
+    document.getElementById('ct-month').textContent = money(task * 50000);
+    pre.querySelectorAll('button').forEach(function(b, i){ b.setAttribute('aria-pressed', i === active); });
+  }
+  [price, tok, succ].forEach(function(el){ el.addEventListener('input', function(){ active = -1; paint(); }); });
+  pre.firstChild.click();
+})();
+
+</script>
+</body>
+</html>

@@ -255,12 +255,12 @@
 
             <p>In June 2026, Microsoft shipped AutoGen v0.5. The update swapped stateful conversational memory for a stateless, event-driven graph. It was a necessary evolution for scaling agents. But across the engineering Slack channels of a dozen fintechs, panic set in. Customer support bots started hallucinating mid-conversation. Context windows overflowed. The root cause wasn't a bug in AutoGen. It was the "awesome-agentic-architectures" GitHub repository.</p>
 
-            <p>Teams had copy-pasted stateful memory patterns directly from the 500-link list. When the underlying framework shifted, those patterns turned into architectural landmines. The list had 15,000 stars. It was completely useless. <span class="quote-marker" data-quote="1">[QUOTE 1]</span> A 500-link repository isn't a blueprint; it's a graveyard with a search bar.</p>
+            <p>Teams had copy-pasted stateful memory patterns directly from the 500-link list. When the underlying framework shifted, those patterns turned into architectural landmines. The list had 15,000 stars. It was completely useless. <span class="quote-marker" data-quote="1"> </span> A 500-link repository isn't a blueprint; it's a graveyard with a search bar.</p>
 
             <h2 id="graveyard">A Graveyard with a Search Bar</h2>
             <div id="reveal-section">
-                <p class="reveal-text">We treat awesome-lists like architecture references. We bookmark them, share them in onboarding docs, and cite them in design reviews. But awesome-lists are discovery artifacts, not blueprints. <span class="quote-marker" data-quote="2">[QUOTE 2]</span> We confuse the menu for the meal, and then we wonder why we're still hungry at 2 AM.</p>
-                <p class="hidden-reveal" style="display:none; opacity:0;">[BEAT 1] The list maintainers optimized for breadth to gain stars, not for production compatibility. A 500-tool repository doesn't make you smarter; it just gives you 500 ways to fail.</p>
+                <p class="reveal-text">We treat awesome-lists like architecture references. We bookmark them, share them in onboarding docs, and cite them in design reviews. But awesome-lists are discovery artifacts, not blueprints. <span class="quote-marker" data-quote="2"> </span> We confuse the menu for the meal, and then we wonder why we're still hungry at 2 AM.</p>
+                <p class="hidden-reveal" style="display:none; opacity:0;"> The list maintainers optimized for breadth to gain stars, not for production compatibility. A 500-tool repository doesn't make you smarter; it just gives you 500 ways to fail.</p>
             </div>
 
             <p>The Apptio 2026 Internal Dev Survey quantified this damage. Engineers spend an average of 4 hours per week scrolling through these internal and external lists, searching for patterns that rarely survive contact with production.</p>
@@ -289,7 +289,7 @@
             <h2 id="inverse-law">The Inverse Law of Lists</h2>
             <p>The Carnegie Mellon Software Engineering Institute audit in July 2026 proved this. They analyzed 500 enterprise repositories and found that 85% of tools linked in popular "awesome-production-ml" lists are abandoned within 18 months. The 15% that survive are single-purpose, narrowly scoped libraries maintained by one or two dedicated authors.</p>
 
-            <div class="pull-quote"><span class="quote-marker" data-quote="3">[QUOTE 3]</span> The completeness of an awesome-list is inversely proportional to its architectural utility.</div>
+            <div class="pull-quote"><span class="quote-marker" data-quote="3"> </span> The completeness of an awesome-list is inversely proportional to its architectural utility.</div>
 
             <!-- Data Viz 1: Scatter Plot -->
             <div class="widget-box">
@@ -306,7 +306,7 @@
                 <figcaption>Complexity breeds silent fractures.</figcaption>
             </div>
 
-            <p>[BEAT 2] BEFORE: Broad community consensus is a signal of quality. TURN: The 15% of tools that survive are the ones too narrow to ever trend on GitHub. AFTER: Broad consensus is a signal of lowest-common-denominator compatibility, which breaks under real load.</p>
+            <p> BEFORE: Broad community consensus is a signal of quality. TURN: The 15% of tools that survive are the ones too narrow to ever trend on GitHub. AFTER: Broad consensus is a signal of lowest-common-denominator compatibility, which breaks under real load.</p>
 
             <p>The lists survive because they are never actually used in production. They are bookmarked. The architecture reference nobody finishes reading is fine exactly as long as you don't try to build from it.</p>
 
@@ -337,7 +337,7 @@
             <h2 id="agency">Earn Your Architecture</h2>
             <p>Stop bookmarking comprehensive lists. Start building narrow ones.</p>
             <p>First, delete any architecture reference from your onboarding docs that has more than 50 links. If it doesn't fit on a single screen, it isn't a reference; it's a dumping ground.</p>
-            <p>Second, write your own pattern. When you solve a hard problem in production, document the exact version, the exact failure mode, and the exact workaround. <span class="quote-marker" data-quote="4">[QUOTE 4]</span> Narrow tools survive because they solve one problem completely; broad lists survive because they avoid solving any problem specifically.</p>
+            <p>Second, write your own pattern. When you solve a hard problem in production, document the exact version, the exact failure mode, and the exact workaround. <span class="quote-marker" data-quote="4"> </span> Narrow tools survive because they solve one problem completely; broad lists survive because they avoid solving any problem specifically.</p>
             <p>Third, audit your dependencies against the CMU data. If you are currently relying on a tool you found in an awesome-list, check its commit history. If it doesn't have a dedicated, active maintainer, assume it will be dead in 18 months. Plan the migration now.</p>
 
             <div id="quote-gallery">

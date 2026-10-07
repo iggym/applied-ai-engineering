@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en" data-slug="approval-is-not-oversight">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Approval Is Not Oversight — Applied AI Engineering</title>
+<meta name="description" content="A human who approves AI output by default soon becomes a signature. Oversight works only when reviewers are measured on what they catch, not what they pass.">
+<meta name="author" content="Applied AI Engineering">
+<link rel="canonical" href="https://iggym.github.io/applied-ai-engineering/articles/approval-is-not-oversight.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Applied AI Engineering">
+<meta property="og:title" content="Approval Is Not Oversight">
+<meta property="og:description" content="A human who approves AI output by default soon becomes a signature. Oversight works only when reviewers are measured on what they catch, not what they pass.">
+<meta property="og:url" content="https://iggym.github.io/applied-ai-engineering/articles/approval-is-not-oversight.html">
+<meta property="article:published_time" content="2026-10-07">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Approval Is Not Oversight">
+<meta name="twitter:description" content="A human who approves AI output by default soon becomes a signature. Oversight works only when reviewers are measured on what they catch, not what they pass.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#12151B; --surface:#181C24; --surface-2:#1E232D;
+  --ink:#E7E5DF; --muted:#9A9FAB;
+  --brass:#C08A3E; --brass-ink:#D9A55A; --brass-dim:rgba(192,138,62,.35);
+  --rust:#C2604B; --rule:rgba(231,229,223,.14);
+  --max:680px; --topbar:52px;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#FAF9F7; --surface:#F0EFEC; --surface-2:#E7E5E0;
+    --ink:#1A1A1A; --muted:#5E5E5E;
+    --brass:#9A6A26; --brass-ink:#8A5C1C; --brass-dim:rgba(154,106,38,.35);
+    --rust:#A6503E; --rule:rgba(26,26,26,.14);
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:calc(var(--topbar) + 16px)}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:'Source Serif 4',Georgia,serif;
+  font-size:18px; line-height:1.65; -webkit-font-smoothing:antialiased}
+@media (min-width:760px){ body{font-size:19px} }
+a{color:var(--brass-ink); text-underline-offset:3px}
+::selection{background:var(--brass-dim)}
+:focus-visible{outline:2px solid var(--brass); outline-offset:3px}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+
+header.top{position:sticky; top:0; z-index:50; height:var(--topbar); display:flex; align-items:center;
+  justify-content:space-between; gap:12px; padding:0 16px; background:color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--rule)}
+.crumbs{font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0}
+.crumbs a{color:var(--ink); text-decoration:none}
+.crumbs a:hover{color:var(--brass-ink)}
+.top-meta{font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--brass-ink); border:1px solid var(--brass-dim);
+  padding:3px 8px; border-radius:2px; flex-shrink:0}
+.progress{position:absolute; left:0; bottom:-1px; height:2px; width:0; background:var(--brass)}
+
+nav.rail{display:none}
+@media (min-width:1180px){
+  nav.rail{display:block; position:fixed; top:calc(var(--topbar) + 56px); left:max(24px, calc(50vw - 340px - 260px)); width:210px}
+  nav.rail p{font-family:'IBM Plex Mono',monospace; font-size:.66rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin:0 0 10px}
+  nav.rail ol{list-style:none; margin:0; padding:0; border-left:1px solid var(--rule)}
+  nav.rail a{display:block; padding:5px 0 5px 14px; margin-left:-1px; border-left:2px solid transparent; color:var(--muted);
+    text-decoration:none; font-family:'IBM Plex Mono',monospace; font-size:.74rem; line-height:1.4}
+  nav.rail a:hover{color:var(--ink)}
+  nav.rail a.active{color:var(--brass-ink); border-left-color:var(--brass)}
+}
+
+main{max-width:var(--max); margin:0 auto; padding:0 16px 64px}
+.hero{padding:64px 0 28px; border-bottom:1px solid var(--rule); margin-bottom:28px}
+.eyebrow{font-family:'IBM Plex Mono',monospace; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+  display:flex; flex-wrap:wrap; gap:6px 14px; margin:0 0 18px}
+.eyebrow .docket{color:var(--brass-ink)}
+h1{font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(2rem,6vw,3rem); line-height:1.12; margin:0 0 14px; letter-spacing:-.01em}
+.hook{font-family:'Fraunces',Georgia,serif; font-style:italic; font-weight:400; font-size:1.18rem; color:var(--muted); margin:0 0 18px; max-width:56ch}
+.tags{display:flex; flex-wrap:wrap; gap:8px; margin:0; padding:0; list-style:none}
+.tags li{font-family:'IBM Plex Mono',monospace; font-size:.66rem; color:var(--brass-ink); border:1px solid var(--brass-dim); padding:2px 8px; border-radius:2px}
+figure.thesis{margin:30px 0 0; padding:18px; background:var(--surface); border:1px solid var(--rule); border-radius:4px}
+figure.thesis svg{display:block; width:100%; height:auto}
+figure.thesis figcaption, .cap{font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--muted); margin-top:10px; line-height:1.5}
+
+article h2{font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:1.6rem; line-height:1.2; margin:2.4em 0 .6em}
+article h3{font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:1.2rem; margin:1.6em 0 .4em}
+article p{margin:0 0 1.1em}
+article strong{color:var(--ink); font-weight:600}
+sup.cite a{font-family:'IBM Plex Mono',monospace; font-size:.66em; text-decoration:none; padding:0 1px}
+.thesis-line{border-left:3px solid var(--brass); padding:4px 0 4px 18px; font-size:1.08em; margin:1.4em 0}
+
+details.predict{margin:1.6em 0; border:1px dashed var(--brass-dim); border-radius:4px; padding:14px 18px; background:var(--surface)}
+details.predict summary{cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--brass-ink); letter-spacing:.04em}
+details.predict[open] summary{margin-bottom:10px}
+details.predict p:last-child{margin-bottom:0}
+
+.centerpiece{margin:2em -4px; padding:20px 18px; background:var(--surface); border:1px solid var(--rule); border-radius:6px}
+.centerpiece h3{margin-top:0}
+.centerpiece .label{font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+.centerpiece button{font:inherit; font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--ink); background:var(--surface-2);
+  border:1px solid var(--rule); border-radius:3px; padding:7px 12px; cursor:pointer; min-height:36px}
+.centerpiece button:hover{border-color:var(--brass-dim)}
+.centerpiece button[aria-pressed="true"], .centerpiece button.on{border-color:var(--brass); color:var(--brass-ink)}
+.centerpiece input[type=range]{width:100%; accent-color:var(--brass)}
+.assumptions{font-family:'IBM Plex Mono',monospace; font-size:.7rem; color:var(--muted); border-top:1px solid var(--rule); margin-top:16px; padding-top:10px; line-height:1.55}
+
+aside.counter{margin:2em 0; padding:20px 20px 6px; border:1px solid var(--rust); border-left-width:4px; border-radius:4px; background:color-mix(in srgb, var(--rust) 7%, transparent)}
+aside.counter .k{font-family:'IBM Plex Mono',monospace; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--rust); margin:0 0 8px}
+
+ol.moves{list-style:none; padding:0; margin:1.2em 0; counter-reset:m}
+ol.moves li{counter-increment:m; position:relative; padding:14px 0 14px 52px; border-bottom:1px solid var(--rule)}
+ol.moves li::before{content:counter(m,decimal-leading-zero); position:absolute; left:0; top:14px; font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--brass-ink)}
+ol.moves label{display:flex; gap:10px; align-items:flex-start; cursor:pointer}
+ol.moves input{margin-top:.45em; accent-color:var(--brass); width:16px; height:16px; flex-shrink:0}
+ol.moves .signal{display:block; font-size:.88em; color:var(--muted); margin-top:4px}
+ol.moves li.done .what{text-decoration:line-through; text-decoration-color:var(--brass-dim)}
+
+blockquote.pull{margin:2em 0; padding:0 0 0 20px; border-left:2px solid var(--brass)}
+blockquote.pull p{font-family:'Fraunces',Georgia,serif; font-style:italic; font-size:1.3rem; line-height:1.35; margin:0 0 10px}
+.share{display:flex; gap:8px; flex-wrap:wrap}
+.share a, .share button{font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--muted); background:none; border:1px solid var(--rule);
+  border-radius:2px; padding:3px 9px; text-decoration:none; cursor:pointer}
+.share a:hover, .share button:hover{color:var(--brass-ink); border-color:var(--brass-dim)}
+
+ul.carry{list-style:none; padding:0; margin:1em 0}
+ul.carry li{padding:12px 0 12px 28px; border-bottom:1px solid var(--rule); position:relative; font-family:'Fraunces',Georgia,serif; font-size:1.1rem}
+ul.carry li::before{content:'→'; position:absolute; left:0; color:var(--brass-ink)}
+
+.quiz details{border-bottom:1px solid var(--rule); padding:12px 0}
+.quiz summary{cursor:pointer; font-weight:600}
+.quiz details p{margin:10px 0 0; color:var(--muted)}
+
+section.sources ol{font-size:.86rem; color:var(--muted); padding-left:1.4em}
+section.sources li{margin-bottom:.6em; overflow-wrap:anywhere}
+section.sources li:target{color:var(--ink); background:var(--surface)}
+
+footer.end{max-width:var(--max); margin:0 auto; padding:28px 16px 56px; border-top:1px solid var(--rule);
+  display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; font-family:'IBM Plex Mono',monospace; font-size:.74rem; color:var(--muted)}
+footer.end a{color:var(--brass-ink); text-decoration:none}
+
+table.cmp{width:100%; border-collapse:collapse; font-size:.86rem; margin:1.4em 0}
+table.cmp th, table.cmp td{text-align:left; vertical-align:top; padding:9px 8px; border-bottom:1px solid var(--rule)}
+table.cmp th{font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:500}
+.scroll-x{overflow-x:auto}
+
+@media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important; scroll-behavior:auto !important} }
+
+/* ---- brief-specific ---- */
+
+.row{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 0}
+.rq-intro{font-size:.92rem; color:var(--muted)}
+ol.rq{list-style:none; padding:0; margin:12px 0 0; counter-reset:r}
+ol.rq li{display:grid; grid-template-columns:1fr auto; gap:8px 12px; align-items:center; padding:10px 0; border-bottom:1px solid var(--rule); font-size:.9rem}
+ol.rq .cite-t{font-family:'IBM Plex Mono',monospace; font-size:.76rem; line-height:1.5}
+ol.rq .btns{display:flex; gap:6px}
+ol.rq button{padding:5px 10px; min-height:32px}
+ol.rq li.missed{background:color-mix(in srgb, var(--rust) 10%, transparent)}
+ol.rq li.caught{background:color-mix(in srgb, var(--brass) 10%, transparent)}
+ol.rq .why{grid-column:1 / -1; font-size:.82rem; color:var(--muted)}
+.rq-out{font-family:'IBM Plex Mono',monospace; font-size:.84rem; color:var(--brass-ink); min-height:1.5em}
+@media (max-width:520px){ ol.rq li{grid-template-columns:1fr} }
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="crumbs"><a href="../">Applied AI Engineering</a> / Approval Is Not Oversight</div>
+  <div class="top-meta">No. 018 · 6 min</div>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<nav class="rail" aria-label="Contents">
+  <p>Contents</p>
+  <ol>
+    <li><a href="#signatures">Signatures Without Review</a></li>
+    <li><a href="#complacency">Why Reviewers Fall Asleep</a></li>
+    <li><a href="#counterargument">The Objection</a></li>
+    <li><a href="#moves">Four Moves Monday</a></li>
+    <li><a href="#carry">Three Things to Carry</a></li>
+    <li><a href="#check">Check Your Understanding</a></li>
+    <li><a href="#sources">Sources</a></li>
+  </ol>
+</nav>
+<main>
+<article>
+  <header class="hero">
+    <p class="eyebrow"><span class="docket">No. 018</span><span>Oct 7, 2026</span><span>6 min read</span><span>Research window: 2018-03-01 to 2026-10-07</span></p>
+    <h1>Approval Is Not Oversight</h1>
+    <p class="hook">A human who approves AI output by default soon becomes a signature. Oversight works only when reviewers are measured on what they catch, not what they pass.</p>
+    <ul class="tags" aria-label="Tags"><li>human-in-the-loop</li><li>governance</li><li>incident-analysis</li><li>org-design</li></ul>
+    <figure class="thesis">
+<svg viewBox="0 0 640 160" role="img" aria-labelledby="h6t">
+  <title id="h6t">As weeks of clean AI output accumulate, the chance that an approve-by-default reviewer catches an error decays, while a reviewer tested with seeded errors stays alert.</title>
+  <line x1="40" y1="135" x2="620" y2="135" stroke="currentColor" stroke-opacity=".3"/>
+  <line x1="40" y1="15" x2="40" y2="135" stroke="currentColor" stroke-opacity=".3"/>
+  <path d="M40 30 C 160 40, 260 95, 620 122" fill="none" stroke="#C2604B" stroke-width="2.5"/>
+  <path d="M40 30 C 160 38, 300 44, 620 46" fill="none" stroke="#C08A3E" stroke-width="2.5"/>
+  <text x="440" y="114" font-family="IBM Plex Mono, monospace" font-size="11" fill="#C2604B">approve-by-default</text>
+  <text x="440" y="38" font-family="IBM Plex Mono, monospace" font-size="11" fill="#C08A3E">tested reviewer</text>
+  <text x="44" y="152" font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" fill-opacity=".6">weeks of clean output →</text>
+  <text x="48" y="24" font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" fill-opacity=".6">P(catch)</text>
+</svg>
+    <figcaption>Schematic. The automation-complacency pattern: the longer a system is right, the less carefully people check it, until the one time it's wrong.</figcaption>
+    </figure>
+  </header>
+
+<p>On the night of March 18, 2018, an Uber test vehicle driving itself in Tempe, Arizona, struck and killed a pedestrian. A human safety operator was behind the wheel to take over if the automation failed. The National Transportation Safety Board found that the operator had been visually distracted by a personal phone for much of the trip. It also named contributing factors at the company level: Uber's inadequate safety risk assessment, ineffective oversight of vehicle operators, and <em>"a lack of adequate mechanisms for addressing operators' automation complacency."</em><sup class="cite"><a href="#src-1" aria-label="Source 1">[1]</a></sup></p>
+
+<p>The obvious reading puts the blame on one inattentive person. The NTSB didn't stop there, and neither should we. The operator was the "human in the loop." The system around the operator assumed that a human in the seat equals oversight. It made no effort to keep that human alert, test them, or catch the moment they stopped looking.</p>
+
+<p class="thesis-line">Human review that approves AI output by default soon becomes a <strong>signature</strong>. Oversight works only when the reviewer is <strong>tested, sampled, and measured on what they catch</strong>, not on how fast they approve.</p>
+
+<h2 id="signatures">Signatures Without Review</h2>
+
+<p>Generative AI has made the Tempe pattern cheap and common. The outputs are fluent, usually right, and fast to approve.</p>
+
+<p><strong>The brief.</strong> In <em>Mata v. Avianca</em>, a personal-injury case in federal court in New York, the plaintiff's lawyers filed a brief citing cases that ChatGPT had invented, complete with fake quotes and internal citations. When opposing counsel couldn't find the cases, the court ordered copies. On June 22, 2023, Judge P. Kevin Castel fined the lawyers $5,000.<sup class="cite"><a href="#src-2" aria-label="Source 2">[2]</a></sup> A licensed attorney signed every page. The signature certified a review that never happened.</p>
+
+<p><strong>The reading list.</strong> In May 2025, the Chicago Sun-Times and The Philadelphia Inquirer ran a syndicated summer guide produced by King Features. Its reading list recommended books by real authors that don't exist, such as a novel by Andy Weir called <em>The Last Algorithm</em>. Most of the recommended books on the list were made up. The freelance writer admitted not checking the chatbot's output. The writer, the syndicate, and two newspapers all passed it along.<sup class="cite"><a href="#src-3" aria-label="Source 3">[3]</a></sup></p>
+
+<p><strong>The report.</strong> In 2025, Deloitte Australia delivered a A$440,000 independent review to the federal Department of Employment and Workplace Relations. A University of Sydney researcher found that it cited non-existent academic papers and included a quote attributed to a Federal Court judgment that the judgment doesn't contain. Deloitte acknowledged using a GPT-4o-based tool in drafting and agreed to repay the final installment of the contract.<sup class="cite"><a href="#src-4" aria-label="Source 4">[4]</a></sup></p>
+
+<details class="predict">
+  <summary>Pause and predict: how many layers of review did the fake reading list pass through?</summary>
+  <p>At least four: the writer, the syndicate's editors, and two newspapers' production processes. <strong>Each layer assumed another layer had checked.</strong> Adding approvals didn't add oversight. It spread the responsibility thin enough that nobody held it.</p>
+</details>
+
+<p>These aren't isolated. A public database maintained by the legal researcher Damien Charlotin had logged more than 1,600 court decisions involving AI-hallucinated content in filings by mid-2026.<sup class="cite"><a href="#src-5" aria-label="Source 5">[5]</a></sup><sup class="cite"><a href="#src-6" aria-label="Source 6">[6]</a></sup> Each filing carried a professional's signature.</p>
+
+<div class="centerpiece" id="rq">
+  <p class="label">Interactive · The review queue</p>
+  <h3>You're the human in the loop. Approve or flag.</h3>
+  <p class="rq-intro">Eight AI-drafted citations for a client memo. All entries are <strong>fictional</strong>, written for this exercise. Two contain a planted error that a check against the source would catch. You have about as much time as a busy reviewer.</p>
+  <ol class="rq" id="rq-list"></ol>
+  <div class="row"><button type="button" id="rq-done">Submit review</button><button type="button" id="rq-reset">Reset</button></div>
+  <p class="rq-out" id="rq-out" aria-live="polite"></p>
+  <p class="assumptions">The planted errors are the kind found in real incidents: a fabricated pinpoint quote, and a case that doesn't exist. The lesson isn't your score. Errors that look like the surrounding correct text are only caught by checking against a source, never by reading for plausibility.</p>
+</div>
+
+<h2 id="complacency">Why Reviewers Fall Asleep</h2>
+
+<p>The mechanism is old, and the NTSB named it: <strong>automation complacency</strong>. When an automated system is right most of the time, people watching it gradually shift from checking to trusting. This isn't a moral failure. It's a rational response to feedback: every check that finds nothing teaches the reviewer that checking is a waste of time. Generative AI makes this worse in two ways. Its errors are fluent, looking exactly like its correct output. And its output arrives in volume, so review time per item shrinks.</p>
+
+<p>That turns many "human-in-the-loop" policies into rituals. A queue with an approve button, a target throughput, and no measurement of misses doesn't produce oversight. It produces <strong>signatures</strong>: a person whose name certifies work they weren't set up to check.</p>
+
+<blockquote class="pull"><p>A reviewer who has never been tested on a planted error is a signature, not a safeguard.</p></blockquote>
+
+<h2 id="counterargument">The Objection</h2>
+
+<aside class="counter" aria-labelledby="ctr6">
+  <p class="k" id="ctr6">The strongest counterargument</p>
+  <p>These are failures of professional diligence, not of system design. The lawyers, the writer, and the consultants were already obliged to check their work, and they didn't. Sanctions, firings, and refunds are the system working. Adding seeded errors and review metrics means treating professionals like airport baggage screeners.</p>
+</aside>
+
+<p>Every one of those people had a professional obligation, and it didn't help. An obligation creates a penalty after a failure. It doesn't create a mechanism that prevents one. The NTSB's finding is useful here because it refused to stop at the individual: the operator was distracted, <em>and</em> the organization had no mechanism to address the complacency it should have expected.<sup class="cite"><a href="#src-1" aria-label="Source 1">[1]</a></sup></p>
+
+<p>The objection is right that measurement can turn insulting or performative. The answer is to measure the <em>process</em> rather than rank the people: catch rates on seeded items, review time against item complexity, and how often reviewers check sources. Professions that take vigilance seriously already do this. Treating it as beneath us is how a signature ends up on a fabricated citation.</p>
+
+<h2 id="moves">Four Moves Monday</h2>
+
+<ol class="moves">
+  <li><label><input type="checkbox"><span><span class="what"><strong>Seed known errors into your review queue.</strong> Every week, slip in a small number of items with planted, realistic mistakes, and record whether they're caught.</span><span class="signal">Signal: you know your reviewers' catch rate, and it's above the bar you set for the risk.</span></span></label></li>
+  <li><label><input type="checkbox"><span><span class="what"><strong>Make "checked against source" a visible action.</strong> Approving a citation, figure, or quote should require opening the source it points to. Log whether that happened.</span><span class="signal">Signal: the share of approvals with a recorded source check is high and isn't falling month over month.</span></span></label></li>
+  <li><label><input type="checkbox"><span><span class="what"><strong>Give one person the responsibility.</strong> For each output, name one accountable reviewer, not a chain of approvers who each assume someone else checked.</span><span class="signal">Signal: every published AI-assisted artifact lists a single named reviewer.</span></span></label></li>
+  <li><label><input type="checkbox"><span><span class="what"><strong>Cap volume per reviewer.</strong> Review quality falls as throughput targets rise. Set item limits by risk tier, and route the excess to sampling instead of rubber-stamping.</span><span class="signal">Signal: median review time per high-risk item stays roughly flat as volume grows.</span></span></label></li>
+</ol>
+
+<h2 id="carry">Three Things to Carry</h2>
+<ul class="carry">
+  <li>A human in the seat isn't oversight. A human who gets tested is.</li>
+  <li>Fluent errors are caught by checking sources, not by reading for plausibility.</li>
+  <li>More approvers spread responsibility. One named reviewer holds it.</li>
+</ul>
+
+<h2 id="check">Check Your Understanding</h2>
+<div class="quiz">
+  <details><summary>Why did the NTSB's Uber finding go beyond the distracted operator?</summary><p>Because complacency is predictable. An organization that puts a human in the loop and does nothing to sustain their attention has designed for the failure it got.</p></details>
+  <details><summary>Why don't extra layers of approval fix the reading-list failure?</summary><p>Each layer reasonably assumes another layer checked the facts. Without one named person responsible for verification against sources, more layers spread responsibility rather than adding scrutiny.</p></details>
+  <details><summary>What do seeded errors measure that throughput metrics can't?</summary><p>Whether reviewers actually catch the kind of error the system produces. Throughput measures how fast approvals happen. Catch rate measures whether the oversight exists at all.</p></details>
+</div>
+
+<section class="sources" aria-labelledby="sources">
+  <h2 id="sources">Sources</h2>
+  <ol>
+    <li id="src-1">NTSB, “Collision Between Vehicle Controlled by Developmental Automated Driving System and Pedestrian, Tempe, Arizona, March 18, 2018,” Highway Accident Report NTSB/HAR-19/03, Nov 2019. <a href="https://ntsb.gov/investigations/accidentreports/reports/har1903.pdf">https://ntsb.gov/investigations/accidentreports/reports/har1903.pdf</a></li>
+    <li id="src-2"><em>Mata v. Avianca, Inc.</em>, S.D.N.Y., sanctions opinion of June 22, 2023 (summary). <a href="https://en.wikipedia.org/wiki/Mata_v._Avianca,_Inc.">https://en.wikipedia.org/wiki/Mata_v._Avianca,_Inc.</a></li>
+    <li id="src-3">NPR, “How an AI-generated summer reading list got published in major newspapers,” May 20, 2025. <a href="https://www.npr.org/2025/05/20/nx-s1-5405022/fake-book-list-ai-chicago-sun-times">https://www.npr.org/2025/05/20/nx-s1-5405022/fake-book-list-ai-chicago-sun-times</a></li>
+    <li id="src-4">Cyber Daily, “Deloitte to refund government after using AI in $440,000 report,” Oct 2025. <a href="https://www.cyberdaily.au/government/12737-deloitte-to-refund-government-after-using-ai-in-440-000-report">https://www.cyberdaily.au/government/12737-deloitte-to-refund-government-after-using-ai-in-440-000-report</a></li>
+    <li id="src-5">Damien Charlotin, “AI Hallucination Cases” database. <a href="https://www.damiencharlotin.com/hallucinations/">https://www.damiencharlotin.com/hallucinations/</a></li>
+    <li id="src-6">Malay Mail, “‘Do your job’: Global courts face rising tide of AI-generated fake cases and quotes,” Jun 16, 2026. <a href="https://www.malaymail.com/news/tech-gadgets/2026/06/16/do-your-job-global-courts-face-rising-tide-of-ai-generated-fake-cases-and-quotes/223865">https://www.malaymail.com/news/tech-gadgets/2026/06/16/do-your-job-global-courts-face-rising-tide-of-ai-generated-fake-cases-and-quotes/223865</a></li>
+  </ol>
+</section>
+
+</article>
+</main>
+<footer class="end">
+  <a href="../">← All briefs</a>
+  <span>No. 018 · Research window 2018-03-01 to 2026-10-07</span>
+  <a href="https://github.com/iggym/applied-ai-engineering">Source on GitHub</a>
+</footer>
+<script>
+(function(){
+  var slug = document.documentElement.getAttribute('data-slug');
+  // reading progress
+  var bar = document.querySelector('.progress');
+  function onScroll(){
+    var h = document.documentElement; var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  document.addEventListener('scroll', onScroll, {passive:true}); onScroll();
+  // contents rail
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.rail a'));
+  if ('IntersectionObserver' in window && links.length){
+    var map = {}; links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){ links.forEach(function(a){ a.classList.remove('active'); a.removeAttribute('aria-current'); });
+          var a = map[e.target.id]; if (a){ a.classList.add('active'); a.setAttribute('aria-current','true'); } }
+      });
+    }, {rootMargin:'-20% 0px -70% 0px'});
+    Object.keys(map).forEach(function(id){ var el = document.getElementById(id); if (el) io.observe(el); });
+  }
+  // moves checklist (per-viewer convenience only)
+  var store = null; try { store = window.localStorage; } catch(e){}
+  document.querySelectorAll('ol.moves input[type=checkbox]').forEach(function(cb, i){
+    var key = 'aae:' + slug + ':move:' + i;
+    try { if (store && store.getItem(key) === '1'){ cb.checked = true; } } catch(e){}
+    function paint(){ cb.closest('li').classList.toggle('done', cb.checked); }
+    paint();
+    cb.addEventListener('change', function(){ paint(); try { store && store.setItem(key, cb.checked ? '1' : '0'); } catch(e){} });
+  });
+  // share controls on pull quotes
+  var url = document.querySelector('link[rel=canonical]').href;
+  document.querySelectorAll('blockquote.pull').forEach(function(q){
+    var text = q.querySelector('p').textContent.trim();
+    var row = document.createElement('div'); row.className = 'share';
+    var x = document.createElement('a'); x.textContent = 'Share on X'; x.target = '_blank'; x.rel = 'noopener';
+    x.href = 'https://x.com/intent/post?text=' + encodeURIComponent('“' + text + '”') + '&url=' + encodeURIComponent(url);
+    var li = document.createElement('a'); li.textContent = 'LinkedIn'; li.target = '_blank'; li.rel = 'noopener';
+    li.href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(url);
+    var cp = document.createElement('button'); cp.type = 'button'; cp.textContent = 'Copy';
+    cp.addEventListener('click', function(){
+      var s = '“' + text + '” — ' + url;
+      (navigator.clipboard ? navigator.clipboard.writeText(s) : Promise.reject()).then(function(){ cp.textContent = 'Copied'; }, function(){ cp.textContent = 'Copy failed'; });
+      setTimeout(function(){ cp.textContent = 'Copy'; }, 1600);
+    });
+    row.appendChild(x); row.appendChild(li); row.appendChild(cp); q.appendChild(row);
+  });
+})();
+</script>
+<script>
+
+(function(){
+  var ITEMS = [
+    {t:'Halvorsen v. Brightline Freight, 412 F.3d 118 (2d Cir. 2005): carrier liability limited by tariff terms.', bad:false},
+    {t:'Okafor v. Meridian Air, 88 F.4th 902 (9th Cir. 2023): quoting “a carrier’s chat assistant speaks with the carrier’s voice,” at 911.', bad:true, why:'Planted: in this exercise the case exists, but the quoted sentence does not appear in it. Fabricated pinpoint quotes are the most common pattern in sanctioned filings.'},
+    {t:'Reyes v. Coastal Transit Auth., 301 F. Supp. 3d 55 (D. Mass. 2018): notice requirements for injury claims.', bad:false},
+    {t:'In re Larkspur Holdings, 640 B.R. 77 (Bankr. D. Del. 2022): treatment of disputed customer credits.', bad:false},
+    {t:'Pemberton v. Allied Skyways, 57 F.4th 330 (7th Cir. 2022): tolling under the Montreal Convention.', bad:true, why:'Planted: no such case exists in this exercise’s source set. It reads exactly like the ones that do, which is the point.'},
+    {t:'Nakamura v. Orion Logistics, 219 F.3d 401 (5th Cir. 2000): forum-selection clauses in consumer contracts.', bad:false},
+    {t:'State ex rel. Duarte v. Pine Ridge Util., 2019 WL 4410023 (Ohio Ct. App. 2019): good-faith reliance on agency guidance.', bad:false},
+    {t:'Whitcombe v. Northstar Rail, 775 F.3d 640 (1st Cir. 2015): punitive damages standard.', bad:false}
+  ];
+  var list = document.getElementById('rq-list'), out = document.getElementById('rq-out'), decisions = {};
+  function build(){
+    list.innerHTML = ''; decisions = {}; out.textContent = '';
+    ITEMS.forEach(function(it, i){
+      var li = document.createElement('li');
+      var t = document.createElement('span'); t.className = 'cite-t'; t.textContent = it.t;
+      var g = document.createElement('span'); g.className = 'btns'; g.setAttribute('role','group'); g.setAttribute('aria-label','Decision for citation ' + (i+1));
+      ['Approve','Flag'].forEach(function(lbl){
+        var b = document.createElement('button'); b.type = 'button'; b.textContent = lbl; b.setAttribute('aria-pressed','false');
+        b.addEventListener('click', function(){ decisions[i] = lbl; g.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', x === b); }); });
+        g.appendChild(b);
+      });
+      li.appendChild(t); li.appendChild(g); list.appendChild(li);
+    });
+  }
+  document.getElementById('rq-done').addEventListener('click', function(){
+    var caught = 0, falseFlags = 0, undecided = 0;
+    ITEMS.forEach(function(it, i){
+      var li = list.children[i], d = decisions[i];
+      if (!d) undecided++;
+      var old = li.querySelector('.why'); if (old) old.remove();
+      li.classList.remove('caught','missed');
+      if (it.bad){
+        var w = document.createElement('span'); w.className = 'why'; w.textContent = it.why; li.appendChild(w);
+        if (d === 'Flag'){ caught++; li.classList.add('caught'); } else { li.classList.add('missed'); }
+      } else if (d === 'Flag'){ falseFlags++; }
+    });
+    out.textContent = 'Caught ' + caught + ' of 2 planted errors' + (falseFlags ? ', with ' + falseFlags + ' false flag' + (falseFlags > 1 ? 's' : '') : '') + (undecided ? '; ' + undecided + ' left undecided (in a real queue, those ship)' : '') + '. Nothing on the page tells you which ones are wrong. Only the source would.';
+  });
+  document.getElementById('rq-reset').addEventListener('click', build);
+  build();
+})();
+
+</script>
+</body>
+</html>

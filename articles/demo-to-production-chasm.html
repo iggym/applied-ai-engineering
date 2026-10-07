@@ -33,6 +33,7 @@
     </style>
 </head>
 <body>
+<nav class="aae-hub-link" aria-label="Site" style="font:500 13px/1.4 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.06em;padding:12px 16px;border-bottom:1px solid rgba(127,127,127,.25);"><a href="../" style="color:#C08A3E;text-decoration:none;">&larr; Applied AI Engineering</a></nav>
 
     <h1>The Demo-to-Production Chasm: Vendor Rhetoric vs. Practitioner Reality</h1>
     <div class="metadata">
@@ -45,25 +46,25 @@
         
         <h2>The Illusion of the Monolith</h2>
         <p>Vendors often present AI as a single, monolithic endpoint. You send text in, you get text out. In production, a single user query might trigger a chain of seven distinct operations. First, the system must authenticate the user and check permissions. Then, it reformulates the query for retrieval. It queries a vector database, applies a metadata filter, and reranks the results. Only then does it construct a prompt, call the model, validate the output against a safety classifier, and format the response for the front end.</p>
-        <p>[QUOTE 1] Vendors sell the inference, but practitioners pay for the orchestration.</p>
+        <p> Vendors sell the inference, but practitioners pay for the orchestration.</p>
         <p>This orchestration layer is where engineering time disappears. Building a retrieval-augmented generation (RAG) pipeline is no longer about calling an API; it is about building a distributed system that handles state, retries, caching, and fallbacks. When a vendor promises a 'knowledge worker copilot,' they are handing you a single gear and expecting you to build the rest of the clock.</p>
         
         <h2>Data Quality and the Context Window</h2>
         <p>Demos operate on curated, perfectly structured data. Production systems operate on the chaotic remnants of a decade of poor data entry practices. <span id="insight-2-trigger" data-observe></span>When a RAG pipeline fails in production, the root cause is rarely the language model. It is almost always the data.</p>
         <p>If your vector database contains outdated policies, contradictory instructions, and poorly scanned PDFs, the model will retrieve and hallucinate based on that garbage. Vendors claim their systems 'understand your business,' but understanding requires clean context. A language model cannot infer the correct procurement procedure if the embedded documents contain three different versions of the 2024 policy.</p>
-        <p>[QUOTE 2] A flawless demo operates in a vacuum; a production system operates in a riot.</p>
+        <p> A flawless demo operates in a vacuum; a production system operates in a riot.</p>
         <p>Practitioners spend weeks building evaluation pipelines to test whether their retrieval system is actually fetching the right documents. They build custom chunking strategies to keep semantic units intact. They build metadata tagging systems to filter out irrelevant contexts. The vendor's demo skips this step entirely, relying on a pre-baked dataset that perfectly matches the prompt.</p>
         
         <h2>Latency, Cost, and the Hidden Tax</h2>
         <p>The vendor demo is instantaneous. The production system is subject to the harsh realities of network latency, token limits, and rate limiting. When you chain three or four model calls together—query reformulation, retrieval, generation, and validation—the latency adds up. A user might wait eight seconds for a response, which is unacceptable in a customer-facing application.</p>
         <p>Then there is the cost. Vendors price by the token. In a demo, you process one query. In production, you process millions. If your system retrieves ten chunks of context for every query, and each chunk is 500 tokens, your input token costs explode rapidly. Practitioners must become experts in prompt compression, caching, and model routing to keep the system financially viable.</p>
-        <p>[QUOTE 3] The true cost of generative AI is not the GPU, but the human evaluation pipeline required to keep it from degrading.</p>
+        <p> The true cost of generative AI is not the GPU, but the human evaluation pipeline required to keep it from degrading.</p>
         <p><span id="insight-3-trigger" data-observe></span>Furthermore, models drift. Vendors silently update their models, which can change the output format or reasoning path. A system that worked perfectly on Tuesday might break on Wednesday because the vendor updated a safety filter. Practitioners must build continuous integration pipelines that test model outputs against regression suites, adding another layer of complexity.</p>
         
         <h2>Guardrails: The Unspoken Infrastructure</h2>
         <p>Vendors show the model generating helpful responses. They do not show the model generating harmful, off-topic, or legally catastrophic responses. In production, the model is the last line of defense; the practitioner’s guardrails are the first.</p>
         <p>Building guardrails means training classifiers to detect prompt injections. It means writing regular expressions to prevent the model from leaking personally identifiable information. It means hardcoding fallback responses when the model’s confidence is low.</p>
-        <p>[QUOTE 4] Guardrails are not an afterthought; they are the majority of the codebase.</p>
+        <p> Guardrails are not an afterthought; they are the majority of the codebase.</p>
         <p>The interactive demo below illustrates this disparity. Click 'Run Demo Query' to see what the vendor shows you. Click 'Run Production Query' to see what actually happens under the hood.</p>
         
         <!-- CENTERPIECE WIDGET INJECTED HERE -->
