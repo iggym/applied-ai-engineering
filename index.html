@@ -205,6 +205,12 @@
     catch(e){ return d; }
   }
 
+  function escapeHTML(str){
+    if(!str) return '';
+    const map = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};
+    return str.replace(/[&<>"']/g, m => map[m]);
+  }
+
   if(ordered.length === 0){
     feedEl.innerHTML = `
       <div class="empty">
@@ -213,19 +219,28 @@
         <p>The first argument is being drafted. Case No. 001 opens the docket.</p>
       </div>`;
   } else {
-    feedEl.innerHTML = ordered.map((a, idx) => `
-      <a class="card" href="${a.path}">
+    feedEl.innerHTML = ordered.map((a, idx) => {
+      const docketId = escapeHTML(a.id || String(idx+1).padStart(3,'0'));
+      const title = escapeHTML(a.title);
+      const hook = escapeHTML(a.hook || '');
+      const path = escapeHTML(a.path);
+      const tags = (a.tags||[]).map(t => `<span class="tag">${escapeHTML(t)}</span>`).join('');
+      const pinned = a.pinned ? '<span class="pinned-flag">· Lead Brief</span>' : '';
+      const readTime = a.reading_time_minutes ? a.reading_time_minutes + ' min' : '';
+
+      return `
+      <a class="card" href="${path}">
         <div class="card-meta">
-          <span class="docket">No. ${a.id || String(idx+1).padStart(3,'0')}</span>
+          <span class="docket">No. ${docketId}</span>
           <span>${fmtDate(a.date)}</span>
-          <span>${a.reading_time_minutes ? a.reading_time_minutes + ' min' : ''}</span>
-          ${a.pinned ? '<span class="pinned-flag">· Lead Brief</span>' : ''}
+          <span>${readTime}</span>
+          ${pinned}
         </div>
-        <h3 class="card-title">${a.title}</h3>
-        <p class="card-hook">${a.hook || ''}</p>
-        <div class="card-tags">${(a.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
-      </a>
-    `).join('');
+        <h3 class="card-title">${title}</h3>
+        <p class="card-hook">${hook}</p>
+        <div class="card-tags">${tags}</div>
+      </a>`;
+    }).join('');
   }
 })();
 </script>
