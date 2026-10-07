@@ -338,8 +338,8 @@
             <p>This is the pattern that keeps showing up across the production systems that actually survive contact with users. The vendors sell you autonomous agents that spin up, reason, and act. The practitioners who deploy them build something else entirely.</p>
 
             <h2>The Traction of Asymmetry</h2>
-            <p>The surviving pattern is read-heavy, write-cautious. <span class="quote-marker" data-quote="3">[QUOTE 3]</span> Vendors sell the tire-spinning autonomy of a sports car; practitioners build the deliberate, asymmetric traction of a tractor.</p>
-            <p>In database engineering, we don’t let every process commit to the database whenever it feels like it. We use ACID transactions. We separate reads from writes. We lock rows. We enforce commit boundaries. <span class="beat-marker" data-beat="1">[BEAT 1]</span> When we look at why autonomous AI agents fail in production, we blame their reasoning capabilities. But they aren't failing because they can't think. They are failing because they lack transaction boundaries. We stopped trying to teach the agent how to think and started teaching it how to stop. <span class="quote-marker" data-quote="1">[QUOTE 1]</span></p>
+            <p>The surviving pattern is read-heavy, write-cautious. <span class="quote-marker" data-quote="3"> </span> Vendors sell the tire-spinning autonomy of a sports car; practitioners build the deliberate, asymmetric traction of a tractor.</p>
+            <p>In database engineering, we don’t let every process commit to the database whenever it feels like it. We use ACID transactions. We separate reads from writes. We lock rows. We enforce commit boundaries. <span class="beat-marker" data-beat="1"> </span> When we look at why autonomous AI agents fail in production, we blame their reasoning capabilities. But they aren't failing because they can't think. They are failing because they lack transaction boundaries. We stopped trying to teach the agent how to think and started teaching it how to stop. <span class="quote-marker" data-quote="1"> </span></p>
             
             <div class="widget-container">
                 <p><strong>Try it:</strong> Drag the slider to see how Vendor Autonomy claims overlap with Practitioner Asymmetry constraints in the execution layer.</p>
@@ -357,7 +357,7 @@
             <p>Consider GitHub’s Copilot Workspace. When they moved from inline autocomplete to multi-file generation, they didn't just let the agent write code. They forced an intermediate step: a plan. The agent reads the repository, drafts a specification, and halts. The human reviews the plan. Only then does the agent write the code. Adding this 15-second human review slowed down the write speed but doubled the code acceptance rate.</p>
 
             <div class="reveal-section" id="beat2-section">
-                <p><span class="beat-marker" data-beat="2">[BEAT 2]</span> Engineering leaders often view human-in-the-loop as a temporary crutch for models that aren't smart enough yet. This is a fundamental misread of system design. The model writes the draft, but the human holds the commit key. <span class="quote-marker" data-quote="2">[QUOTE 2]</span> Human-in-the-loop isn't a patch for stupidity; it is a permanent architectural requirement for safe state mutation.</p>
+                <p><span class="beat-marker" data-beat="2"> </span> Engineering leaders often view human-in-the-loop as a temporary crutch for models that aren't smart enough yet. This is a fundamental misread of system design. The model writes the draft, but the human holds the commit key. <span class="quote-marker" data-quote="2"> </span> Human-in-the-loop isn't a patch for stupidity; it is a permanent architectural requirement for safe state mutation.</p>
             </div>
 
             <div class="shape-shift" id="shapeShiftDiv">
@@ -368,7 +368,7 @@
             </div>
 
             <h2>Drafts and Commit Keys</h2>
-            <p>The strongest counterargument is that models will eventually become reliable enough to write autonomously. If GPT-6 can write flawless code or execute perfect refunds, the commit boundary is just latency. But this ignores the nature of production environments. Environments drift. Database schemas change. Edge cases exist outside the training distribution. A genius agent with no commit boundary is a liability, because autonomy scales the execution of tasks, but asymmetry scales the survival of the system. <span class="quote-marker" data-quote="4">[QUOTE 4]</span></p>
+            <p>The strongest counterargument is that models will eventually become reliable enough to write autonomously. If GPT-6 can write flawless code or execute perfect refunds, the commit boundary is just latency. But this ignores the nature of production environments. Environments drift. Database schemas change. Edge cases exist outside the training distribution. A genius agent with no commit boundary is a liability, because autonomy scales the execution of tasks, but asymmetry scales the survival of the system. <span class="quote-marker" data-quote="4"> </span></p>
             <p>LangChain’s ecosystem pivot proves this. In 2024, practitioners abandoned free-form autonomous loops in favor of LangGraph. They realized that agents spinning in continuous write loops hallucinate catastrophically. By wrapping agents in a state machine, engineers forced the agent into long read phases, punctuated by sharp, interruptible write nodes. They domesticated the agent by restricting its write access.</p>
 
             <div class="data-viz">

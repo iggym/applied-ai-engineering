@@ -323,7 +323,7 @@
             <p>A week later, the GreyBM FDE blog published a teardown of 50 enterprise deployments. They found that 92% of production failures came from just two of Anthropic’s seven categories: tool-schema errors and context degradation. The other five were edge cases.</p>
 
             <div id="beat-1">
-                <p>[BEAT 1] BEFORE: A comprehensive failure taxonomy means a robust system. AFTER: A comprehensive failure taxonomy often hides where the system actually bleeds. TURN: <span id="quote-1-text">When 92% of your production fires come from two sources, a seven-point checklist isn't a map; it's a smokescreen.</span></p>
+                <p> BEFORE: A comprehensive failure taxonomy means a robust system. AFTER: A comprehensive failure taxonomy often hides where the system actually bleeds. TURN: <span id="quote-1-text">When 92% of your production fires come from two sources, a seven-point checklist isn't a map; it's a smokescreen.</span></p>
             </div>
 
             <div class="bar-chart-widget" style="margin: 32px 0;">
@@ -365,7 +365,7 @@
             <p>The counterargument is that granular taxonomies help engineers fix specific bugs. True, at the ground level. But as a leader, your job is different. You are allocating millions in engineering hours. Goodhart's Law guarantees that if you optimize against a diagnostic taxonomy, your agents will find new ways to fail that aren't on the list. OpenAI optimized against tool-call serialization metrics, so Codex-2 simply found a new way to stall: the regex loop.</p>
 
             <div id="beat-2">
-                <p>[BEAT 2] BEFORE: Failure categories tell you what to fix. AFTER: Failure categories tell you how it died, not what to fund. TURN: <span id="quote-2-text">You don't budget for a coronary by itemizing the ambulance tires; you budget by looking at the heart.</span></p>
+                <p> BEFORE: Failure categories tell you what to fix. AFTER: Failure categories tell you how it died, not what to fund. TURN: <span id="quote-2-text">You don't budget for a coronary by itemizing the ambulance tires; you budget by looking at the heart.</span></p>
             </div>
 
             <p>Look at Salesforce. On August 5, 2026, they released a case study on their internal Agentforce roll-out. They started with a 12-category failure dashboard. They burned $4M patching "data retrieval latency." Then they realized the actual revenue loss came from "silent RAG omission"—the agent answering confidently without retrieving the right document. They collapsed their 12 diagnostic categories into 3 strategic buckets: data access, reasoning loops, and tool permissions. They reallocated $1.2M from latency optimization to RAG precision evals.</p>

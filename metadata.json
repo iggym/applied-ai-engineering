@@ -165,6 +165,120 @@
   "reading_time_minutes": 4,
   "pinned": false,
   "research_window": "2026-06-15 to 2026-08-10"
-}
+},
+  {
+    "id": "013",
+    "slug": "your-chatbot-has-signing-authority",
+    "title": "Your Chatbot Has Signing Authority",
+    "hook": "Every customer-facing model can make promises on your behalf. The real design question isn't how accurate it is; it's what it can commit you to.",
+    "path": "articles/your-chatbot-has-signing-authority.html",
+    "date": "2026-10-07",
+    "status": "published",
+    "format": "essay",
+    "tags": [
+      "customer-facing-ai",
+      "liability",
+      "architecture",
+      "incident-analysis"
+    ],
+    "reading_time_minutes": 7,
+    "pinned": false,
+    "research_window": "2023-12-01 to 2026-10-07"
+  },
+  {
+    "id": "014",
+    "slug": "the-leaderboard-is-a-press-release",
+    "title": "The Leaderboard Is a Press Release",
+    "hook": "A public benchmark score now measures a vendor's release process as much as its model. The only eval that predicts your production is the one built from your traffic.",
+    "path": "articles/the-leaderboard-is-a-press-release.html",
+    "date": "2026-10-07",
+    "status": "published",
+    "format": "essay",
+    "tags": [
+      "evaluation",
+      "benchmarks",
+      "vendor-critique",
+      "model-selection"
+    ],
+    "reading_time_minutes": 6,
+    "pinned": false,
+    "research_window": "2024-05-01 to 2026-10-07"
+  },
+  {
+    "id": "015",
+    "slug": "the-channel-is-the-vulnerability",
+    "title": "The Channel Is the Vulnerability",
+    "hook": "Prompt injection isn't a bug vendors will patch. It's what happens when instructions and data share one channel, and the only durable fix is to remove a leg of the trifecta.",
+    "path": "articles/the-channel-is-the-vulnerability.html",
+    "date": "2026-10-07",
+    "status": "published",
+    "format": "essay",
+    "tags": [
+      "security",
+      "agentic-systems",
+      "prompt-injection",
+      "architecture"
+    ],
+    "reading_time_minutes": 6,
+    "pinned": false,
+    "research_window": "2024-08-01 to 2026-10-07"
+  },
+  {
+    "id": "016",
+    "slug": "instructions-are-suggestions-credentials-are-policy",
+    "title": "Instructions Are Suggestions. Credentials Are Policy.",
+    "hook": "When a coding agent destroys something, the postmortem blames its judgment. The cause is that it held a credential that could destroy it.",
+    "path": "articles/instructions-are-suggestions-credentials-are-policy.html",
+    "date": "2026-10-07",
+    "status": "published",
+    "format": "essay",
+    "tags": [
+      "agentic-systems",
+      "blast-radius",
+      "incident-analysis",
+      "platform-engineering"
+    ],
+    "reading_time_minutes": 6,
+    "pinned": false,
+    "research_window": "2025-07-01 to 2026-10-07"
+  },
+  {
+    "id": "017",
+    "slug": "the-token-price-is-falling-your-bill-isnt",
+    "title": "The Token Price Is Falling. Your Bill Isn't.",
+    "hook": "Per-token prices drop about 10x a year, but agents multiply the tokens per task faster. The unit that predicts your bill is cost per completed task.",
+    "path": "articles/the-token-price-is-falling-your-bill-isnt.html",
+    "date": "2026-10-07",
+    "status": "published",
+    "format": "essay",
+    "tags": [
+      "unit-economics",
+      "agentic-systems",
+      "pricing",
+      "strategy"
+    ],
+    "reading_time_minutes": 6,
+    "pinned": false,
+    "research_window": "2023-03-01 to 2026-10-07"
+  },
+  {
+    "id": "018",
+    "slug": "approval-is-not-oversight",
+    "title": "Approval Is Not Oversight",
+    "hook": "A human who approves AI output by default soon becomes a signature. Oversight works only when reviewers are measured on what they catch, not what they pass.",
+    "path": "articles/approval-is-not-oversight.html",
+    "date": "2026-10-07",
+    "status": "published",
+    "format": "essay",
+    "tags": [
+      "human-in-the-loop",
+      "governance",
+      "incident-analysis",
+      "org-design"
+    ],
+    "reading_time_minutes": 6,
+    "pinned": false,
+    "research_window": "2018-03-01 to 2026-10-07"
+  }
   ]
 }

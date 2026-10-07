@@ -619,7 +619,7 @@
 
             <section id="reframe">
                 <h2>The X-Axis Mismatch</h2>
-                <p>The industry keeps borrowing model-scaling intuition to justify org-scaling decisions. The two curves don't share an X-axis. <mark data-quote="1">[QUOTE 1]</mark> When you scale a transformer, you pour in parameters and data, and capability predictably rises along a smooth logarithmic curve. When you scale an AI engineering organization, you pour in headcount, and coordination costs explode along a quadratic curve. We confuse the two because both involve the word "scaling," but they obey entirely different physics.</p>
+                <p>The industry keeps borrowing model-scaling intuition to justify org-scaling decisions. The two curves don't share an X-axis. <mark data-quote="1"> </mark> When you scale a transformer, you pour in parameters and data, and capability predictably rises along a smooth logarithmic curve. When you scale an AI engineering organization, you pour in headcount, and coordination costs explode along a quadratic curve. We confuse the two because both involve the word "scaling," but they obey entirely different physics.</p>
                 
                 <div class="spectrum">
                     <div class="spectrum-old"></div>
@@ -635,7 +635,7 @@
 
             <section id="connections">
                 <h2>Hardware Meets Human Physics</h2>
-                <p class="reveal-text">Look at JPMorgan's June 2026 internal reorganization. They doubled their internal AI platform team, expecting deployment frequency to rise. Instead, deployment frequency halved over the subsequent quarter. <mark data-beat="1">[BEAT 1]</mark></p>
+                <p class="reveal-text">Look at JPMorgan's June 2026 internal reorganization. They doubled their internal AI platform team, expecting deployment frequency to rise. Instead, deployment frequency halved over the subsequent quarter. <mark data-beat="1"> </mark></p>
                 <div class="reveal-text" style="border-left: 2px solid var(--warn); padding-left: 16px; margin: 16px 0; font-size: 0.9rem; color: var(--text-dim);">
                     <strong>BEFORE:</strong> Adding AI engineers scales AI output linearly.<br>
                     <strong>AFTER:</strong> Adding AI engineers creates integration debt that slows output exponentially.<br>
@@ -671,7 +671,7 @@
                     <figcaption>Fig. 1: The compute curve climbs cleanly; the org curve climbs, sickens, and crashes.</figcaption>
                 </div>
 
-                <p class="reveal-text">The same physics apply to hardware. Meta's July 2026 disclosure of a 19-hour outage on their 100k GPU Llama 4 training cluster wasn't a model failure; it was an orchestration collapse. A single node failure cascaded across the rack because the network topology prioritized raw bandwidth over fault isolation. Blast radius scales exponentially with compute. <mark data-beat="2">[BEAT 2]</mark></p>
+                <p class="reveal-text">The same physics apply to hardware. Meta's July 2026 disclosure of a 19-hour outage on their 100k GPU Llama 4 training cluster wasn't a model failure; it was an orchestration collapse. A single node failure cascaded across the rack because the network topology prioritized raw bandwidth over fault isolation. Blast radius scales exponentially with compute. <mark data-beat="2"> </mark></p>
                 <div class="reveal-text" style="border-left: 2px solid var(--warn); padding-left: 16px; margin: 16px 0; font-size: 0.9rem; color: var(--text-dim);">
                     <strong>BEFORE:</strong> More compute yields predictable, linear capability gains.<br>
                     <strong>AFTER:</strong> More compute creates unpredictable, exponential operational bottlenecks.<br>
@@ -679,7 +679,7 @@
                 </div>
                 <p class="reveal-text">When you pack 100,000 GPUs into a single cluster, you aren't just scaling model capability; you are scaling the probability of a hardware fault interacting with a software bug. The model recovers; the training run does not. The checkpointing mechanism failed under the cascading load, meaning the system couldn't save its state before shutting down. They scaled the compute, but the orchestration layer was operating on a linear assumption of failure.</p>
 
-                <div class="pull-quote reveal-text">You cannot bypass coordination costs by buying more GPUs, because the hardware and the humans operate on different physics. <mark data-quote="2">[QUOTE 2]</mark></div>
+                <div class="pull-quote reveal-text">You cannot bypass coordination costs by buying more GPUs, because the hardware and the humans operate on different physics. <mark data-quote="2"> </mark></div>
             </section>
 
             <section id="nuance">
@@ -727,7 +727,7 @@
                 <p>First, measure resolution latency, not token throughput. If your dashboard celebrates tokens generated per second while your customers wait for a database query, you are optimizing the wrong axis. Track the time from user input to system resolution, and hunt down the non-AI bottlenecks.</p>
                 <p style="background: var(--surface); padding: 12px; border-radius: 8px; border-left: 4px solid var(--accent-2); font-size: 0.9rem; color: var(--text-dim);"><em>Learning Aside: We retain concepts better when we predict an outcome before learning the answer—a technique called prediction error. Stop and predict: in your current AI project, what is the single slowest non-model component? The discomfort of not knowing is the mechanism that encodes the lesson.</em></p>
                 <p>Second, cap GPU cluster blast radius. Implement cellular architectures where a single node failure drops a cell, not the entire training run. Meta's 19-hour outage proves that monolithic clusters are a single point of failure. If a cluster is too big to fail, it is too big. Divide your 100k cluster into four 25k cells with independent orchestration.</p>
-                <p>Third, structure teams around bounded contexts before adding headcount. <mark data-quote="3">[QUOTE 3]</mark> Doubling your AI team halves your deployment frequency when you scale headcount before scaling your organizational architecture. Define the API contracts first, then hire against them. Do not assume the team will self-organize like a neural network. Humans require explicit interfaces.</p>
+                <p>Third, structure teams around bounded contexts before adding headcount. <mark data-quote="3"> </mark> Doubling your AI team halves your deployment frequency when you scale headcount before scaling your organizational architecture. Define the API contracts first, then hire against them. Do not assume the team will self-organize like a neural network. Humans require explicit interfaces.</p>
 
                 <!-- Data Storytelling Visual 3: JPMorgan Table -->
                 <div class="data-viz">
