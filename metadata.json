@@ -136,10 +136,10 @@
   "research_window": "2025-05-15 to 2026-05-15"
 },{
     "id": "0042",
-    "slug": "vendor-rhetoric-vs-practitioner-reality",
+    "slug": "demo-to-production-chasm",
     "title": "The Demo-to-Production Chasm: Vendor Rhetoric vs. Practitioner Reality",
     "hook": "Vendors sell the inference, but practitioners pay for the orchestration.",
-    "path": "articles/vendor-rhetoric-vs-practitioner-reality.html",
+    "path": "articles/demo-to-production-chasm.html",
     "date": "2026-05-15",
     "status": "published",
     "format": "essay",

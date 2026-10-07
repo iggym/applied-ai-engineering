@@ -8,7 +8,7 @@ Each task has an acceptance check.
 
 ## P0 — Data integrity and broken content
 
-- [ ] **Fix the duplicate `vendor-rhetoric-vs-practitioner-reality` entries in `metadata.json`.**
+- [x] **Fix the duplicate `vendor-rhetoric-vs-practitioner-reality` entries in `metadata.json`.**
   Two entries (ids `0001556` and `0042`) share a slug and both point to `articles/vendor-rhetoric-vs-practitioner-reality.html`. As a result, the hub lists one article twice and never links `articles/vendor-rhetoric-vs-practitioner-reality-0.html` ("The Demo-to-Production Chasm"). Give that file a real slug, for example `demo-to-production-chasm.html`, and point entry `0042` at it, or merge or drop it if it is a near-duplicate.
   *Check:* every `path` in `metadata.json` is unique, and every file in `articles/` is listed exactly once.
 - [ ] **Remove the duplicated hook.** `throwing-bodies-at-silicon` reuses the hook of `scaling-laws-vs-operating-laws` word for word ("The industry keeps borrowing model-scaling intuition…"). Write a hook specific to that article. Also decide whether the two pieces should be merged, because they argue the same thesis.
