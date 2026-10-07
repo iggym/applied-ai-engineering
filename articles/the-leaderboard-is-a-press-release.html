@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en" data-slug="the-leaderboard-is-a-press-release">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Leaderboard Is a Press Release — Applied AI Engineering</title>
+<meta name="description" content="A public benchmark score now measures a vendor&#x27;s release process as much as its model. The only eval that predicts your production is the one built from your traffic.">
+<meta name="author" content="Applied AI Engineering">
+<link rel="canonical" href="https://iggym.github.io/applied-ai-engineering/articles/the-leaderboard-is-a-press-release.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Applied AI Engineering">
+<meta property="og:title" content="The Leaderboard Is a Press Release">
+<meta property="og:description" content="A public benchmark score now measures a vendor&#x27;s release process as much as its model. The only eval that predicts your production is the one built from your traffic.">
+<meta property="og:url" content="https://iggym.github.io/applied-ai-engineering/articles/the-leaderboard-is-a-press-release.html">
+<meta property="article:published_time" content="2026-10-07">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="The Leaderboard Is a Press Release">
+<meta name="twitter:description" content="A public benchmark score now measures a vendor&#x27;s release process as much as its model. The only eval that predicts your production is the one built from your traffic.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#12151B; --surface:#181C24; --surface-2:#1E232D;
+  --ink:#E7E5DF; --muted:#9A9FAB;
+  --brass:#C08A3E; --brass-ink:#D9A55A; --brass-dim:rgba(192,138,62,.35);
+  --rust:#C2604B; --rule:rgba(231,229,223,.14);
+  --max:680px; --topbar:52px;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#FAF9F7; --surface:#F0EFEC; --surface-2:#E7E5E0;
+    --ink:#1A1A1A; --muted:#5E5E5E;
+    --brass:#9A6A26; --brass-ink:#8A5C1C; --brass-dim:rgba(154,106,38,.35);
+    --rust:#A6503E; --rule:rgba(26,26,26,.14);
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:calc(var(--topbar) + 16px)}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:'Source Serif 4',Georgia,serif;
+  font-size:18px; line-height:1.65; -webkit-font-smoothing:antialiased}
+@media (min-width:760px){ body{font-size:19px} }
+a{color:var(--brass-ink); text-underline-offset:3px}
+::selection{background:var(--brass-dim)}
+:focus-visible{outline:2px solid var(--brass); outline-offset:3px}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+
+header.top{position:sticky; top:0; z-index:50; height:var(--topbar); display:flex; align-items:center;
+  justify-content:space-between; gap:12px; padding:0 16px; background:color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--rule)}
+.crumbs{font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0}
+.crumbs a{color:var(--ink); text-decoration:none}
+.crumbs a:hover{color:var(--brass-ink)}
+.top-meta{font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--brass-ink); border:1px solid var(--brass-dim);
+  padding:3px 8px; border-radius:2px; flex-shrink:0}
+.progress{position:absolute; left:0; bottom:-1px; height:2px; width:0; background:var(--brass)}
+
+nav.rail{display:none}
+@media (min-width:1180px){
+  nav.rail{display:block; position:fixed; top:calc(var(--topbar) + 56px); left:max(24px, calc(50vw - 340px - 260px)); width:210px}
+  nav.rail p{font-family:'IBM Plex Mono',monospace; font-size:.66rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin:0 0 10px}
+  nav.rail ol{list-style:none; margin:0; padding:0; border-left:1px solid var(--rule)}
+  nav.rail a{display:block; padding:5px 0 5px 14px; margin-left:-1px; border-left:2px solid transparent; color:var(--muted);
+    text-decoration:none; font-family:'IBM Plex Mono',monospace; font-size:.74rem; line-height:1.4}
+  nav.rail a:hover{color:var(--ink)}
+  nav.rail a.active{color:var(--brass-ink); border-left-color:var(--brass)}
+}
+
+main{max-width:var(--max); margin:0 auto; padding:0 16px 64px}
+.hero{padding:64px 0 28px; border-bottom:1px solid var(--rule); margin-bottom:28px}
+.eyebrow{font-family:'IBM Plex Mono',monospace; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+  display:flex; flex-wrap:wrap; gap:6px 14px; margin:0 0 18px}
+.eyebrow .docket{color:var(--brass-ink)}
+h1{font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:clamp(2rem,6vw,3rem); line-height:1.12; margin:0 0 14px; letter-spacing:-.01em}
+.hook{font-family:'Fraunces',Georgia,serif; font-style:italic; font-weight:400; font-size:1.18rem; color:var(--muted); margin:0 0 18px; max-width:56ch}
+.tags{display:flex; flex-wrap:wrap; gap:8px; margin:0; padding:0; list-style:none}
+.tags li{font-family:'IBM Plex Mono',monospace; font-size:.66rem; color:var(--brass-ink); border:1px solid var(--brass-dim); padding:2px 8px; border-radius:2px}
+figure.thesis{margin:30px 0 0; padding:18px; background:var(--surface); border:1px solid var(--rule); border-radius:4px}
+figure.thesis svg{display:block; width:100%; height:auto}
+figure.thesis figcaption, .cap{font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--muted); margin-top:10px; line-height:1.5}
+
+article h2{font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:1.6rem; line-height:1.2; margin:2.4em 0 .6em}
+article h3{font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:1.2rem; margin:1.6em 0 .4em}
+article p{margin:0 0 1.1em}
+article strong{color:var(--ink); font-weight:600}
+sup.cite a{font-family:'IBM Plex Mono',monospace; font-size:.66em; text-decoration:none; padding:0 1px}
+.thesis-line{border-left:3px solid var(--brass); padding:4px 0 4px 18px; font-size:1.08em; margin:1.4em 0}
+
+details.predict{margin:1.6em 0; border:1px dashed var(--brass-dim); border-radius:4px; padding:14px 18px; background:var(--surface)}
+details.predict summary{cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--brass-ink); letter-spacing:.04em}
+details.predict[open] summary{margin-bottom:10px}
+details.predict p:last-child{margin-bottom:0}
+
+.centerpiece{margin:2em -4px; padding:20px 18px; background:var(--surface); border:1px solid var(--rule); border-radius:6px}
+.centerpiece h3{margin-top:0}
+.centerpiece .label{font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+.centerpiece button{font:inherit; font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--ink); background:var(--surface-2);
+  border:1px solid var(--rule); border-radius:3px; padding:7px 12px; cursor:pointer; min-height:36px}
+.centerpiece button:hover{border-color:var(--brass-dim)}
+.centerpiece button[aria-pressed="true"], .centerpiece button.on{border-color:var(--brass); color:var(--brass-ink)}
+.centerpiece input[type=range]{width:100%; accent-color:var(--brass)}
+.assumptions{font-family:'IBM Plex Mono',monospace; font-size:.7rem; color:var(--muted); border-top:1px solid var(--rule); margin-top:16px; padding-top:10px; line-height:1.55}
+
+aside.counter{margin:2em 0; padding:20px 20px 6px; border:1px solid var(--rust); border-left-width:4px; border-radius:4px; background:color-mix(in srgb, var(--rust) 7%, transparent)}
+aside.counter .k{font-family:'IBM Plex Mono',monospace; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--rust); margin:0 0 8px}
+
+ol.moves{list-style:none; padding:0; margin:1.2em 0; counter-reset:m}
+ol.moves li{counter-increment:m; position:relative; padding:14px 0 14px 52px; border-bottom:1px solid var(--rule)}
+ol.moves li::before{content:counter(m,decimal-leading-zero); position:absolute; left:0; top:14px; font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--brass-ink)}
+ol.moves label{display:flex; gap:10px; align-items:flex-start; cursor:pointer}
+ol.moves input{margin-top:.45em; accent-color:var(--brass); width:16px; height:16px; flex-shrink:0}
+ol.moves .signal{display:block; font-size:.88em; color:var(--muted); margin-top:4px}
+ol.moves li.done .what{text-decoration:line-through; text-decoration-color:var(--brass-dim)}
+
+blockquote.pull{margin:2em 0; padding:0 0 0 20px; border-left:2px solid var(--brass)}
+blockquote.pull p{font-family:'Fraunces',Georgia,serif; font-style:italic; font-size:1.3rem; line-height:1.35; margin:0 0 10px}
+.share{display:flex; gap:8px; flex-wrap:wrap}
+.share a, .share button{font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--muted); background:none; border:1px solid var(--rule);
+  border-radius:2px; padding:3px 9px; text-decoration:none; cursor:pointer}
+.share a:hover, .share button:hover{color:var(--brass-ink); border-color:var(--brass-dim)}
+
+ul.carry{list-style:none; padding:0; margin:1em 0}
+ul.carry li{padding:12px 0 12px 28px; border-bottom:1px solid var(--rule); position:relative; font-family:'Fraunces',Georgia,serif; font-size:1.1rem}
+ul.carry li::before{content:'→'; position:absolute; left:0; color:var(--brass-ink)}
+
+.quiz details{border-bottom:1px solid var(--rule); padding:12px 0}
+.quiz summary{cursor:pointer; font-weight:600}
+.quiz details p{margin:10px 0 0; color:var(--muted)}
+
+section.sources ol{font-size:.86rem; color:var(--muted); padding-left:1.4em}
+section.sources li{margin-bottom:.6em; overflow-wrap:anywhere}
+section.sources li:target{color:var(--ink); background:var(--surface)}
+
+footer.end{max-width:var(--max); margin:0 auto; padding:28px 16px 56px; border-top:1px solid var(--rule);
+  display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; font-family:'IBM Plex Mono',monospace; font-size:.74rem; color:var(--muted)}
+footer.end a{color:var(--brass-ink); text-decoration:none}
+
+table.cmp{width:100%; border-collapse:collapse; font-size:.86rem; margin:1.4em 0}
+table.cmp th, table.cmp td{text-align:left; vertical-align:top; padding:9px 8px; border-bottom:1px solid var(--rule)}
+table.cmp th{font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:500}
+.scroll-x{overflow-x:auto}
+
+@media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important; scroll-behavior:auto !important} }
+
+/* ---- brief-specific ---- */
+
+.bon-bars{margin:16px 0 6px}
+.bon-row{display:grid; grid-template-columns:86px 1fr 52px; gap:10px; align-items:center; margin:8px 0; font-size:.8rem}
+.track{height:14px; background:var(--surface-2); border-radius:2px; overflow:hidden}
+.fill{height:100%}
+.fill.true{background:var(--muted)}
+.fill.pub{background:var(--brass); width:50%; transition:width .25s ease}
+.bon-note{font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--brass-ink); min-height:2.6em; margin:10px 0 0}
+#bon label{display:block; margin-top:12px}
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="crumbs"><a href="../">Applied AI Engineering</a> / The Leaderboard Is a Press Release</div>
+  <div class="top-meta">No. 014 · 6 min</div>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+<nav class="rail" aria-label="Contents">
+  <p>Contents</p>
+  <ol>
+    <li><a href="#selection">Selection, Not Cheating</a></li>
+    <li><a href="#same-shape">Same Shape, Three Benchmarks</a></li>
+    <li><a href="#counterargument">The Objection</a></li>
+    <li><a href="#moves">Four Moves Monday</a></li>
+    <li><a href="#carry">Three Things to Carry</a></li>
+    <li><a href="#check">Check Your Understanding</a></li>
+    <li><a href="#sources">Sources</a></li>
+  </ol>
+</nav>
+<main>
+<article>
+  <header class="hero">
+    <p class="eyebrow"><span class="docket">No. 014</span><span>Oct 7, 2026</span><span>6 min read</span><span>Research window: 2024-05-01 to 2026-10-07</span></p>
+    <h1>The Leaderboard Is a Press Release</h1>
+    <p class="hook">A public benchmark score now measures a vendor&#x27;s release process as much as its model. The only eval that predicts your production is the one built from your traffic.</p>
+    <ul class="tags" aria-label="Tags"><li>evaluation</li><li>benchmarks</li><li>vendor-critique</li><li>model-selection</li></ul>
+    <figure class="thesis">
+<svg viewBox="0 0 640 150" role="img" aria-labelledby="h2t">
+  <title id="h2t">Twenty-seven variants of identical true skill produce a spread of noisy scores; only the highest is published.</title>
+  <line x1="20" y1="120" x2="620" y2="120" stroke="currentColor" stroke-opacity=".3"/>
+  <line x1="320" y1="20" x2="320" y2="125" stroke="currentColor" stroke-opacity=".5" stroke-dasharray="4 4"/>
+  <text x="320" y="142" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor" fill-opacity=".7">true skill</text>
+  <g fill="#9A9FAB" fill-opacity=".7">
+    <circle cx="250" cy="108" r="5"/><circle cx="268" cy="96" r="5"/><circle cx="281" cy="108" r="5"/><circle cx="295" cy="96" r="5"/><circle cx="300" cy="84" r="5"/>
+    <circle cx="306" cy="108" r="5"/><circle cx="314" cy="96" r="5"/><circle cx="318" cy="84" r="5"/><circle cx="322" cy="72" r="5"/><circle cx="326" cy="108" r="5"/>
+    <circle cx="331" cy="96" r="5"/><circle cx="336" cy="84" r="5"/><circle cx="341" cy="108" r="5"/><circle cx="347" cy="96" r="5"/><circle cx="352" cy="84" r="5"/>
+    <circle cx="358" cy="108" r="5"/><circle cx="366" cy="96" r="5"/><circle cx="372" cy="108" r="5"/><circle cx="381" cy="96" r="5"/><circle cx="390" cy="108" r="5"/>
+    <circle cx="276" cy="84" r="5"/><circle cx="288" cy="72" r="5"/><circle cx="344" cy="72" r="5"/><circle cx="362" cy="84" r="5"/><circle cx="398" cy="96" r="5"/><circle cx="236" cy="108" r="5"/>
+  </g>
+  <circle cx="428" cy="108" r="7" fill="#C08A3E"/>
+  <text x="436" y="60" font-family="IBM Plex Mono, monospace" font-size="12" fill="#C08A3E">the one you see</text>
+  <path d="M440 66 L430 98" stroke="#C08A3E" stroke-width="1.5"/>
+</svg>
+    <figcaption>Run the same model through enough private variants and noise alone produces a winner. Publish only the max and the leaderboard records your selection process.</figcaption>
+    </figure>
+  </header>
+
+<p>In early April 2025, Meta launched Llama 4, and one variant, Maverick, appeared near the top of LMArena, the crowd-voted chatbot leaderboard that many buyers treat as a scoreboard. Within days, people noticed that the model on the leaderboard wasn't the model Meta released. It was "Llama-4-Maverick-03-26-Experimental," a version that Meta itself described as optimized for conversationality. LMArena apologized, changed its policies, and added the released model. The vanilla Maverick ranked below GPT-4o, Claude 3.5 Sonnet, and Gemini 1.5 Pro, all older models.<sup class="cite"><a href="#src-1" aria-label="Source 1">[1]</a></sup><sup class="cite"><a href="#src-2" aria-label="Source 2">[2]</a></sup></p>
+
+<p>The obvious reading: one vendor gamed one leaderboard, and the leaderboard tightened its rules. The deeper problem showed up three weeks later, in a paper titled <em>The Leaderboard Illusion</em>.</p>
+
+<p class="thesis-line">A public benchmark score now measures a vendor's <strong>release process</strong> as much as its model. The only evaluation that predicts your production behavior is one you build from your own traffic, run yourself, and keep private.</p>
+
+<h2 id="selection">Selection, Not Cheating</h2>
+
+<p>The <em>Leaderboard Illusion</em> authors, from Cohere Labs, Princeton, Stanford, Ai2, and others, documented how the Arena actually worked. A handful of providers could test many private variants before a release and publish only the best score. Before Llama 4, Meta tested 27 private variants. Proprietary models were also sampled more often and removed less often. Google and OpenAI received an estimated 19.2% and 20.4% of all Arena battle data, which is free training signal for the exact distribution the leaderboard measures.<sup class="cite"><a href="#src-3" aria-label="Source 3">[3]</a></sup></p>
+
+<p>Nobody needs to cheat for this to inflate scores. Testing 27 variants and picking the top one is <strong>best-of-N on a noisy measurement</strong>. Even if every variant had identical underlying quality, the maximum of 27 noisy scores sits well above the average. The leaderboard then records a fact about how many draws you took.</p>
+
+<div class="centerpiece" id="bon">
+  <p class="label">Interactive · The selection tax</p>
+  <h3>How much does "best of N" inflate a score?</h3>
+  <label for="bon-n" class="label">Private variants tested: <output id="bon-n-out">1</output></label>
+  <input id="bon-n" type="range" min="1" max="40" value="1">
+  <label for="bon-s" class="label">Measurement noise (std. dev., rating points): <output id="bon-s-out">15</output></label>
+  <input id="bon-s" type="range" min="5" max="30" value="15">
+  <div class="bon-bars" aria-live="polite">
+    <div class="bon-row"><span class="mono">True skill</span><div class="track"><div class="fill true" style="width:50%"></div></div><span class="mono" id="bon-true">1200</span></div>
+    <div class="bon-row"><span class="mono">Published</span><div class="track"><div class="fill pub" id="bon-pub"></div></div><span class="mono" id="bon-pubv">1200</span></div>
+  </div>
+  <p class="bon-note" id="bon-note"></p>
+  <p class="assumptions">Model: every variant has identical true skill (1200). Each measured score = skill + Gaussian noise. The vendor publishes the maximum. The number shown is the expected maximum, estimated from 4,000 simulated releases per setting. Noise levels are illustrative, not LMArena's actual confidence intervals. The point is the shape: inflation grows with N even when nothing improved.</p>
+</div>
+
+<h2 id="same-shape">Same Shape, Three Benchmarks</h2>
+
+<p>The Arena is a human-preference benchmark, but the same mechanism shows up in static tests.</p>
+
+<p><strong>Contamination.</strong> In May 2024, Scale AI researchers wrote GSM1k: 1,000 new grade-school math problems matched in style and difficulty to the famous GSM8k test. Several model families scored up to 8% lower on the new problems. Models that were more likely to reproduce GSM8k examples word for word showed bigger gaps, which suggests partial memorization.<sup class="cite"><a href="#src-4" aria-label="Source 4">[4]</a></sup> The test had been in the training data, so the score partly measured exposure.</p>
+
+<p><strong>Broken instruments.</strong> In August 2024, OpenAI published SWE-bench Verified after paying 93 developers to review 1,699 tasks from the original SWE-bench. They removed 68.3% of the reviewed tasks as underspecified, unfair, or ungradable.<sup class="cite"><a href="#src-5" aria-label="Source 5">[5]</a></sup> For a year before that, the industry had compared coding agents on a benchmark where most of the reviewed tasks were flawed. The leaderboard looked precise. The ruler was bent.</p>
+
+<details class="predict">
+  <summary>Pause and predict: what do private variants, contamination, and broken tasks have in common?</summary>
+  <p>In each case, <strong>the score was optimized against, or polluted by, the same public distribution it claims to measure.</strong> Selection (best-of-N), leakage (training on the test), and instrument error (unfair tasks) all push the headline number away from what you'll see on your own work. Only the first one involves anyone choosing to do it.</p>
+</details>
+
+<p>This is Goodhart's law with a procurement budget attached. Once a public number decides funding rounds, launch coverage, and enterprise shortlists, everything upstream bends toward that number: which variant ships, what goes into training, which tasks the eval team prioritizes. You can call it the <strong>selection tax</strong>. It's the gap between the published score and what the model will do on data nobody optimized for.</p>
+
+<blockquote class="pull"><p>A leaderboard rank tells you how many times the vendor tried. Your eval tells you whether it works.</p></blockquote>
+
+<h2 id="counterargument">The Objection</h2>
+
+<aside class="counter" aria-labelledby="ctr2">
+  <p class="k" id="ctr2">The strongest counterargument</p>
+  <p>Benchmarks still track real capability. The GSM1k authors themselves found that frontier models showed minimal overfitting and that all models generalized to new problems. Arena rankings broadly agree with what practitioners experience. A noisy public signal beats no signal, and most teams don't have the resources to build serious evals.</p>
+</aside>
+
+<p>That's right at coarse grain. Benchmarks reliably separate a 2023 model from a 2026 one, and the GSM1k paper says so.<sup class="cite"><a href="#src-4" aria-label="Source 4">[4]</a></sup> But procurement decisions are rarely coarse. They're choices between three frontier models whose public scores sit within a few points of each other. That's exactly the range where the selection tax is as large as the differences being compared. The signal is real across generations and unreliable within one.</p>
+
+<p>"We don't have the resources" is also the wrong cost comparison. A useful private eval is small: a couple of hundred real, anonymized requests from your logs with graded expected outcomes. That costs a few engineer-days. Picking the wrong model for a system you'll run for two years costs much more.</p>
+
+<h2 id="moves">Four Moves Monday</h2>
+
+<ol class="moves">
+  <li><label><input type="checkbox"><span><span class="what"><strong>Build a 200-item eval from your own logs.</strong> Sample real requests across your traffic mix, including the ugly tail, and write down what a correct outcome is for each.</span><span class="signal">Signal: the eval runs in under an hour and has caught at least one regression a leaderboard didn't predict.</span></span></label></li>
+  <li><label><input type="checkbox"><span><span class="what"><strong>Ban leaderboard ranks from decision documents.</strong> Any model-selection memo has to cite your eval's numbers, with variance across at least three runs.</span><span class="signal">Signal: the next model swap proposal includes a confidence interval.</span></span></label></li>
+  <li><label><input type="checkbox"><span><span class="what"><strong>Keep a held-out set that nobody tunes against.</strong> Split your eval, tune prompts on one half, and report only on the other. Refresh it every quarter from new traffic.</span><span class="signal">Signal: the tuned and held-out scores stay within a few points. A growing gap is your own selection tax.</span></span></label></li>
+  <li><label><input type="checkbox"><span><span class="what"><strong>Re-run on every vendor model update.</strong> "Same model name" isn't "same model." Pin versions and re-evaluate before you roll forward.</span><span class="signal">Signal: you can say what changed on your workload within a day of a vendor release.</span></span></label></li>
+</ol>
+
+<h2 id="carry">Three Things to Carry</h2>
+<ul class="carry">
+  <li>Best-of-N on a noisy test produces a winner even when nothing improved.</li>
+  <li>Public benchmarks are good across generations and unreliable within one, which is where your decision sits.</li>
+  <li>The eval that matters is small, private, built from your traffic, and nobody gets to tune against it.</li>
+</ul>
+
+<blockquote class="pull"><p>The score was optimized against the same distribution it claims to measure. That's not a measurement anymore; it's marketing.</p></blockquote>
+
+<h2 id="check">Check Your Understanding</h2>
+<div class="quiz">
+  <details><summary>Why can private testing inflate scores even if no variant is better than the others?</summary><p>Because publishing the maximum of N noisy measurements is biased upward. The expected maximum grows with N and with noise, independent of true skill.</p></details>
+  <details><summary>Which of the three mechanisms (selection, contamination, broken tasks) can your own private eval also suffer from?</summary><p>All three. If you tune prompts against it, you get selection. If its items leak into fine-tuning data, you get contamination. If items have unclear "correct" answers, you get a broken instrument. Hence the held-out split and the quarterly refresh.</p></details>
+  <details><summary>When is a public leaderboard genuinely useful?</summary><p>For coarse filtering, such as which models are even worth evaluating, and for tracking capability across generations. Not for choosing between close competitors.</p></details>
+</div>
+
+<section class="sources" aria-labelledby="sources">
+  <h2 id="sources">Sources</h2>
+  <ol>
+    <li id="src-1">TechCrunch, “Meta’s vanilla Maverick AI model ranks below rivals on a popular chat benchmark,” Apr 11, 2025. <a href="https://techcrunch.com/2025/04/11/metas-vanilla-maverick-ai-model-ranks-below-rivals-on-a-popular-chat-benchmark">https://techcrunch.com/2025/04/11/metas-vanilla-maverick-ai-model-ranks-below-rivals-on-a-popular-chat-benchmark</a></li>
+    <li id="src-2">Simon Willison, notes on LMArena’s Llama 4 policy update, Apr 8, 2025. <a href="https://simonwillison.net/2025/Apr/8/lmaren">https://simonwillison.net/2025/Apr/8/lmaren</a></li>
+    <li id="src-3">Singh et al., “The Leaderboard Illusion,” arXiv:2504.20879, Apr 2025. <a href="https://arxiv.org/abs/2504.20879v2">https://arxiv.org/abs/2504.20879v2</a></li>
+    <li id="src-4">Zhang et al. (Scale AI), “A Careful Examination of Large Language Model Performance on Grade School Arithmetic,” arXiv:2405.00332, May 2024. <a href="https://arxiv.org/abs/2405.00332">https://arxiv.org/abs/2405.00332</a></li>
+    <li id="src-5">OpenAI, “Introducing SWE-bench Verified,” Aug 2024. <a href="https://openai.com/index/introducing-swe-bench-verified/">https://openai.com/index/introducing-swe-bench-verified/</a></li>
+  </ol>
+</section>
+
+</article>
+</main>
+<footer class="end">
+  <a href="../">← All briefs</a>
+  <span>No. 014 · Research window 2024-05-01 to 2026-10-07</span>
+  <a href="https://github.com/iggym/applied-ai-engineering">Source on GitHub</a>
+</footer>
+<script>
+(function(){
+  var slug = document.documentElement.getAttribute('data-slug');
+  // reading progress
+  var bar = document.querySelector('.progress');
+  function onScroll(){
+    var h = document.documentElement; var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  document.addEventListener('scroll', onScroll, {passive:true}); onScroll();
+  // contents rail
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.rail a'));
+  if ('IntersectionObserver' in window && links.length){
+    var map = {}; links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){ links.forEach(function(a){ a.classList.remove('active'); a.removeAttribute('aria-current'); });
+          var a = map[e.target.id]; if (a){ a.classList.add('active'); a.setAttribute('aria-current','true'); } }
+      });
+    }, {rootMargin:'-20% 0px -70% 0px'});
+    Object.keys(map).forEach(function(id){ var el = document.getElementById(id); if (el) io.observe(el); });
+  }
+  // moves checklist (per-viewer convenience only)
+  var store = null; try { store = window.localStorage; } catch(e){}
+  document.querySelectorAll('ol.moves input[type=checkbox]').forEach(function(cb, i){
+    var key = 'aae:' + slug + ':move:' + i;
+    try { if (store && store.getItem(key) === '1'){ cb.checked = true; } } catch(e){}
+    function paint(){ cb.closest('li').classList.toggle('done', cb.checked); }
+    paint();
+    cb.addEventListener('change', function(){ paint(); try { store && store.setItem(key, cb.checked ? '1' : '0'); } catch(e){} });
+  });
+  // share controls on pull quotes
+  var url = document.querySelector('link[rel=canonical]').href;
+  document.querySelectorAll('blockquote.pull').forEach(function(q){
+    var text = q.querySelector('p').textContent.trim();
+    var row = document.createElement('div'); row.className = 'share';
+    var x = document.createElement('a'); x.textContent = 'Share on X'; x.target = '_blank'; x.rel = 'noopener';
+    x.href = 'https://x.com/intent/post?text=' + encodeURIComponent('“' + text + '”') + '&url=' + encodeURIComponent(url);
+    var li = document.createElement('a'); li.textContent = 'LinkedIn'; li.target = '_blank'; li.rel = 'noopener';
+    li.href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(url);
+    var cp = document.createElement('button'); cp.type = 'button'; cp.textContent = 'Copy';
+    cp.addEventListener('click', function(){
+      var s = '“' + text + '” — ' + url;
+      (navigator.clipboard ? navigator.clipboard.writeText(s) : Promise.reject()).then(function(){ cp.textContent = 'Copied'; }, function(){ cp.textContent = 'Copy failed'; });
+      setTimeout(function(){ cp.textContent = 'Copy'; }, 1600);
+    });
+    row.appendChild(x); row.appendChild(li); row.appendChild(cp); q.appendChild(row);
+  });
+})();
+</script>
+<script>
+
+(function(){
+  var n = document.getElementById('bon-n'), s = document.getElementById('bon-s');
+  // deterministic PRNG so the numbers don't jitter between renders
+  function rng(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function gauss(r){ var u = 1 - r(), v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+  function expectedMax(N, sigma){
+    var r = rng(42), total = 0, T = 4000;
+    for (var t = 0; t < T; t++){ var m = -Infinity; for (var i = 0; i < N; i++){ var x = gauss(r) * sigma; if (x > m) m = x; } total += m; }
+    return total / T;
+  }
+  function paint(){
+    var N = +n.value, sigma = +s.value, lift = expectedMax(N, sigma);
+    document.getElementById('bon-n-out').textContent = N;
+    document.getElementById('bon-s-out').textContent = sigma;
+    var pub = 1200 + lift;
+    document.getElementById('bon-pubv').textContent = Math.round(pub);
+    document.getElementById('bon-pub').style.width = Math.min(100, 50 + lift * 1.1) + '%';
+    document.getElementById('bon-note').textContent = N === 1
+      ? 'One variant, one score: no selection, no inflation (on average).'
+      : 'Publishing the best of ' + N + ' adds about +' + Math.round(lift) + ' points of pure selection, with zero change in the model.';
+  }
+  n.addEventListener('input', paint); s.addEventListener('input', paint); paint();
+})();
+
+</script>
+</body>
+</html>
